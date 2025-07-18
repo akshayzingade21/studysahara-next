@@ -7,8 +7,8 @@ import styles from '../styles/Home.module.css';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
-  'https://afbybnlmgntiggetonaa.supabase.co',
-  'your-supabase-anon-key' // Replace with your actual Supabase anon key
+  "https://afbybnlmgntiggetonaa.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmYnlibmxtZ250aWdnZXRvbmFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NDg3NjIsImV4cCI6MjA2NDEyNDc2Mn0.KNeuwHnFp0H97w2jOgE9vOaOhfwNuHwSdiRlB9tphqo"
 );
 
 export default function Home() {
@@ -313,7 +313,7 @@ export default function Home() {
           <div className={styles.container}>
             <h2>Ready to Start Your Journey?</h2>
             <p>Join thousands of students who have achieved their dreams with StudySahara.</p>
-            <Link href="/eligibily" className={styles['btn-secondary']}>Apply for a Loan</Link>
+            <Link href="/eligibility" className={styles['btn-secondary']}>Apply for a Loan</Link>
           </div>
         </section>
       </main>

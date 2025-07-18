@@ -188,7 +188,7 @@ export default function LoanOption1() {
             <div className={styles.infoCard}>
               <h2 className={styles.sectionTitle}>What is This Loan?</h2>
               <p className={styles.infoText}>
-                This is an education loan where students are not required to provide a co-applicant or any collateral. It's perfect for students who wish to be financially independent.
+                This is an education loan where students are not required to provide a co-applicant or any collateral. It&#39;s perfect for students who wish to be financially independent.
               </p>
             </div>
             <div className={styles.infoCard}>

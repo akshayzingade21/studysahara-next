@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 export default function Success() {
   return (
     <div style={{ textAlign: "center", padding: "50px", maxWidth: "600px", margin: "0 auto" }}>
@@ -9,20 +10,19 @@ export default function Success() {
       <p style={{ fontSize: "18px", color: "#333", marginBottom: "30px" }}>
         Your education loan application has been successfully submitted. Our team will review your details and contact you soon. Thank you for choosing StudySahara!
       </p>
-      import Link from 'next/link';
-
-<Link href="/" passHref>
-  <a style={{ 
-    background: "#007bff", 
-    color: "#fff", 
-    padding: "12px 25px", 
-    borderRadius: "5px", 
-    textDecoration: "none", 
-    fontSize: "16px", 
-    transition: "background 0.3s"
-  }}>
-    Back to Homepage
-  </a>
+<Link
+  href="/"
+  style={{
+    background: "#007bff",
+    color: "#fff",
+    padding: "12px 25px",
+    borderRadius: "5px",
+    textDecoration: "none",
+    fontSize: "16px",
+    transition: "background 0.3s",
+  }}
+>
+  Back to Homepage
 </Link>
     </div>
   );
