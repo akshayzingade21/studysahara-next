@@ -195,7 +195,7 @@ export default function LoanOptionUS() {
               <h2 className={styles.sectionTitle}>Key Features</h2>
               <ul className={styles.featureList}>
                 <li><span className={styles.checkIcon}>✔</span> The co-signer can be anybody within or outside the family such as relative, friends or colleague etc.</li>
-                <li><span className={styles.checkIcon}>✔</span> The co-signer’s credit score is a critical factor for approval.</li>
+                <li><span className={styles.checkIcon}>✔</span> The co-signer&#39;s credit score is a critical factor for approval.</li>
                 <li><span className={styles.checkIcon}>✔</span> Can get lower interest rates as the rates are based on US Central Bank rates.</li>
                 <li><span className={styles.checkIcon}>✔</span> Available only for students who are planning to study in the US.</li>
               </ul>

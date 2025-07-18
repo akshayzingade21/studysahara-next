@@ -176,7 +176,7 @@ export default function LoanOption2() {
             <div className={styles.heroContent}>
               <h1 className={styles.heroTitle}>Co-Applicant & No Collateral Loan</h1>
               <p className={styles.heroSubtitle}>
-                Empower your study abroad journey with StudySahara’s flexible loan option. No collateral needed—just a co-applicant’s support!
+                Empower your study abroad journey with StudySahara&#39;s flexible loan option. No collateral needed—just a co-applicant&#39;s support!
               </p>
               <button className={styles.applyButton} onClick={openModal}>
                 Apply Now
@@ -195,7 +195,7 @@ export default function LoanOption2() {
               <h2 className={styles.sectionTitle}>Key Features</h2>
               <ul className={styles.featureList}>
                 <li><span className={styles.checkIcon}>✔</span> No asset pledge required</li>
-                <li><span className={styles.checkIcon}>✔</span> Relies on co-applicant’s financial profile</li>
+                <li><span className={styles.checkIcon}>✔</span> Relies on co-applicant&#39;s financial profile</li>
                 <li><span className={styles.checkIcon}>✔</span> Flexible repayment terms</li>
               </ul>
             </div>
@@ -208,7 +208,7 @@ export default function LoanOption2() {
               </ul>
             </div>
             <div className={styles.infoCard}>
-              <h2 className={styles.sectionTitle}>Who It’s For</h2>
+              <h2 className={styles.sectionTitle}>Who It&#39;s For</h2>
               <p className={styles.infoText}>
                 Ideal for students with family support willing to co-apply, especially those avoiding collateral while having a financially strong co-applicant.
               </p>

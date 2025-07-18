@@ -176,7 +176,7 @@ export default function LoanOption1() {
             <div className={styles.heroContent}>
               <h1 className={styles.heroTitle}>No Co-Applicant & No Collateral Loan</h1>
               <p className={styles.heroSubtitle}>
-                Empower your study abroad journey with StudySahara’s independent loan option. No co-applicant or collateral needed!
+                Empower your study abroad journey with StudySahara&#39;s independent loan option. No co-applicant or collateral needed!
               </p>
               <button className={styles.applyButton} onClick={openModal}>
                 Apply Now
@@ -197,7 +197,7 @@ export default function LoanOption1() {
                 <li><span className={styles.checkIcon}>✔</span> No need for a guarantor or co-signer</li>
                 <li><span className={styles.checkIcon}>✔</span> No asset pledge required</li>
                 <li><span className={styles.checkIcon}>✔</span> Loan approval based on your profile</li>
-                <li><span className={styles.checkIcon}>✔</span> Disbursed in the study country’s currency</li>
+                <li><span className={styles.checkIcon}>✔</span> Disbursed in the study country&#39;s currency</li>
               </ul>
             </div>
             <div className={styles.infoCard}>
@@ -205,12 +205,12 @@ export default function LoanOption1() {
               <ul className={styles.eligibilityList}>
                 <li>Admission to a recognized university abroad</li>
                 <li>Solid academic background</li>
-                <li>Selected universities/courses (mostly Master’s or higher)</li>
+                <li>Selected universities/courses (mostly Master&#39;s or higher)</li>
                 <li>Credit history considered (CIBIL score or alternative factors)</li>
               </ul>
             </div>
             <div className={styles.infoCard}>
-              <h2 className={styles.sectionTitle}>Who It’s For</h2>
+              <h2 className={styles.sectionTitle}>Who It&#39;s For</h2>
               <p className={styles.infoText}>
                 Ideal for students seeking financial independence without involving family or assets.
               </p>

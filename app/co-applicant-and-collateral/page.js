@@ -176,7 +176,7 @@ export default function LoanOption3() {
             <div className={styles.heroContent}>
               <h1 className={styles.heroTitle}>Co-Applicant & Collateral Loan</h1>
               <p className={styles.heroSubtitle}>
-                Secure your study abroad journey with StudySahara’s loan option requiring a co-applicant and collateral support!
+                Secure your study abroad journey with StudySahara&#39;s loan option requiring a co-applicant and collateral support!
               </p>
               <button className={styles.applyButton} onClick={openModal}>
                 Apply Now
@@ -195,7 +195,7 @@ export default function LoanOption3() {
               <h2 className={styles.sectionTitle}>Key Features</h2>
               <ul className={styles.featureList}>
                 <li><span className={styles.checkIcon}>✔</span> Lower interest rates due to the secured nature of the loan.</li>
-                <li><span className={styles.checkIcon}>✔</span> Co-applicant’s income and credit history are considered.</li>
+                <li><span className={styles.checkIcon}>✔</span> Co-applicant&#39;s income and credit history are considered.</li>
                 <li><span className={styles.checkIcon}>✔</span> Collateral can be residential property, fixed deposit or life insurance policy.</li>
               </ul>
             </div>
@@ -207,8 +207,8 @@ export default function LoanOption3() {
                 <li>Admission to a recognized university.</li>
                 <li>Credit History Consideration:
                   <ul style={{ listStyleType: "circle", paddingLeft: "20px" }}>
-                    <li>Lenders may consider the student’s and co-applicant's CIBIL score (Credit Information Bureau India Limited) or other credit reports to assess repayment ability.</li>
-                    <li>Even students or co-applicants without a Credit/CIBIL score are eligible, as lenders may assess loan eligibility based on other factors like the student's university ranking, course, and co-applicant's income profile.</li>
+                    <li>Lenders may consider the student&#39;s and co-applicant&#39;s CIBIL score (Credit Information Bureau India Limited) or other credit reports to assess repayment ability.</li>
+                    <li>Even students or co-applicants without a Credit/CIBIL score are eligible, as lenders may assess loan eligibility based on other factors like the student&#39;s university ranking, course, and co-applicant&#39;s income profile.</li>
                   </ul>
                 </li>
               </ul>
