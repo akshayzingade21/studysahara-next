@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  margin: 0;
+  padding-top: 60px;
+  background: linear-gradient(to right, #cce5ff, #f0f8ff);
+  color: #333;
+  line-height: 1.7;
+  font-size: 16px;
+  transition: padding-top 0.3s ease;
+  scroll-behavior: smooth;
+}
+
+body.scrolled {
+  padding-top: 50px;
+}

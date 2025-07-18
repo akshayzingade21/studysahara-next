@@ -1,0 +1,389 @@
+/* ourcompany.module.css */
+
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 50;
+  background-color: #ffffff;
+  color: #1e3a8a;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.scrolled {
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.headerContainer {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: #1e3a8a;
+  transition: transform 0.2s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+.logoImage {
+  transition: transform 0.3s ease;
+}
+
+.logo:hover .logoImage {
+  transform: rotate(10deg);
+}
+
+.desktopNav ul {
+  display: flex;
+  gap: 2rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  list-style: none;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #1e3a8a;
+  text-decoration: none;
+  transition: color 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+  font-size: 1.25rem;
+  padding: 0.75rem 1.25rem;
+}
+
+.navLink:hover {
+  color: #2563eb;
+  transform: translateY(-2px);
+}
+
+.homeIcon {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.heroSection {
+  padding: 8rem 1rem 6rem;
+  text-align: center;
+  background-image: linear-gradient(to bottom, rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.95)),
+    url("/images/wave-bg.svg");
+  background-size: cover;
+  background-position: center;
+  color: white;
+  border-radius: 0 0 30px 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1), transparent);
+  opacity: 0.5;
+}
+
+.heroContent {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.heroContent h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+  animation: fadeInUp 1s ease-out;
+}
+
+.heroContent p {
+  font-size: 1.25rem;
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  color: #f1f5f9;
+  animation: fadeInUp 1s ease-out 0.2s;
+  animation-fill-mode: backwards;
+}
+
+.ctaButton {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  animation: fadeInUp 1s ease-out 0.4s;
+  animation-fill-mode: backwards;
+}
+
+.ctaButton:hover {
+  background-color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.aboutSection {
+  padding: 6rem 1rem;
+  background-color: #f8fafc;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.aboutSection h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 2rem;
+  text-align: center;
+  animation: fadeIn 1s ease-out;
+}
+
+.aboutSection p,
+.aboutSection ul {
+  font-size: 1.125rem;
+  color: #374151;
+  margin-bottom: 1.5rem;
+}
+
+.featureList li {
+  margin-bottom: 0.75rem;
+  transition: transform 0.3s ease;
+}
+
+.featureList li:hover {
+  transform: translateX(10px);
+}
+
+.aboutSection h3 {
+  font-size: 1.75rem;
+  color: #1e3a8a;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.visionMissionContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.visionMissionCard {
+  position: relative;
+  padding: 2.5rem;
+  background: linear-gradient(135deg, #ffffff, #f1f5f9);
+  border-left: 4px solid transparent;
+  border-image: linear-gradient(to bottom, #3b82f6, #1e3a8a) 1;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  animation: fadeInUp 1s ease-out;
+  animation-fill-mode: backwards;
+}
+
+.visionMissionCard:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.visionMissionCard:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.visionMissionCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  border-image: linear-gradient(to bottom, #2563eb, #1e3a8a) 1;
+}
+
+.visionMissionCard h3 {
+  font-size: 2rem;
+  color: #1e3a8a;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.visionMissionCard p {
+  font-size: 1.125rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.partnersSection {
+  padding: 6rem 1rem;
+  background-color: #ffffff;
+}
+
+.partnersSection h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.partnersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.partnerCard {
+  background-color: #f8fafc;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.partnerCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.partnerCard h3 {
+  font-size: 1.5rem;
+  color: #1e3a8a;
+  margin-bottom: 1rem;
+}
+
+.partnerCard p {
+  font-size: 1rem;
+  color: #374151;
+}
+
+.valuesSection {
+  padding: 6rem 1rem;
+  background-color: #f1f5f9;
+}
+
+.valuesSection h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.valuesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.valueCard {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.valueCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.valueCard h3 {
+  font-size: 1.5rem;
+  color: #1e3a8a;
+  margin-bottom: 1rem;
+}
+
+.valueCard p {
+  font-size: 1rem;
+  color: #374151;
+}
+
+.partnerWithUsSection {
+  padding: 6rem 1rem;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+.partnerWithUsSection h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 2rem;
+}
+
+.partnerWithUsSection p {
+  font-size: 1.125rem;
+  color: #374151;
+  margin-bottom: 2rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.footer {
+  background-color: #1e3a8a;
+  color: white;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.footerContent {
+  max-width: 900px;
+  margin: 0 auto;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.footerLink {
+  color: #bfdbfe;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footerLink:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
