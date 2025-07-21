@@ -349,6 +349,7 @@ export default function Home() {
         <section className={`${styles['featured-lenders']} ${styles['section-padding']}`}>
           <div className={styles.container}>
             <h2 className={styles['section-heading']}>Our Partnered Lenders</h2>
+            <span> Tap on any of the lenders to know more about them</span>
             <div className={styles['lender-carousel']}>
               <button className={`${styles['carousel-button']} ${styles.left}`} onClick={scrollLeft} aria-label="Scroll carousel left">
                 ←
