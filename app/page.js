@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from '../styles/Home.module.css';
@@ -21,6 +21,8 @@ export default function Home() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [carouselOffset, setCarouselOffset] = useState(0);
+  const carouselRef = useRef(null);
 
   const lenders = [
     { name: 'SBI', logo: '/images/sbi.png', url: '/sbi' },
@@ -41,7 +43,6 @@ export default function Home() {
     { name: 'Earnest', logo: '/images/earnest.png', url: '/earnest' },
     { name: 'Sallie Mae', logo: '/images/salliemae.png', url: '/salliemae' },
     { name: 'Ascent', logo: '/images/ascent.png', url: '/ascent' },
-  
   ];
 
   // Handle scroll for header
@@ -53,10 +54,28 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Continuous carousel scrolling
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCarouselOffset((prev) => prev - 1);
+    }, 16); // ~60fps for smooth scrolling
+    return () => clearInterval(interval);
+  }, []);
+
+  // Seamless looping for endless scrolling
+  useEffect(() => {
+    const logoWidth = 204; // 200px logo width + 2px margin-left + 2px margin-right
+    const totalWidth = logoWidth * lenders.length; // Width of one set of logos
+    if (carouselOffset <= -totalWidth) {
+      // Reset to the start of the second set instantly for seamless looping
+      setCarouselOffset(0);
+    }
+  }, [carouselOffset, lenders.length]);
+
   // Toggle mobile menu
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
-    setIsLoanDropdownOpen(false); // Close dropdowns when menu toggles
+    setIsLoanDropdownOpen(false);
     setIsLenderDropdownOpen(false);
   };
 
@@ -64,13 +83,13 @@ export default function Home() {
   const toggleLoanDropdown = (e) => {
     e.preventDefault();
     setIsLoanDropdownOpen(!isLoanDropdownOpen);
-    setIsLenderDropdownOpen(false); // Close other dropdown
+    setIsLenderDropdownOpen(false);
   };
 
   const toggleLenderDropdown = (e) => {
     e.preventDefault();
     setIsLenderDropdownOpen(!isLenderDropdownOpen);
-    setIsLoanDropdownOpen(false); // Close other dropdown
+    setIsLoanDropdownOpen(false);
   };
 
   // Handle mouse events for desktop
@@ -140,69 +159,72 @@ export default function Home() {
     console.log(`Touch event on: ${url} (Timestamp: ${new Date().toISOString()})`);
   };
 
+  // Handle manual carousel navigation
+  const scrollLeft = () => {
+    setCarouselOffset((prev) => prev + 204); // Move left by one logo width
+  };
+
+  const scrollRight = () => {
+    setCarouselOffset((prev) => prev - 204); // Move right by one logo width
+  };
+
   return (
     <>
-    <Head>
+      <Head>
         <title>StudySahara U+002d Education Loans for Studying Abroad</title>
         <link
           rel="preload"
           as="image"
           href="/_next/image?url=%2Fimages%2Fnewposter.webp&w=3840&q=75"
           imagesrcset="
-          /_next/image?url=%2Fimages%2Fnewposter.webp&w=640&q=75 640w,
-          /_next/image?url=%2Fimages%2Fnewposter.webp&w=750&q=75 750w,
-          /_next/image?url=%2Fimages%2Fnewposter.webp&w=828&q=75 828w,
-          /_next/image?url=%2Fimages%2Fnewposter.webp&w=1080&q=75 1080w,
-          /_next/image?url=%2Fimages%2Fnewposter.webp&w=1200&q=75 1200w,
-          /_next/image?url=%2Fimages%2Fnewposter.webp&w=1920&q=75 1920w,
-          /_next/image?url=%2Fimages%2Fnewposter.webp&w=2048&q=75 2048w,
-          /_next/image?url=%2Fimages%2Fnewposter.webp&w=3840&q=75 3840w
+            /_next/image?url=%2Fimages%2Fnewposter.webp&w=640&q=75 640w,
+            /_next/image?url=%2Fimages%2Fnewposter.webp&w=750&q=75 750w,
+            /_next/image?url=%2Fimages%2Fnewposter.webp&w=828&q=75 828w,
+            /_next/image?url=%2Fimages%2Fnewposter.webp&w=1080&q=75 1080w,
+            /_next/image?url=%2Fimages%2Fnewposter.webp&w=1200&q=75 1200w,
+            /_next/image?url=%2Fimages%2Fnewposter.webp&w=1920&q=75 1920w,
+            /_next/image?url=%2Fimages%2Fnewposter.webp&w=2048&q=75 2048w,
+            /_next/image?url=%2Fimages%2Fnewposter.webp&w=3840&q=75 3840w
           "
           imagesizes="100vw"
-          />
+        />
         <meta name="description" content="Get the best education loan options for studying abroad. Compare lenders, check eligibility, and apply with no charges. Trusted by 2000+ Indian students." />
         <meta name="keywords" content="education loan, study abroad loan, International student loan, no collateral loan, no co-applicant loan, no cosigner loan, overseas education loan, SBI education loan, ICICI education loan, NBFC loan for study, HDFC Credila education loan, Avanse education loan, gyandhan, nomad credit, prodigy finance, tata capital education loan, student loan India, loan for USA studies, loan for UK studies, US International student loan, no cosigner and no collateral loan, no cosigner loan," />
         <meta name="author" content="StudySahara" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-        {/* Canonical URL */}
         <link rel="canonical" href="https://www.studysahara.com/" />
-
-        {/* Favicon (Main logo for homepage) */}
         <link rel="icon" type="image/png" href="/favicon.ico" />
-
-        {/* Open Graph for social sharing */}
         <meta property="og:title" content="StudySahara U+002d Education Loans for Studying Abroad" />
         <meta property="og:description" content="Compare education loan options with or without collateral and co-applicant. Get expert help for faster approvals from trusted lenders." />
         <meta property="og:image" content="https://www.studysahara.com/og-banner.jpg" />
         <meta property="og:url" content="https://www.studysahara.com/" />
         <meta property="og:type" content="website" />
         <script
-  type="application/ld+json"
-  dangerouslySetInnerHTML={{
-    __html: JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "StudySahara",
-      "url": "https://www.studysahara.com",
-      "description": "StudySahara is India's education loan platform helping students secure study abroad loans from top Indian and international lenders — with or without collateral.",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://www.studysahara.com/images/logo.png",
-        "width": "120",
-        "height": "120"
-      },
-      "sameAs": [
-        "https://www.instagram.com/studysahara"
-      ],
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "email": "hello@studysahara.com",
-        "contactType": "Customer Support"
-      }
-    })
-  }}
-/>
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "StudySahara",
+              "url": "https://www.studysahara.com",
+              "description": "StudySahara is India's education loan platform helping students secure study abroad loans from top Indian and international lenders — with or without collateral.",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.studysahara.com/images/logo.png",
+                "width": "120",
+                "height": "120"
+              },
+              "sameAs": [
+                "https://www.instagram.com/studysahara"
+              ],
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "email": "hello@studysahara.com",
+                "contactType": "Customer Support"
+              }
+            })
+          }}
+        />
       </Head>
       <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
         <div className={styles.container}>
@@ -328,7 +350,10 @@ export default function Home() {
           <div className={styles.container}>
             <h2 className={styles['section-heading']}>Our Partnered Lenders</h2>
             <div className={styles['lender-carousel']}>
-              <div className={styles['lender-track']}>
+              <button className={`${styles['carousel-button']} ${styles.left}`} onClick={scrollLeft} aria-label="Scroll carousel left">
+                ←
+              </button>
+              <div className={styles['lender-track']} style={{ transform: `translateX(${carouselOffset}px)` }}>
                 {[...lenders, ...lenders, ...lenders].map((lender, index) => (
                   <Link
                     href={lender.url}
@@ -345,6 +370,9 @@ export default function Home() {
                   </Link>
                 ))}
               </div>
+              <button className={`${styles['carousel-button']} ${styles.right}`} onClick={scrollRight} aria-label="Scroll carousel right">
+                →
+              </button>
             </div>
           </div>
         </section>
