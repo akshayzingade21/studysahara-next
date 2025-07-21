@@ -177,6 +177,32 @@ export default function Home() {
         <meta property="og:image" content="https://www.studysahara.com/og-banner.jpg" />
         <meta property="og:url" content="https://www.studysahara.com/" />
         <meta property="og:type" content="website" />
+        <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "StudySahara",
+      "url": "https://www.studysahara.com",
+      "description": "StudySahara is India's education loan platform helping students secure study abroad loans from top Indian and international lenders — with or without collateral.",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.studysahara.com/images/logo.png",
+        "width": "120",
+        "height": "120"
+      },
+      "sameAs": [
+        "https://www.instagram.com/studysahara"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "hello@studysahara.com",
+        "contactType": "Customer Support"
+      }
+    })
+  }}
+/>
       </Head>
       <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
         <div className={styles.container}>
