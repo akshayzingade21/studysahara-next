@@ -144,6 +144,22 @@ export default function Home() {
     <>
     <Head>
         <title>StudySahara U+002d Education Loans for Studying Abroad</title>
+        <link
+          rel="preload"
+          as="image"
+          href="/_next/image?url=%2Fimages%2Fnewposter.webp&w=3840&q=75"
+          imagesrcset="
+          /_next/image?url=%2Fimages%2Fnewposter.webp&w=640&q=75 640w,
+          /_next/image?url=%2Fimages%2Fnewposter.webp&w=750&q=75 750w,
+          /_next/image?url=%2Fimages%2Fnewposter.webp&w=828&q=75 828w,
+          /_next/image?url=%2Fimages%2Fnewposter.webp&w=1080&q=75 1080w,
+          /_next/image?url=%2Fimages%2Fnewposter.webp&w=1200&q=75 1200w,
+          /_next/image?url=%2Fimages%2Fnewposter.webp&w=1920&q=75 1920w,
+          /_next/image?url=%2Fimages%2Fnewposter.webp&w=2048&q=75 2048w,
+          /_next/image?url=%2Fimages%2Fnewposter.webp&w=3840&q=75 3840w
+          "
+          imagesizes="100vw"
+          />
         <meta name="description" content="Get the best education loan options for studying abroad. Compare lenders, check eligibility, and apply with no charges. Trusted by 2000+ Indian students." />
         <meta name="keywords" content="education loan, study abroad loan, International student loan, no collateral loan, no co-applicant loan, no cosigner loan, overseas education loan, SBI education loan, ICICI education loan, NBFC loan for study, HDFC Credila education loan, Avanse education loan, gyandhan, nomad credit, prodigy finance, tata capital education loan, student loan India, loan for USA studies, loan for UK studies, US International student loan, no cosigner and no collateral loan, no cosigner loan," />
         <meta name="author" content="StudySahara" />
@@ -161,7 +177,6 @@ export default function Home() {
         <meta property="og:image" content="https://www.studysahara.com/og-banner.jpg" />
         <meta property="og:url" content="https://www.studysahara.com/" />
         <meta property="og:type" content="website" />
-
       </Head>
       <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
         <div className={styles.container}>
