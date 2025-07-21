@@ -108,47 +108,14 @@
   transform: rotate(-45deg) translate(6px, -6px);
 }
 
-.sidebar {
-  display: none;
-  position: fixed;
-  top: 60px;
-  right: 0;
-  width: 250px;
-  height: calc(100% - 60px);
-  background: #ffffff;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  z-index: 1000;
-  transform: translateX(100%);
-  transition: transform 0.3s ease;
+.homeIcon {
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
-.sidebar.show {
-  display: block;
-  transform: translateX(0);
-  animation: slideIn 0.3s ease;
-}
-
-.sidebarList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.sidebarLink {
-  color: #003087;
-  text-decoration: none;
-  display: block;
-  padding: 12px 0;
-  font-size: 16px;
-  font-weight: 500;
-  transition: color 0.3s ease, transform 0.2s ease;
-}
-
-.sidebarLink:hover {
-  color: #0055A4;
-  transform: translateX(5px);
-}
+.homeIcon:hover {
+  transform: scale(1.05);
+} 
 
 .main {
   max-width: 1200px;
@@ -929,9 +896,6 @@
   .hamburger {
     display: none;
   }
-  .sidebar {
-    display: none !important;
-  }
   .contentGrid {
     grid-template-columns: 1fr 3fr;
   }
@@ -1000,4 +964,203 @@
   50% { transform: translateX(5px); }
   75% { transform: translateX(-5px); }
   100% { transform: translateX(0); }
+}
+/* Mobile-specific optimizations */
+@media (max-width: 767px) {
+  /* Adjust container padding for better spacing on small screens */
+  .auxiloContainer {
+    padding: 0 10px;
+  }
+
+  /* Ensure header content fits within mobile screen */
+  .headerContent {
+    padding: 0 10px;
+    flex-wrap: wrap;
+  }
+
+  /* Reduce logo size for mobile */
+  .logoImage {
+    height: 30px;
+  }
+
+  .logoText {
+    font-size: 20px;
+    margin-left: 8px;
+  }
+
+  /* Optimize hamburger menu for smaller touch targets */
+  .hamburger {
+    width: 25px;
+    padding: 3px;
+  }
+
+  .hamburger span {
+    height: 2px;
+    margin: 3px 0;
+  }
+
+  /* Optimize main content area */
+  .main {
+    margin-top: 60px;
+    padding: 15px 10px;
+  }
+
+  /* Hero section adjustments for mobile */
+  .hero {
+    padding: 20px 15px;
+    margin-bottom: 15px;
+  }
+
+  .heroContent {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .heroText {
+    min-width: 100%;
+    text-align: center;
+  }
+
+  .heroTitle {
+    font-size: 24px;
+  }
+
+  .heroSubtitle {
+    font-size: 14px;
+  }
+
+  .heroButton {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .heroImage {
+    min-width: 100%;
+  }
+
+  .imageWrapper {
+    width: 150px;
+    height: 150px;
+    padding: 10px;
+  }
+
+  .auxiloImage {
+    width: 80%;
+  }
+
+  /* Ensure content grid stacks properly */
+  .contentGrid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  /* Section adjustments */
+  .section {
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+
+  .sectionTitle {
+    font-size: 20px;
+  }
+
+  .sectionText {
+    font-size: 14px;
+  }
+
+  /* Optimize table for mobile */
+  .tableContainer {
+    padding: 0;
+  }
+
+  .table {
+    font-size: 14px;
+  }
+
+  .table th,
+  .table td {
+    padding: 8px;
+  }
+
+  /* Adjust form elements in modal for mobile */
+  .modalContent {
+    width: 95%;
+    max-width: 400px;
+    padding: 15px;
+  }
+
+  .modalTitle {
+    font-size: 18px;
+  }
+
+  .input,
+  .select {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .countryCodeSelect {
+    width: 30%;
+    padding: 10px;
+  }
+
+  .phoneInput,
+  .intakeInput {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cancelButton,
+  .nextButton,
+  .prevButton,
+  .submitButton {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  /* Footer adjustments */
+  .footer {
+    padding: 30px 15px;
+  }
+
+  .footerContent {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .newsletterForm {
+    flex-direction: column;
+  }
+
+  .newsletterInput {
+    width: 100%;
+    padding: 8px;
+  }
+
+  .newsletterButton {
+    width: 100%;
+    padding: 8px;
+  }
+
+  /* Ensure faqs are readable */
+  .faqQuestion {
+    font-size: 14px;
+  }
+
+  .faqAnswer {
+    font-size: 14px;
+    padding-left: 10px;
+  }
+
+  /* Prevent horizontal overflow */
+  body.html {
+    overflow-x: hidden;
+    width: 100%;
+  }
 }

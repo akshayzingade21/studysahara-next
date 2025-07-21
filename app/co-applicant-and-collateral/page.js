@@ -159,6 +159,7 @@ export default function LoanOption3() {
           property="twitter:description"
           content="Affordable loans for Indian students (18-40) to study in USA, UK, Canada, Ireland, Germany, France, Australia, New Zealand, Italy, or Dubai with co-applicant and collateral!"
         />
+        <link rel="canonical" href="https://www.studysahara.com/co-applicant-and-collateral" />
       </Head>
       <div className={styles.PNBContainer}>
         <header className={styles.header}>
@@ -267,15 +268,14 @@ export default function LoanOption3() {
             <div className={styles.footerSection}>
               <h3>Contact Us</h3>
               <p>Email: support@studysahara.com</p>
-              <p>Phone: +91-9876543210</p>
-              <p>Address: 123 Education Lane, Mumbai, India</p>
+              <p>Address: No 51, 5th Floor, 5th Main Road, Above Alchemy Coffee Roasters, Bengaluru-560041</p>
             </div>
             <div className={styles.footerSection}>
               <h3>Quick Links</h3>
               <ul>
                 <li><Link href="/">Home</Link></li>
-                <li><Link href="/co-applicant-and-collateral">Loan Options</Link></li>
-                <li><Link href="/about">About Us</Link></li>
+                <li><Link href="/eligibility">Check your Loan Eligibility</Link></li>
+                <li><Link href="/ourcompany">About Us</Link></li>
               </ul>
             </div>
             <div className={styles.footerSection}>

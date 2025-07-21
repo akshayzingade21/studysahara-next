@@ -226,6 +226,7 @@ export default function UnionBank() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta charSet="UTF-8" />
         <meta name="author" content="StudySahara" />
+        <link rel="canonical" href="https://www.studysahara.com/unionbank" />
       </Head>
       <div className={styles.unionbankContainer}>
         <header className={styles.header}>
@@ -234,20 +235,12 @@ export default function UnionBank() {
               <Image src="/images/logo.png" alt="StudySahara Logo" width={40} height={48} className={styles.logoImage} />
               <span className={styles.logoText}>StudySahara</span>
             </Link>
-            <div id="hamburger" className={`${styles.hamburger} ${isSidebarOpen ? styles.active : ""}`} onClick={toggleSidebar}>
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <nav className={`${styles.nav} ${isSidebarOpen ? styles.show : ""}`}>
-              <Link href="/" className={styles.navLink}>Home</Link>
-            </nav>
-          </div>
-          <nav id="sidebar" className={`${styles.sidebar} ${isSidebarOpen ? styles.show : ""}`}>
-            <ul className={styles.sidebarList}>
-              <li><Link href="/" className={styles.sidebarLink} onClick={toggleSidebar}>Home</Link></li>
-            </ul>
-          </nav>
+             <Link href="/" className={styles.navLink}>
+                  <svg className={styles.homeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                </Link>
+                </div>
         </header>
 
         <main className={styles.main}>
@@ -656,8 +649,8 @@ export default function UnionBank() {
                       required
                     >
                       <option value="">Select Year</option>
-                      <option value="2025">2023</option>
-                      <option value="2025">2024</option>
+                      <option value="2023">2023</option>
+                      <option value="2024">2024</option>
                       <option value="2025">2025</option>
                       <option value="2026">2026</option>
                       <option value="2027">2027</option>

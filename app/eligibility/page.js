@@ -42,22 +42,25 @@ export default function Eligibility() {
   const [isLenderDropdownOpen, setIsLenderDropdownOpen] = useState(false);
 
   const lenders = [
-    { name: 'Union Bank', logo: '/images/union-bank.png', url: 'https://unionbankofindia.co.in' },
-    { name: 'PNB', logo: '/images/pnb.png', url: 'https://pnbindia.in' },
-    { name: 'ICICI Bank', logo: '/images/icici.png', url: 'https://icicibank.com' },
-    { name: 'Avanse', logo: '/images/avanse.png', url: 'https://avanse.com' },
-    { name: 'IDFC First Bank', logo: '/images/idfc.png', url: 'https://idfcfirstbank.com' },
-    { name: 'Axis Bank', logo: '/images/axis.png', url: 'https://axisbank.com' },
-    { name: 'Yes Bank', logo: '/images/yes-bank.png', url: 'https://yesbank.in' },
-    { name: 'Auxilo', logo: '/images/auxilo.png', url: 'https://auxilo.com' },
-    { name: 'Incred', logo: '/images/incred.png', url: 'https://incred.com' },
-    { name: 'Tata Capital', logo: '/images/tata-capital.png', url: 'https://tatacapital.com' },
-    { name: 'Poonawalla Fincorp', logo: '/images/poonawalla.png', url: 'https://poonawallafincorp.com' },
-    { name: 'Prodigy Finance', logo: '/images/prodigy.png', url: 'https://prodigyfinance.com' },
-    { name: 'Mpower Financing', logo: '/images/mpower.png', url: 'https://mpowerfinancing.com' },
-    { name: 'Earnest', logo: '/images/earnest.png', url: 'https://earnest.com' },
-    { name: 'Sallie Mae', logo: '/images/sallie-mae.png', url: 'https://salliemae.com' },
-    { name: 'Ascent', logo: '/images/ascent.png', url: 'https://ascentfunding.com' },
+    { name: 'SBI', logo: '/images/sbi.png', url: '/sbi' },
+    { name: 'Credila', logo: '/images/credila.png', url: '/credila' },
+    { name: 'Union Bank', logo: '/images/unionbank.png', url: '/unionbank' },
+    { name: 'PNB', logo: '/images/pnb.png', url: '/PNB' },
+    { name: 'ICICI Bank', logo: '/images/icicibank.png', url: '/icicibank' },
+    { name: 'Avanse', logo: '/images/avanse.png', url: '/avanse' },
+    { name: 'IDFC First Bank', logo: '/images/idfc.png', url: '/idfc' },
+    { name: 'Axis Bank', logo: '/images/axisbank.png', url: '/axisbank' },
+    { name: 'Yes Bank', logo: '/images/yesbank.png', url: '/yesbank' },
+    { name: 'Auxilo', logo: '/images/auxilo.png', url: '/auxilo' },
+    { name: 'Incred', logo: '/images/incred.png', url: '/incred' },
+    { name: 'Tata Capital', logo: '/images/tatacapital.png', url: '/tatacapital' },
+    { name: 'Poonawalla Fincorp', logo: '/images/poonawallafincorp.png', url: '/poonawallafincorp' },
+    { name: 'Prodigy Finance', logo: '/images/prodigyfinance.png', url: '/prodigyfinance' },
+    { name: 'Mpower Financing', logo: '/images/mpowerfinancing.png', url: '/mpowerfinancing' },
+    { name: 'Earnest', logo: '/images/earnest.png', url: '/earnest' },
+    { name: 'Sallie Mae', logo: '/images/salliemae.png', url: '/salliemae' },
+    { name: 'Ascent', logo: '/images/ascent.png', url: '/ascent' },
+  
   ];
 
   const years = [2022, 2023, 2024, 2025, 2026];
@@ -248,7 +251,7 @@ export default function Eligibility() {
                 height={48}
                 className={styles.logoImage}
               />
-              <span className={styles.logoText}>StudySahara</span>
+              <h1 className={styles.logoText}>StudySahara</h1>
             </Link>
           <div className={`${styles.hamburger} ${isMenuOpen ? styles.open : ''}`} onClick={toggleMenu}>
             <span></span>
@@ -261,10 +264,10 @@ export default function Eligibility() {
                 Loan  Options
               </a>
               <ul className={`${styles['dropdown-menu']} ${isLoanDropdownOpen ? styles.show : ''}`}>
-                <li><Link href="/loans/no-co-applicant-no-collateral">No Co-Applicant & No Collateral</Link></li>
-                <li><Link href="/loans/co-applicant-no-collateral">Co-Applicant & No Collateral</Link></li>
-                <li><Link href="/loans/co-applicant-collateral">Co-Applicant and Collateral</Link></li>
-                <li><Link href="/loans/us-co-applicant">US Co-Applicant</Link></li>
+                <li><Link href="/no-co-applicant-and-no-collateral">No Co-Applicant & No Collateral</Link></li>
+                <li><Link href="/co-applicant-and-no-collateral">Co-Applicant & No Collateral</Link></li>
+                <li><Link href="/co-applicant-and-collateral">Co-Applicant and Collateral</Link></li>
+                <li><Link href="/us-co-applicant">US Co-Applicant</Link></li>
               </ul>
             </li>
             <li><Link href="/eligibility" className={styles.active}>Loan Eligibility</Link></li>
@@ -280,8 +283,7 @@ export default function Eligibility() {
                 ))}
               </ul>
             </li>
-            <li><Link href="/company">Our Company</Link></li>
-            <li><Link href="/">Refer & Earn</Link></li>
+            <li><Link href="/ourcompany">Our Company</Link></li>
           </ul>
         </div>
       </header>

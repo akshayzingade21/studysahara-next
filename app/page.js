@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from '../styles/Home.module.css';
+import Head from 'next/head';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -21,8 +22,9 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Updated lender data with SBI and Credila added
   const lenders = [
+    { name: 'SBI', logo: '/images/sbi.png', url: '/sbi' },
+    { name: 'Credila', logo: '/images/credila.png', url: '/credila' },
     { name: 'Union Bank', logo: '/images/unionbank.png', url: '/unionbank' },
     { name: 'PNB', logo: '/images/pnb.png', url: '/PNB' },
     { name: 'ICICI Bank', logo: '/images/icicibank.png', url: '/icicibank' },
@@ -39,8 +41,7 @@ export default function Home() {
     { name: 'Earnest', logo: '/images/earnest.png', url: '/earnest' },
     { name: 'Sallie Mae', logo: '/images/salliemae.png', url: '/salliemae' },
     { name: 'Ascent', logo: '/images/ascent.png', url: '/ascent' },
-    { name: 'SBI', logo: '/images/sbi.png', url: '/sbi' },
-    { name: 'Credila', logo: '/images/credila.png', url: '/credila' },
+  
   ];
 
   // Handle scroll for header
@@ -55,25 +56,48 @@ export default function Home() {
   // Toggle mobile menu
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+    setIsLoanDropdownOpen(false); // Close dropdowns when menu toggles
+    setIsLenderDropdownOpen(false);
   };
 
-  // Hover handlers for dropdowns
+  // Toggle dropdowns for mobile
+  const toggleLoanDropdown = (e) => {
+    e.preventDefault();
+    setIsLoanDropdownOpen(!isLoanDropdownOpen);
+    setIsLenderDropdownOpen(false); // Close other dropdown
+  };
+
+  const toggleLenderDropdown = (e) => {
+    e.preventDefault();
+    setIsLenderDropdownOpen(!isLenderDropdownOpen);
+    setIsLoanDropdownOpen(false); // Close other dropdown
+  };
+
+  // Handle mouse events for desktop
   const handleLoanDropdownEnter = () => {
-    setIsLoanDropdownOpen(true);
-    setIsLenderDropdownOpen(false);
+    if (window.innerWidth > 768) {
+      setIsLoanDropdownOpen(true);
+      setIsLenderDropdownOpen(false);
+    }
   };
 
   const handleLoanDropdownLeave = () => {
-    setIsLoanDropdownOpen(false);
+    if (window.innerWidth > 768) {
+      setIsLoanDropdownOpen(false);
+    }
   };
 
   const handleLenderDropdownEnter = () => {
-    setIsLenderDropdownOpen(true);
-    setIsLoanDropdownOpen(false);
+    if (window.innerWidth > 768) {
+      setIsLenderDropdownOpen(true);
+      setIsLoanDropdownOpen(false);
+    }
   };
 
   const handleLenderDropdownLeave = () => {
-    setIsLenderDropdownOpen(false);
+    if (window.innerWidth > 768) {
+      setIsLenderDropdownOpen(false);
+    }
   };
 
   // Handle form input changes
@@ -106,8 +130,39 @@ export default function Home() {
     setError(null);
   };
 
+  // Debug handler for lender clicks
+  const handleLenderClick = (url) => {
+    console.log(`Navigating to: ${url} (Timestamp: ${new Date().toISOString()})`);
+  };
+
+  // Debug handler for touch events
+  const handleLenderTouch = (url) => {
+    console.log(`Touch event on: ${url} (Timestamp: ${new Date().toISOString()})`);
+  };
+
   return (
     <>
+    <Head>
+        <title>StudySahara U+002d Education Loans for Studying Abroad</title>
+        <meta name="description" content="Get the best education loan options for studying abroad. Compare lenders, check eligibility, and apply with no charges. Trusted by 2000+ Indian students." />
+        <meta name="keywords" content="education loan, study abroad loan, International student loan, no collateral loan, no co-applicant loan, no cosigner loan, overseas education loan, SBI education loan, ICICI education loan, NBFC loan for study, HDFC Credila education loan, Avanse education loan, gyandhan, nomad credit, prodigy finance, tata capital education loan, student loan India, loan for USA studies, loan for UK studies, US International student loan, no cosigner and no collateral loan, no cosigner loan," />
+        <meta name="author" content="StudySahara" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        {/* Canonical URL */}
+        <link rel="canonical" href="https://www.studysahara.com/" />
+
+        {/* Favicon (Main logo for homepage) */}
+        <link rel="icon" type="image/png" href="/favicon.ico" />
+
+        {/* Open Graph for social sharing */}
+        <meta property="og:title" content="StudySahara U+002d Education Loans for Studying Abroad" />
+        <meta property="og:description" content="Compare education loan options with or without collateral and co-applicant. Get expert help for faster approvals from trusted lenders." />
+        <meta property="og:image" content="https://www.studysahara.com/og-banner.jpg" />
+        <meta property="og:url" content="https://www.studysahara.com/" />
+        <meta property="og:type" content="website" />
+
+      </Head>
       <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
         <div className={styles.container}>
           <div className={styles.logo}>
@@ -123,10 +178,15 @@ export default function Home() {
             <span></span>
           </div>
           <ul className={`${styles['nav-menu']} ${isMenuOpen ? styles.active : ''}`}>
-            <li className={styles.dropdown} onMouseEnter={handleLoanDropdownEnter} onMouseLeave={handleLoanDropdownLeave}>
+            <li
+              className={styles.dropdown}
+              onMouseEnter={handleLoanDropdownEnter}
+              onMouseLeave={handleLoanDropdownLeave}
+            >
               <a
                 href="#"
                 className={`${styles['dropdown-toggle']} ${isLoanDropdownOpen ? styles.active : ''}`}
+                onClick={toggleLoanDropdown}
               >
                 Loan Options
               </a>
@@ -138,17 +198,30 @@ export default function Home() {
               </ul>
             </li>
             <li><Link href="/eligibility">Loan Eligibility</Link></li>
-            <li className={styles.dropdown} onMouseEnter={handleLenderDropdownEnter} onMouseLeave={handleLenderDropdownLeave}>
+            <li
+              className={styles.dropdown}
+              onMouseEnter={handleLenderDropdownEnter}
+              onMouseLeave={handleLenderDropdownLeave}
+            >
               <a
                 href="#"
                 className={`${styles['dropdown-toggle']} ${isLenderDropdownOpen ? styles.active : ''}`}
+                onClick={toggleLenderDropdown}
               >
                 Partnered Lenders
               </a>
               <ul className={`${styles['dropdown-menu']} ${styles['partners-menu']} ${isLenderDropdownOpen ? styles.show : ''}`}>
                 {lenders.map((lender) => (
                   <li key={lender.name}>
-                    <Link href={lender.url}>{lender.name}</Link>
+                    <Link href={lender.url} legacyBehavior>
+                      <a
+                        onClick={() => handleLenderClick(lender.url)}
+                        onTouchStart={() => handleLenderTouch(lender.url)}
+                        data-testid={`lender-link-${lender.name.toLowerCase().replace(/\s/g, '-')}`}
+                      >
+                        {lender.name}
+                      </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -166,8 +239,8 @@ export default function Home() {
               <Image
                 src="/images/newposter.webp"
                 alt="Students"
-                layout="fill"
-                objectFit="contain"
+                fill
+                style={{ objectFit: 'contain' }}
                 priority
               />
             </div>
@@ -175,8 +248,8 @@ export default function Home() {
               <h2>Empower Your Education with StudySahara</h2>
               <p>Discover affordable education loans to fuel your dreams.</p>
             </div>
-            </div>
-          </section>
+          </div>
+        </section>
 
         <section className={`${styles['loan-options']} ${styles['section-padding']}`}>
           <div className={styles.container}>
@@ -216,8 +289,18 @@ export default function Home() {
             <div className={styles['lender-carousel']}>
               <div className={styles['lender-track']}>
                 {[...lenders, ...lenders, ...lenders].map((lender, index) => (
-                  <Link href={lender.url} key={`${lender.name}-${index}`} className={styles['lender-item']}>
-                    <Image src={lender.logo} alt={lender.name} width={180} height={70} />
+                  <Link
+                    href={lender.url}
+                    key={`${lender.name}-${index}`}
+                    className={styles['lender-item']}
+                    legacyBehavior
+                  >
+                    <a
+                      onClick={() => handleLenderClick(lender.url)}
+                      onTouchStart={() => handleLenderTouch(lender.url)}
+                    >
+                      <Image src={lender.logo} alt={lender.name} width={180} height={70} />
+                    </a>
                   </Link>
                 ))}
               </div>

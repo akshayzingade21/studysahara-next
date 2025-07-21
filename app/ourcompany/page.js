@@ -3,6 +3,7 @@
 import styles from './ourcompany.module.css';
 import Link from 'next/link';
 import Image from 'next/image';
+import Head from 'next/head';
 import { useEffect, useState } from 'react';
 
 export default function OurCompanyPage() {
@@ -17,6 +18,28 @@ export default function OurCompanyPage() {
   }, []);
 
   return (
+    <>
+    <Head>
+        <title>About StudySahara | Your Trusted Education Loan Partner</title>
+        <meta name="description" content="StudySahara is India’s leading education loan marketplace helping students secure the best loan deals for studying abroad from top banks, NBFCs, and international lenders." />
+        <meta name="keywords" content="about StudySahara, education loan consultant, study abroad finance, best loan advisor for students, education loan marketplace, loan support for overseas education, who is StudySahara, US Education loan, International student loan, free education loan assistance, education loan assitance, abroad student loan, abroad education loan" />
+        <meta name="author" content="StudySahara" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        {/* Canonical URL */}
+        <link rel="canonical" href="https://www.studysahara.com/ourcompany" />
+
+        {/* Favicon (you can keep main logo or add a specific icon) */}
+        <link rel="icon" href="/favicon.ico" />
+
+        {/* Open Graph for sharing */}
+        <meta property="og:title" content="About StudySahara | Your Trusted Education Loan Partner" />
+        <meta property="og:description" content="Learn how StudySahara empowers Indian students with reliable education loan support for studying abroad." />
+        <meta property="og:image" content="https://www.studysahara.com/og-about.jpg" />
+        <meta property="og:url" content="https://www.studysahara.com/ourcompany" />
+        <meta property="og:type" content="website" />
+      </Head>
+
     <div>
       {/* Header */}
       <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
@@ -38,7 +61,6 @@ export default function OurCompanyPage() {
                   <svg className={styles.homeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                   </svg>
-                  Home
                 </Link>
               </li>
             </ul>
@@ -160,12 +182,13 @@ export default function OurCompanyPage() {
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
           <p>© 2025 StudySahara. All rights reserved.</p>
-          <p>No 51, 5th Floor, 5th Main Road, Above Alchemy Coffee Roasters, Bengaluru</p>
+          <p>No 51, 5th Floor, 5th Main Road, Above Alchemy Coffee Roasters, Bengaluru-560041</p>
           <p>
             <a href="mailto:hello@studysahara.com" className={styles.footerLink}>hello@studysahara.com</a>
           </p>
         </div>
       </footer>
     </div>
+    </>
   );
 }

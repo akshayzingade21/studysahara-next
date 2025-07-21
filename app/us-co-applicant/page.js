@@ -159,6 +159,7 @@ export default function LoanOptionUS() {
           property="twitter:description"
           content="Affordable US co-signer loan for international students studying in the USA. Apply now with StudySahara!"
         />
+        <link rel="canonical" href="https://www.studysahara.com/us-co-applicant" />
       </Head>
       <div className={styles.PNBContainer}>
         <header className={styles.header}>
@@ -259,15 +260,14 @@ export default function LoanOptionUS() {
             <div className={styles.footerSection}>
               <h3>Contact Us</h3>
               <p>Email: support@studysahara.com</p>
-              <p>Phone: +91-9876543210</p>
-              <p>Address: 123 Education Lane, Mumbai, India</p>
+              <p>Address: No 51, 5th Floor, 5th Main Road, Above Alchemy Coffee Roasters, Bengaluru-560041</p>
             </div>
             <div className={styles.footerSection}>
               <h3>Quick Links</h3>
               <ul>
                 <li><Link href="/">Home</Link></li>
-                <li><Link href="/us-co-applicant">Loan Options</Link></li>
-                <li><Link href="/about">About Us</Link></li>
+                <li><Link href="/eligibility">Check your Loan Eligibility</Link></li>
+                <li><Link href="/ourcompany">About Us</Link></li>
               </ul>
             </div>
             <div className={styles.footerSection}>
