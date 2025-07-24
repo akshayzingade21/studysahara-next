@@ -969,13 +969,23 @@
 @media (max-width: 767px) {
   /* Adjust container padding for better spacing on small screens */
   .prodigyContainer {
-    padding: 0 10px;
+    box-sizing: border-box;
   }
 
   /* Ensure header content fits within mobile screen */
-  .headerContent {
-    padding: 0 10px;
-    flex-wrap: wrap;
+ .headerContent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap; /* Prevent wrapping from causing misalignment */
+    max-width: 100%; /* Constrain to viewport */
+    overflow-x: hidden; /* Prevent horizontal overflow */
+  }
+
+  .homeIcon {
+    margin-right: 25px; /* Add margin to pull the icon left */
+    max-width: 2.5rem; /* Slightly reduce size to ensure it fits */
+    max-height: 2.5rem;
   }
 
   /* Reduce logo size for mobile */
@@ -1070,23 +1080,24 @@
 
   /* Optimize table for mobile */
   .tableContainer {
-    padding: 0;
+    max-width: 100%;
+    padding: 0px;
   }
 
   .table {
-    font-size: 14px;
+    font-size: 12.1px;
   }
 
   .table th,
   .table td {
-    padding: 8px;
+    padding: 5px;
+    word-break: break-word;
   }
 
   /* Adjust form elements in modal for mobile */
   .modalContent {
-    width: 95%;
-    max-width: 400px;
-    padding: 15px;
+    box-sizing: border-box;
+   max-width: 95vw;
   }
 
   .modalTitle {
@@ -1158,6 +1169,21 @@
     padding-left: 10px;
   }
 
+  .nav.show {
+   flex-direction: column;
+   width: 100%;
+   position: absolute;
+   top: 100%;
+   left: 0;
+   background: #ffffff;
+   padding: 10px;
+   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.footerContent {
+  max-width: 100%;
+  box-sizing: border-box;
+}
   /* Prevent horizontal overflow */
   body.html {
     overflow-x: hidden;

@@ -969,14 +969,26 @@
 @media (max-width: 767px) {
   /* Adjust container padding for better spacing on small screens */
   .salliemaeContainer {
+    box-sizing: border-box;
     padding: 0 10px;
   }
 
   /* Ensure header content fits within mobile screen */
   .headerContent {
-    padding: 0 10px;
-    flex-wrap: wrap;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap; /* Prevent wrapping from causing misalignment */
+    max-width: 100%; /* Constrain to viewport */
+    overflow-x: hidden; /* Prevent horizontal overflow */
   }
+
+  .homeIcon {
+    margin-right: 25px; /* Add margin to pull the icon left */
+    max-width: 2.5rem; /* Slightly reduce size to ensure it fits */
+    max-height: 2.5rem;
+  }
+
 
   /* Reduce logo size for mobile */
   .logoImage {
@@ -1068,26 +1080,27 @@
     font-size: 14px;
   }
 
-  /* Optimize table for mobile */
-  .tableContainer {
-    padding: 0;
-  }
+  /* Optimize table for mobile to prevent overflow */
+.tableContainer {
+  max-width: 100%; /* Ensure table container doesn't exceed viewport */
+}
 
-  .table {
-    font-size: 14px;
-  }
+.table {
+  font-size: 13px; /* Slightly smaller font for better fit */
+  min-width: 0; /* Prevent table from forcing a wider width */
+}
 
-  .table th,
-  .table td {
-    padding: 8px;
-  }
+.table th,
+.table td {
+  padding: 6px; /* Reduce padding further for mobile */
+  word-break: break-word; /* Break long words to prevent overflow */
+}
 
   /* Adjust form elements in modal for mobile */
-  .modalContent {
-    width: 95%;
-    max-width: 400px;
-    padding: 15px;
-  }
+ .modalContent {
+  box-sizing: border-box;
+  max-width: 95vw; /* Use viewport width to ensure fit */
+}
 
   .modalTitle {
     font-size: 18px;

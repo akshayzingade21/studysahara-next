@@ -969,6 +969,7 @@
 @media (max-width: 767px) {
   /* Adjust container padding for better spacing on small screens */
   .earnestContainer {
+    box-sizing: border-box; 
     padding: 0 10px;
   }
 
@@ -1070,24 +1071,25 @@
 
   /* Optimize table for mobile */
   .tableContainer {
-    padding: 0;
-  }
+  max-width: 100%; /* Ensure table container doesn't exceed viewport */
+}
 
-  .table {
-    font-size: 14px;
-  }
+.table {
+  font-size: 13px; /* Slightly smaller font for better fit */
+  min-width: 0; /* Prevent table from forcing a wider width */
+}
 
-  .table th,
-  .table td {
-    padding: 8px;
-  }
+.table th,
+.table td {
+  padding: 6px; /* Reduce padding further for mobile */
+  word-break: break-word; /* Break long words to prevent overflow */
+}
 
   /* Adjust form elements in modal for mobile */
-  .modalContent {
-    width: 95%;
-    max-width: 400px;
-    padding: 15px;
-  }
+ .modalContent {
+  box-sizing: border-box;
+  max-width: 95vw; /* Use viewport width to ensure fit */
+}
 
   .modalTitle {
     font-size: 18px;

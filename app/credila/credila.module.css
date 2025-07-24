@@ -209,7 +209,7 @@
 .imageWrapper {
   background: #ffffff;
   border-radius: 50%;
-  padding: 15px;
+  padding: 20px;
   width: 180px;
   height: 180px;
   display: flex;
@@ -224,7 +224,7 @@
 }
 
 .credilaImage {
-  width: 95%;
+  width: 100%;
   height: auto;
 }
 
@@ -970,18 +970,23 @@
 @media (max-width: 767px) {
   /* Adjust container padding for better spacing on small screens */
   .credilaContainer {
-    padding: 0 10px;
-    overflow-x: hidden;
-    width: 100%;
     box-sizing: border-box;
   }
 
   /* Ensure header content fits within mobile screen */
-  .headerContent {
-    padding: 0 10px;
-    flex-wrap: wrap;
-    width: 100%;
-    box-sizing: border-box;
+.headerContent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap; /* Prevent wrapping from causing misalignment */
+    max-width: 100%; /* Constrain to viewport */
+    overflow-x: hidden; /* Prevent horizontal overflow */
+  }
+
+  .homeIcon {
+    margin-right: 25px; /* Add margin to pull the icon left */
+    max-width: 2.5rem; /* Slightly reduce size to ensure it fits */
+    max-height: 2.5rem;
   }
 
   /* Reduce logo size for mobile */
@@ -1009,23 +1014,17 @@
   .main {
     margin-top: 60px;
     padding: 15px 10px;
-    width: 100%;
-    box-sizing: border-box;
   }
 
   /* Hero section adjustments for mobile */
   .hero {
     padding: 20px 15px;
     margin-bottom: 15px;
-    width: 100%;
-    box-sizing: border-box;
   }
 
   .heroContent {
     flex-direction: column;
     gap: 15px;
-    width: 100%;
-    box-sizing: border-box;
   }
 
   .heroText {
@@ -1047,33 +1046,31 @@
   }
 
   .heroImage {
-    min-width: 100%;
+  max-width: 100%; /* Constrain images to parent width */
+  width: 100%; /* Ensure they scale down */
+  height: auto; /* Maintain aspect ratio */
+}
+
+.credilaImage {
+   width: 95%;
   }
 
   .imageWrapper {
-    width: 150px;
-    height: 150px;
+    width: 180px;
+    height: 180px;
     padding: 10px;
-  }
-
-  .credilaImage {
-    width: 95%;
   }
 
   /* Ensure content grid stacks properly */
   .contentGrid {
     grid-template-columns: 1fr;
     gap: 15px;
-    width: 100%;
-    box-sizing: border-box;
   }
 
   /* Section adjustments */
   .section {
     padding: 15px;
     margin-bottom: 15px;
-    width: 100%;
-    box-sizing: border-box;
   }
 
   .sectionTitle {
@@ -1086,29 +1083,26 @@
 
   /* Optimize table for mobile */
   .tableContainer {
-    padding: 0;
-    width: 100%;
-    box-sizing: border-box;
+    max-width: 100%;
+    padding: 0px;
   }
 
   .table {
-    font-size: 14px;
-    width: 100%;
-    box-sizing: border-box;
+    font-size: 12px;
+    min-width: 0;
   }
 
   .table th,
   .table td {
-    padding: 8px;
-  }
+  padding: 6px; /* Reduce padding further for mobile */
+  word-break: break-word; /* Break long words to prevent overflow */
+}
 
   /* Adjust form elements in modal for mobile */
-  .modalContent {
-    width: 95%;
-    max-width: 400px;
-    padding: 15px;
-    box-sizing: border-box;
-  }
+.modalContent {
+  box-sizing: border-box;
+  max-width: 95vw;
+}
 
   .modalTitle {
     font-size: 18px;
@@ -1118,8 +1112,6 @@
   .select {
     padding: 10px;
     font-size: 14px;
-    width: 100%;
-    box-sizing: border-box;
   }
 
   .countryCodeSelect {
@@ -1131,15 +1123,11 @@
   .intakeInput {
     flex-direction: column;
     gap: 8px;
-    width: 100%;
-    box-sizing: border-box;
   }
 
   .buttonGroup {
     flex-direction: column;
     gap: 10px;
-    width: 100%;
-    box-sizing: border-box;
   }
 
   .cancelButton,
@@ -1154,21 +1142,15 @@
   /* Footer adjustments */
   .footer {
     padding: 30px 15px;
-    width: 100%;
-    box-sizing: border-box;
   }
 
   .footerContent {
     grid-template-columns: 1fr;
     gap: 15px;
-    width: 100%;
-    box-sizing: border-box;
   }
 
   .newsletterForm {
     flex-direction: column;
-    width: 100%;
-    box-sizing: border-box;
   }
 
   .newsletterInput {
@@ -1191,10 +1173,25 @@
     padding-left: 10px;
   }
 
-  /* Prevent horizontal overflow */
+  .nav.show {
+  flex-direction: column;
+  width: 100%;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #ffffff;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.footerContent {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
   body.html {
     overflow-x: hidden;
     width: 100%;
-    box-sizing: border-box;
   }
+  /* Prevent horizontal overflow */
 }
