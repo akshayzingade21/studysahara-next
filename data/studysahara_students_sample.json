@@ -1,0 +1,85 @@
+{
+  "S001": {
+    "StudentProfiles": {
+      "StudentID": "S001",
+      "FullName": "Ananya Sharma",
+      "Email": "ananya.sharma@email.com",
+      "Phone": "+91-9876543210",
+      "Country": "UK",
+      "University": "University of Glasgow",
+      "CourseType": "Masters",
+      "IntakeMonthYear": "Sep 2025",
+      "OfferType": "Conditional",
+      "LastGraduatedDate": "2023-07-15",
+      "WorkExperienceYears": 1,
+      "TestsGiven": "IELTS",
+      "StudentCIBILScore": 720,
+      "ExistingLoans": "No",
+      "QSRanking": "Top 200",
+      "IntentType": "New Education Loan"
+    },
+    "CoApplicantProfiles": {
+      "StudentID": "S001",
+      "Relation": "Father",
+      "IncomeType": "Salaried",
+      "ITRAvailable": "Yes",
+      "CIBILScore": 700,
+      "ExistingEMIs": "\u20b920,000",
+      "LoanTypes": "Home Loan"
+    },
+    "ContactDetails": {
+      "StudentID": "S001",
+      "PreferredContactMode": "WhatsApp",
+      "PreferredTimeSlot": "6 PM - 8 PM",
+      "TimeZone": "IST"
+    },
+    "SpecialRemarks": {
+      "StudentID": "S001",
+      "NoteType": "PropertyOwnership",
+      "NoteDetail": "Property in joint name with mother, not registered yet"
+    }
+  },
+  "S002": {
+    "StudentProfiles": {
+      "StudentID": "S002",
+      "FullName": "Rohan Mehta",
+      "Email": "rohan.mehta@email.com",
+      "Phone": "+91-9988776655",
+      "Country": "Canada",
+      "University": "University of Toronto",
+      "CourseType": "Masters",
+      "IntakeMonthYear": "Jan 2026",
+      "OfferType": "Unconditional",
+      "LastGraduatedDate": "2022-05-30",
+      "WorkExperienceYears": 2,
+      "TestsGiven": "GRE, IELTS",
+      "StudentCIBILScore": 750,
+      "ExistingLoans": "Yes",
+      "LoanType": "Education",
+      "LoanOutstanding": "\u20b91,50,000",
+      "QSRanking": "Top 50",
+      "IntentType": "Top-Up"
+    },
+    "CoApplicantProfiles": {
+      "StudentID": "S002",
+      "Relation": "Mother",
+      "IncomeType": "Self-Employed",
+      "ITRAvailable": "Yes",
+      "CIBILScore": 640,
+      "ExistingEMIs": "\u20b915,000",
+      "LoanTypes": "Business Loan",
+      "LowCIBILReason": "Delayed payments during COVID"
+    },
+    "ContactDetails": {
+      "StudentID": "S002",
+      "PreferredContactMode": "Call",
+      "PreferredTimeSlot": "10 AM - 12 PM",
+      "TimeZone": "IST"
+    },
+    "SpecialRemarks": {
+      "StudentID": "S002",
+      "NoteType": "DocumentConcern",
+      "NoteDetail": "Wants to apply before uploading IELTS"
+    }
+  }
+}

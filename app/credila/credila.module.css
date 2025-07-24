@@ -115,7 +115,7 @@
 
 .homeIcon:hover {
   transform: scale(1.05);
-} 
+}
 
 .main {
   max-width: 1200px;
@@ -224,7 +224,7 @@
 }
 
 .credilaImage {
-  width: 80%;
+  width: 95%;
   height: auto;
 }
 
@@ -965,17 +965,23 @@
   75% { transform: translateX(-5px); }
   100% { transform: translateX(0); }
 }
+
 /* Mobile-specific optimizations */
 @media (max-width: 767px) {
   /* Adjust container padding for better spacing on small screens */
   .credilaContainer {
     padding: 0 10px;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   /* Ensure header content fits within mobile screen */
   .headerContent {
     padding: 0 10px;
     flex-wrap: wrap;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   /* Reduce logo size for mobile */
@@ -1003,17 +1009,23 @@
   .main {
     margin-top: 60px;
     padding: 15px 10px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   /* Hero section adjustments for mobile */
   .hero {
     padding: 20px 15px;
     margin-bottom: 15px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .heroContent {
     flex-direction: column;
     gap: 15px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .heroText {
@@ -1039,25 +1051,29 @@
   }
 
   .imageWrapper {
-    width: 195px;
-    height: 195px;
+    width: 150px;
+    height: 150px;
     padding: 10px;
   }
 
   .credilaImage {
-    width: 90%;
+    width: 95%;
   }
 
   /* Ensure content grid stacks properly */
   .contentGrid {
     grid-template-columns: 1fr;
     gap: 15px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   /* Section adjustments */
   .section {
     padding: 15px;
     margin-bottom: 15px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .sectionTitle {
@@ -1071,10 +1087,14 @@
   /* Optimize table for mobile */
   .tableContainer {
     padding: 0;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .table {
     font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .table th,
@@ -1087,6 +1107,7 @@
     width: 95%;
     max-width: 400px;
     padding: 15px;
+    box-sizing: border-box;
   }
 
   .modalTitle {
@@ -1097,6 +1118,8 @@
   .select {
     padding: 10px;
     font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .countryCodeSelect {
@@ -1108,11 +1131,15 @@
   .intakeInput {
     flex-direction: column;
     gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .buttonGroup {
     flex-direction: column;
     gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .cancelButton,
@@ -1127,15 +1154,21 @@
   /* Footer adjustments */
   .footer {
     padding: 30px 15px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .footerContent {
     grid-template-columns: 1fr;
     gap: 15px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .newsletterForm {
     flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .newsletterInput {
@@ -1162,5 +1195,6 @@
   body.html {
     overflow-x: hidden;
     width: 100%;
+    box-sizing: border-box;
   }
 }

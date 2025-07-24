@@ -1,4 +1,8 @@
 import '../styles/globals.css';
+import dynamic from 'next/dynamic';
+
+// Lazy-load the ChatWidget to avoid hydration issues
+const ChatWidget = dynamic(() => import('./components/ChatWidget'), { ssr: false });
 
 export const metadata = {
   title: 'StudySahara - Empowering Education',
@@ -21,7 +25,10 @@ export default function RootLayout({ children }) {
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <ChatWidget />
+      </body>
     </html>
   );
 }
