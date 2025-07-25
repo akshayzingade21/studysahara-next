@@ -550,22 +550,29 @@
     display: flex;
   }
 
-  .nav-menu li {
+ .nav-menu li {
+    border-bottom: 1px solid #ffffff33;
     margin: 10px 0;
     text-align: center;
-    width: 100%; /* Ensure full width for touch targets */
+    width: 100%;
   }
 
   .nav-menu li a {
     font-size: 1.2em;
     padding: 12px;
     display: block;
-    text-align: center;
+    text-align: left;
     min-height: 48px;
     line-height: 24px;
     color: #ffffff;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
+
+  .menuItemBox {
+  border: 1px solid #ffffff33;
+  border-radius: 8px;
+  margin: 6px 12px;
+}
 
   .nav-menu li a:hover,
   .nav-menu li a:active {
@@ -575,16 +582,8 @@
   }
 
   .dropdown-toggle {
-    padding: 12px;
-    font-size: 1.2em;
-    text-align: center;
-    display: block;
-    width: 100%;
-    min-height: 48px;
-    line-height: 24px;
-    color: #ffffff;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    position: relative; /* Ensure dropdown arrow alignment */
+    position: relative;
+    padding-right: 30px;
   }
 
   .dropdown-toggle:hover,
@@ -600,12 +599,14 @@
   }
 
   .dropdown-toggle::after {
-    content: '\25BC';
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 0.8em;
+  content: '\25BC';
+  position: absolute;
+  left: auto;
+  right: -11px;         /* this keeps the arrow just right of the text */
+  top: 35%;
+  transform: translateY(-50%);
+  font-size: 0.9em;
+  pointer-events: none;
   }
 
   .dropdown-menu {
