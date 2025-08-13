@@ -4,12 +4,20 @@ import dynamic from 'next/dynamic';
 // Lazy-load the ChatWidget to avoid hydration issues
 const ChatWidget = dynamic(() => import('./components/ChatWidget'), { ssr: false });
 
+// app/layout.js
 export const metadata = {
-  title: 'StudySahara - Empowering Education',
-  description: 'StudySahara helps students achieve their dreams with affordable education loans.',
-  icons: {
-    icon: '/favicon.ico',
+  metadataBase: new URL("https://studysahara.com"),
+  title: {
+    default: "StudySahara – Education Loans for Studying Abroad",
+    template: "%s | StudySahara"
   },
+  icons: {
+    icon: "/favicon.ico" // keep your existing icon
+  },
+  alternates: {
+    canonical: "https://studysahara.com/"
+  }
+  // (You can add robots or verification here if needed)
 };
 
 export default function RootLayout({ children }) {

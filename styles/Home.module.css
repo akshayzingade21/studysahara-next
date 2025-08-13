@@ -108,6 +108,12 @@
   transition: font-size 0.3s ease;
 }
 
+.brand {
+  display: inline-block; /* acts like text but can be styled */
+  font-size: 1.5em;         /* matches old h1 */
+  font-weight: bold;
+}
+
 .tagline {
   font-family: 'Open Sans', sans-serif;
   font-size: 0.85em;

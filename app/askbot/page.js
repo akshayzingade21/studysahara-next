@@ -1,35 +1,89 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const showChatbot = process.env.NEXT_PUBLIC_SHOW_CHATBOT === 'true';
 
 export default function AskBotPage() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [lastBotQuestion, setLastBotQuestion] = useState('');
+  const [isBotTyping, setIsBotTyping] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  const [conversationState, setConversationState] = useState({
+    country: null,
+    offerLetter: null,
+    loanType: null,
+  });
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isBotTyping]);
 
   const sendMessage = async () => {
-    if (!input) return;
+    if (!input.trim()) return;
 
-    const userMessage = { role: 'user', content: input };
-    setMessages(prev => [...prev, userMessage]);
+    const trimmedInput = input.trim();
+    const isShortReply = ['yes', 'no'].includes(trimmedInput.toLowerCase());
+    const formattedInput = isShortReply && lastBotQuestion
+      ? `${trimmedInput} (Answer to: ${lastBotQuestion})`
+      : trimmedInput;
+
+    const userMessage = { role: 'user', content: trimmedInput };
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     setInput('');
+    setIsBotTyping(true);
 
     try {
       const res = await fetch('/api/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({
+          history: updatedMessages,
+          message: formattedInput,
+          state: conversationState,
+        }),
       });
 
       const data = await res.json();
-      const botMessage = { role: 'assistant', content: data.reply };
-      setMessages(prev => [...prev, botMessage]);
+      const botReply = data.reply || '🤖 No response received.';
+      const botMessage = { role: 'assistant', content: botReply };
+
+      setTimeout(() => {
+        setMessages(prev => [...prev, botMessage]);
+        setIsBotTyping(false);
+
+        const lastLine = botReply.trim().split('\n').filter(line => line.trim()).pop();
+        if (lastLine && lastLine.endsWith('?')) {
+          setLastBotQuestion(lastLine);
+        }
+
+        const replyLower = botReply.toLowerCase();
+
+        if (replyLower.includes('received an offer')) {
+          setConversationState(prev => ({ ...prev, country: 'USA' }));
+        }
+        if (replyLower.includes('who is your co-applicant') || replyLower.includes('relation of co-applicant')) {
+          setConversationState(prev => ({ ...prev, offerLetter: 'yes' }));
+        }
+        if (replyLower.includes('fixed deposit') || replyLower.includes('property')) {
+          setConversationState(prev => ({ ...prev, loanType: 'with collateral' }));
+        }
+      }, 1200);
+
     } catch (error) {
+      console.error('Chat error:', error);
       setMessages(prev => [
         ...prev,
         { role: 'assistant', content: '❌ Something went wrong.' },
       ]);
+      setIsBotTyping(false);
     }
   };
 
@@ -46,7 +100,8 @@ export default function AskBotPage() {
   return (
     <div className="p-4 max-w-xl mx-auto">
       <h1 className="text-xl font-bold mb-4">Ask StudySahara Anything</h1>
-      <div className="border p-4 h-96 overflow-y-scroll rounded">
+
+      <div className="border p-4 h-96 overflow-y-scroll rounded bg-white shadow-sm">
         {messages.map((msg, i) => (
           <div
             key={i}
@@ -54,7 +109,7 @@ export default function AskBotPage() {
           >
             <span
               className={
-                msg.role === 'user' ? 'text-blue-600' : 'text-green-600'
+                msg.role === 'user' ? 'text-blue-600 font-semibold' : 'text-green-600 font-semibold'
               }
             >
               {msg.role === 'user' ? 'You' : 'AskBot'}:
@@ -62,7 +117,16 @@ export default function AskBotPage() {
             {msg.content}
           </div>
         ))}
+
+        {isBotTyping && (
+          <div className="text-left text-green-600 font-semibold animate-pulse">
+            AskBot: Typing...
+          </div>
+        )}
+
+        <div ref={messagesEndRef} />
       </div>
+
       <div className="mt-4 flex gap-2">
         <input
           value={input}

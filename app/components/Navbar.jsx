@@ -1,14 +1,12 @@
 'use client';
 import Link from 'next/link';
 import { useState, useRef } from 'react';
-import ReferModal from './ReferModal';
 
 export default function Navbar() {
   const [openMenu, setOpenMenu] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileLoanOpen, setMobileLoanOpen] = useState(false);
   const [mobileLenderOpen, setMobileLenderOpen] = useState(false);
-  const [isReferOpen, setIsReferOpen] = useState(false);
   const timeoutRef = useRef();
 
   const lenders = [
@@ -30,7 +28,6 @@ export default function Navbar() {
 
   return (
     <nav className="bg-white shadow sticky top-0 z-50">
-      <ReferModal isOpen={isReferOpen} onClose={() => setIsReferOpen(false)} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center">
@@ -41,7 +38,9 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-6 text-sm font-medium text-gray-700 relative z-50">
+          <div className="hidden md:flex space-x-8 items-center text-sm font-medium text-gray-700 relative z-50">
+            <Link href="/">Home</Link>
+
             <div
               className="relative"
               onMouseEnter={() => handleMouseEnter('loan')}
@@ -77,25 +76,18 @@ export default function Navbar() {
               {openMenu === 'lender' && (
                 <div className="absolute top-full left-0 mt-0 w-72 bg-white border rounded shadow-md flex flex-col max-h-96 overflow-y-auto z-50">
                   {lenders.map(([name, path]) => (
-                    <Link key={name} href={path} className="px-4 py-2 hover:bg-gray-100">{name}</Link>
+                    <Link key={name} href={path} className="px-4 py-2 hover:bg-gray-100">
+                      {name}
+                    </Link>
                   ))}
                 </div>
               )}
             </div>
 
-            <Link href="/check-loan-eligibility" className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition">
-              Check Loan Eligibility
-            </Link>
-
-            <button
-              onClick={() => setIsReferOpen(true)}
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-            >
-              Refer & Earn
-            </button>
+            <Link href="/about">About</Link>
           </div>
 
-          {/* Mobile menu icon */}
+          {/* Mobile menu button */}
           <div className="md:hidden">
             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-indigo-600 focus:outline-none">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2"
@@ -106,8 +98,39 @@ export default function Navbar() {
             </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden mt-2 space-y-2 px-4 pb-4 text-sm font-medium text-gray-700">
+            <Link href="/">Home</Link>
+
+            <div>
+              <button onClick={() => setMobileLoanOpen(!mobileLoanOpen)} className="w-full text-left text-indigo-600">Loan Options</button>
+              {mobileLoanOpen && (
+                <div className="pl-4 space-y-1">
+                  <Link href="/no-coapplicant-nocollateral">No Co-applicant & No Collateral</Link>
+                  <Link href="/coapplicant-nocollateral">Co-applicant & No Collateral</Link>
+                  <Link href="/coapplicant-collateral">Co-applicant & Collateral</Link>
+                  <Link href="/us-coapplicant">US Co-applicant</Link>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <button onClick={() => setMobileLenderOpen(!mobileLenderOpen)} className="w-full text-left text-indigo-600">Lending Partners</button>
+              {mobileLenderOpen && (
+                <div className="pl-4 space-y-1 max-h-64 overflow-y-auto">
+                  {lenders.map(([name, path]) => (
+                    <Link key={name} href={path}>{name}</Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <Link href="/about">About</Link>
+          </div>
+        )}
       </div>
     </nav>
   );
 }
-åå

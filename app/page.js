@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import styles from '../styles/Home.module.css';
 import Head from 'next/head';
+import Script from "next/script";
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -171,69 +172,33 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>StudySahara U+002d Education Loans for Studying Abroad</title>
-        <link
-          rel="preload"
-          as="image"
-          href="/_next/image?url=%2Fimages%2Fnewposter.webp&w=3840&q=75"
-          imagesrcset="
-            /_next/image?url=%2Fimages%2Fnewposter.webp&w=640&q=75 640w,
-            /_next/image?url=%2Fimages%2Fnewposter.webp&w=750&q=75 750w,
-            /_next/image?url=%2Fimages%2Fnewposter.webp&w=828&q=75 828w,
-            /_next/image?url=%2Fimages%2Fnewposter.webp&w=1080&q=75 1080w,
-            /_next/image?url=%2Fimages%2Fnewposter.webp&w=1200&q=75 1200w,
-            /_next/image?url=%2Fimages%2Fnewposter.webp&w=1920&q=75 1920w,
-            /_next/image?url=%2Fimages%2Fnewposter.webp&w=2048&q=75 2048w,
-            /_next/image?url=%2Fimages%2Fnewposter.webp&w=3840&q=75 3840w
-          "
-          imagesizes="100vw"
-        />
-        <meta name="description" content="Get the best education loan options for studying abroad. Compare lenders, check eligibility, and apply with no charges. Trusted by 2000+ Indian students." />
-        <meta name="keywords" content="education loan, study abroad loan, International student loan, no collateral loan, no co-applicant loan, no cosigner loan, overseas education loan, SBI education loan, ICICI education loan, NBFC loan for study, HDFC Credila education loan, Avanse education loan, gyandhan, nomad credit, prodigy finance, tata capital education loan, student loan India, loan for USA studies, loan for UK studies, US International student loan, no cosigner and no collateral loan, no cosigner loan," />
-        <meta name="author" content="StudySahara" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="canonical" href="https://www.studysahara.com/" />
-        <link rel="icon" type="image/png" href="/favicon.ico" />
-        <meta property="og:title" content="StudySahara U+002d Education Loans for Studying Abroad" />
-        <meta property="og:description" content="Compare education loan options with or without collateral and co-applicant. Get expert help for faster approvals from trusted lenders." />
-        <meta property="og:image" content="https://www.studysahara.com/og-banner.jpg" />
-        <meta property="og:url" content="https://www.studysahara.com/" />
-        <meta property="og:type" content="website" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "StudySahara",
-              "url": "https://www.studysahara.com",
-              "description": "StudySahara is India's education loan platform helping students secure study abroad loans from top Indian and international lenders — with or without collateral.",
-              "logo": {
-                "@type": "ImageObject",
-                "url": "https://www.studysahara.com/images/logo.png",
-                "width": "120",
-                "height": "120"
-              },
-              "sameAs": [
-                "https://www.instagram.com/studysahara"
-              ],
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "email": "hello@studysahara.com",
-                "contactType": "Customer Support"
-              }
-            })
-          }}
-        />
-      </Head>
+  <title>Study Abroad Education Loans for Indian Students | StudySahara</title>
+  <meta
+    name="description"
+    content="Compare education loans for USA, UK, Germany, Canada and more. Free eligibility check, clear guidance, and faster approvals with trusted lenders."
+  />
+  <link rel="canonical" href="https://studysahara.com/" />
+  <meta name="robots" content="index, follow" />
+
+  {/* Open Graph */}
+  <meta property="og:title" content="Study Abroad Education Loans for Indian Students | StudySahara" />
+  <meta property="og:description" content="Compare options with or without collateral and co-applicant. Free eligibility check and expert help." />
+  <meta property="og:url" content="https://studysahara.com/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="StudySahara" />
+  <meta property="og:image" content="https://studysahara.com/og-banner.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+</Head>
+
       <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
         <div className={styles.container}>
           <div className={styles.logo}>
             <Image src="/images/logo.png" alt="StudySahara Logo" width={40} height={40} />
             <div className={styles['logo-text']}>
-              <h1>StudySahara</h1>
+              <span className={styles.brand} aria-label="StudySahara">StudySahara</span>
               <p className={styles.tagline}>Empowering Education</p>
-            </div>
+          </div>
           </div>
           <div className={`${styles.hamburger} ${isMenuOpen ? styles.open : ''}`} onClick={toggleMenu}>
             <span></span>
@@ -303,13 +268,14 @@ export default function Home() {
                 src="/images/newposter.webp"
                 alt="Students"
                 fill
-                style={{ objectFit: 'contain' }}
-                priority
+                sizes="100vw"        // <-- add this so the browser picks the right size
+                priority             // <-- Next.js will preload + set fetchpriority=high
+                // placeholder="blur" blurDataURL="data:image/..."  // optional: prevents layout shift shimmer
               />
             </div>
             <div className={styles['banner-text']}>
-              <h2>Empower Your Education with StudySahara</h2>
-              <p>Discover affordable education loans to fuel your dreams.</p>
+             <h1>Study Abroad Education Loans for Indian Students</h1>
+             <p>Compare options, check eligibility, and get faster approvals.</p>
             </div>
           </div>
         </section>
@@ -532,6 +498,70 @@ export default function Home() {
           <p>© 2025 StudySahara. All rights reserved.</p>
         </div>
       </footer>
+
+<Script id="faq-home" type="application/ld+json">
+{JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How does StudySahara help with education loans?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We compare options across banks and NBFCs, guide your documentation, and help secure fast approvals—at no cost to you."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need collateral or a co-applicant?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It depends on your profile, course, country, and amount. We’ll evaluate collateral-free options and advise if a co-applicant strengthens the case."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does approval usually take?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Typically 5–10 working days after complete documents. Timelines vary by lender and profile."
+      }
+    }
+  ]
+})}
+</Script>
+
+<Script id="organization-schema" type="application/ld+json">
+{JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "StudySahara",
+  "url": "https://studysahara.com",
+  "description": "StudySahara is India's education loan platform helping students secure study abroad loans from top Indian and international lenders — with or without collateral.",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://studysahara.com/images/logo.png",
+    "width": "120",
+    "height": "120"
+  },
+  "sameAs": ["https://www.instagram.com/studysahara"],
+  "contactPoint": [
+    { "@type": "ContactPoint", "email": "hello@studysahara.com", "contactType": "Customer Support", "availableLanguage": ["English", "Hindi"] }
+  ]
+})}
+</Script>
+
+<Script id="website-schema" type="application/ld+json">
+{JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "StudySahara",
+  "url": "https://studysahara.com/",
+  "inLanguage": "en"
+})}
+</Script>
+
     </>
   );
 }

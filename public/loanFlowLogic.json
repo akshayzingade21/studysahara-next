@@ -1,0 +1,107 @@
+[
+  {
+    "Step": 1,
+    "TriggerCondition": "User wants education loan for UK",
+    "QuestionToAsk": "Have you received an offer/admit letter from your UK university?"
+  },
+  {
+    "Step": 2,
+    "TriggerCondition": "User has received offer/admit letter",
+    "QuestionToAsk": "Is the offer/admit letter conditional or unconditional? "
+  },
+  {
+    "Step": 3,
+    "TriggerCondition": "User has conditional offer/admit letter",
+    "QuestionToAsk": "What are the conditions mentioned in the offer?"
+  },
+  {
+    "Step": 4,
+    "TriggerCondition": "Condition of Entrance Test",
+    "QuestionToAsk": "When are planning to give the test?"
+  },
+  {
+    "Step": 5,
+    "TriggerCondition": "Condition of Initial Deposit payment",
+    "QuestionToAsk": "How much is the initial deposit amount and follow up question of deadline for the initial deposit payment?"
+  },
+  {
+    "Step": 6,
+    "TriggerCondition": "Follow up question for initial deposit payment",
+    "QuestionToAsk": "Is the user looking the initial deposit payment to be paid from the loan amount?"
+  },
+  {
+    "Step": 7,
+    "TriggerCondition": "User needs loan for initial deposit payment",
+    "QuestionToAsk": "Ask user has he applied for the loan with any of the lenders/banks for the loan just to understand whats the current update regarding the loan"
+  },
+  {
+    "Step": 8,
+    "TriggerCondition": "User has already paid the initial deposit",
+    "QuestionToAsk": "Are you looking to reimburse the initial deposit amount/get back the initial deposit amount from the loan if the loan is approved"
+  },
+  {
+    "Step": 10,
+    "TriggerCondition": "Any other conditions apart from the conditions in Step 4, Step5, Step 9",
+    "QuestionToAsk": "Ask the user what is the condition"
+  },
+  {
+    "Step": 11,
+    "TriggerCondition": "User has unconditional offer/admit letter",
+    "QuestionToAsk": "Ask user has he applied for the loan with any of the lenders/banks for the loan just to understand whats the current update regarding the loan"
+  },
+  {
+    "Step": 12,
+    "TriggerCondition": "User has not yet applied for the loan with any of the lenders/banks",
+    "QuestionToAsk": "Ask student about his/her profile"
+  },
+  {
+    "Step": 13,
+    "TriggerCondition": "User has applied with certain lenders/banks",
+    "QuestionToAsk": "Ask the user with which lender/bank has he/her applied with"
+  },
+  {
+    "Step": 14,
+    "TriggerCondition": "Once user gives any lenders/banks name",
+    "QuestionToAsk": "Ask the user if he/she has shared the documents with the lenders that he/she mentioned"
+  },
+  {
+    "Step": 16,
+    "TriggerCondition": "If the file is logged in/approved/sanctioned",
+    "QuestionToAsk": "Ask the user with what is the status with each lender/bank he/she has applied"
+  },
+  {
+    "Step": 18,
+    "TriggerCondition": "If the file is approved/sanctioned",
+    "QuestionToAsk": "Ask the user how much loan amount is sanctioned and at what rate of interest"
+  },
+  {
+    "Step": 19,
+    "TriggerCondition": "Once user provides with the loan amount and rate of interest that is approved/sanctioned",
+    "QuestionToAsk": "Ask why he/she is exploring other options, is it because of higher loan amount requirement/lower rate of interest/looking for better lender or bank"
+  },
+  {
+    "Step": 21,
+    "TriggerCondition": "User does not have offer/admit letter",
+    "QuestionToAsk": "Have you applied for any of Universities?"
+  },
+  {
+    "Step": 22,
+    "TriggerCondition": "If the user has applied for the universities",
+    "QuestionToAsk": "Ask to which universities he/she has applied and when he/she is expecting to get the offer letter"
+  },
+  {
+    "Step": 23,
+    "TriggerCondition": "User has not yet applied with any of the universities ",
+    "QuestionToAsk": "Ask which intake the user is planning for"
+  },
+  {
+    "Step": 26,
+    "TriggerCondition": "Loan process initiation ",
+    "QuestionToAsk": "Ask the user if he/she wants to initiate the loan process"
+  },
+  {
+    "Step": 27,
+    "TriggerCondition": "If the user does not want to initiate the loan process",
+    "QuestionToAsk": "Ask why he does not want to initiate the loan process"
+  }
+]
