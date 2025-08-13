@@ -8,36 +8,39 @@ export const metadata = {
   metadataBase: new URL("https://www.studysahara.com"),
   title: {
     default: "StudySahara – Education Loans for Studying Abroad",
-    template: "%s | StudySahara",
+    template: "%s | StudySahara"
   },
-  icons: { icon: "/images/logo.png" },
+  description:
+    "Get the best education loan deals for studying abroad – lowest interest rates, discounted processing fees, and 100% free support.",
+  icons: {
+    icon: "/images/logo.png"
+  },
   alternates: {
-    canonical: "https://www.studysahara.com/",
+    canonical: "https://www.studysahara.com/"
   },
   openGraph: {
-    type: "website",
+    title: "StudySahara – Education Loans for Studying Abroad",
+    description:
+      "Get the best education loan deals for studying abroad – lowest interest rates, discounted processing fees, and 100% free support.",
     url: "https://www.studysahara.com/",
     siteName: "StudySahara",
-    title: "Study Abroad Education Loans for Students | StudySahara",
-    description:
-      "Compare options with or without collateral and co-applicant. Free eligibility check and expert help.",
     images: [
       {
         url: "https://www.studysahara.com/images/og-banner.jpg",
         width: 1200,
         height: 630,
-        alt: "StudySahara – Education Loans for Students",
-      },
+        alt: "StudySahara – Education Loans for Studying Abroad"
+      }
     ],
+    type: "website"
   },
   twitter: {
     card: "summary_large_image",
-    title: "Study Abroad Education Loans for Students | StudySahara",
+    title: "StudySahara – Education Loans for Studying Abroad",
     description:
-      "Compare options with or without collateral and co-applicant. Free eligibility check and expert help.",
-    images: ["https://www.studysahara.com/images/og-banner.jpg"],
-  },
-  robots: { index: true, follow: true },
+      "Get the best education loan deals for studying abroad – lowest interest rates, discounted processing fees, and 100% free support.",
+    images: ["https://www.studysahara.com/images/og-banner.jpg"]
+  }
 };
 
 export default function RootLayout({ children }) {
