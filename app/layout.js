@@ -2,48 +2,48 @@
 import '../styles/globals.css';
 import dynamic from 'next/dynamic';
 
-// Lazy-load the ChatWidget to avoid hydration issues
 const ChatWidget = dynamic(() => import('./components/ChatWidget'), { ssr: false });
 
 export const metadata = {
-  metadataBase: new URL("https://studysahara.com"),
+  metadataBase: new URL("https://www.studysahara.com"),
   title: {
-    // Make the default equal to what you want on the homepage
-    default: "Study Abroad Education Loans for Students | StudySahara",
-    template: "%s | StudySahara"
+    default: "StudySahara – Education Loans for Studying Abroad",
+    template: "%s | StudySahara",
   },
-  description:
-    "Compare education loans for USA, UK, Germany, Canada and more. Free eligibility check, clear guidance, and faster approvals with trusted lenders.",
+  icons: { icon: "/images/logo.png" },
   alternates: {
-    canonical: "https://studysahara.com/"
-  },
-  robots: { index: true, follow: true },
-  icons: {
-    icon: "/images/logo.png"
+    canonical: "https://www.studysahara.com/",
   },
   openGraph: {
+    type: "website",
+    url: "https://www.studysahara.com/",
+    siteName: "StudySahara",
     title: "Study Abroad Education Loans for Students | StudySahara",
     description:
       "Compare options with or without collateral and co-applicant. Free eligibility check and expert help.",
-    url: "https://studysahara.com/",
-    siteName: "StudySahara",
-    type: "website",
     images: [
       {
-        url: "/images/og-banner.jpg",   // put the file at /public/images/og-banner.jpg
+        url: "https://www.studysahara.com/images/og-banner.jpg",
         width: 1200,
         height: 630,
-        alt: "StudySahara – Education Loans for Students"
-      }
-    ]
-  }
+        alt: "StudySahara – Education Loans for Students",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Study Abroad Education Loans for Students | StudySahara",
+    description:
+      "Compare options with or without collateral and co-applicant. Free eligibility check and expert help.",
+    images: ["https://www.studysahara.com/images/og-banner.jpg"],
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {/* Your external stylesheets can stay here */}
         <link
           href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Montserrat:wght@700&display=swap"
           rel="stylesheet"

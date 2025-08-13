@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://studysahara.com
+Host: https://www.studysahara.com
 
 # Sitemaps
-Sitemap: https://studysahara.com/sitemap.xml
+Sitemap: https://www.studysahara.com/sitemap.xml
