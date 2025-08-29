@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { createClient } from "@supabase/supabase-js";
 import Head from "next/head";
+import { createClient } from "@supabase/supabase-js";
 import styles from "./sbi.module.css";
 
 const supabase = createClient(
@@ -12,10 +12,17 @@ const supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmYnlibmxtZ250aWdnZXRvbmFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NDg3NjIsImV4cCI6MjA2NDEyNDc2Mn0.KNeuwHnFp0H97w2jOgE9vOaOhfwNuHwSdiRlB9tphqo"
 );
 
+const OG_IMAGE = "https://www.studysahara.com/images/og-banner.jpg";
+const CANONICAL = "https://www.studysahara.com/sbi";
+
 export default function SBIBank() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formStep, setFormStep] = useState(1);
+  const [progress, setProgress] = useState(50);
+  const [universitiesData, setUniversitiesData] = useState({});
+  const [universityList, setUniversityList] = useState([]);
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -28,18 +35,16 @@ export default function SBIBank() {
     intakeYear: "",
     admitStatus: "",
   });
-  const [universitiesData, setUniversitiesData] = useState({});
-  const [universityList, setUniversityList] = useState([]);
-  const [progress, setProgress] = useState(50);
 
+  // --- Effects ---
   useEffect(() => {
     fetch("/universities.json")
-      .then((response) => {
-        if (!response.ok) throw new Error(`Failed to load universities.json: ${response.status}`);
-        return response.json();
+      .then((r) => {
+        if (!r.ok) throw new Error(`Failed to load universities.json: ${r.status}`);
+        return r.json();
       })
       .then((data) => setUniversitiesData(data))
-      .catch((error) => console.error("Error loading universities:", error.message));
+      .catch((err) => console.error("Error loading universities:", err.message));
 
     const handleResize = () => {
       if (window.innerWidth > 768 && isSidebarOpen) setIsSidebarOpen(false);
@@ -48,9 +53,8 @@ export default function SBIBank() {
     return () => window.removeEventListener("resize", handleResize);
   }, [isSidebarOpen]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  // --- Handlers ---
+  const toggleSidebar = () => setIsSidebarOpen((v) => !v);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -60,6 +64,8 @@ export default function SBIBank() {
   const closeModal = () => {
     setIsModalOpen(false);
     setFormStep(1);
+    setProgress(50);
+    clearErrors();
     setFormData({
       fullName: "",
       email: "",
@@ -72,19 +78,17 @@ export default function SBIBank() {
       intakeYear: "",
       admitStatus: "",
     });
-    setProgress(50);
-    clearErrors();
     document.body.style.overflow = "auto";
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    console.log(`Updated ${name} to ${value}`);
     if (name === "university" && value.trim().length >= 3 && formData.country) {
-      const filtered = universitiesData[formData.country]?.filter((uni) =>
-        uni.toLowerCase().startsWith(value.trim().toLowerCase())
-      ) || [];
+      const filtered =
+        universitiesData[formData.country]?.filter((uni) =>
+          uni.toLowerCase().startsWith(value.trim().toLowerCase())
+        ) || [];
       setUniversityList(filtered);
     } else if (name === "country") {
       setFormData((prev) => ({ ...prev, university: "" }));
@@ -92,25 +96,26 @@ export default function SBIBank() {
     }
   };
 
+  // --- Validation ---
   const validateStep1 = () => {
     clearErrors();
     let errors = [];
     if (!formData.fullName.trim()) {
       errors.push("Full name is empty");
-      document.getElementById("fullName-error").classList.remove("hidden");
+      document.getElementById("fullName-error")?.classList.remove("hidden");
     }
     if (!formData.email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
       errors.push("Invalid email");
-      document.getElementById("email-error").classList.remove("hidden");
+      document.getElementById("email-error")?.classList.remove("hidden");
     }
     const fullContactNumber = formData.countryCode + formData.contactNumber;
     if (
       !formData.countryCode ||
-      !formData.contactNumber.match(/^\d{10,12}$/) ||
-      !fullContactNumber.match(/^\+\d{1,3}\d{10,12}$/)
+      !/^\d{10,12}$/.test(formData.contactNumber) ||
+      !/^\+\d{1,3}\d{10,12}$/.test(fullContactNumber)
     ) {
       errors.push("Invalid contact number");
-      document.getElementById("contactNumber-error").classList.remove("hidden");
+      document.getElementById("contactNumber-error")?.classList.remove("hidden");
     }
     if (errors.length > 0) {
       alert("Please correct errors in Step 1.");
@@ -124,23 +129,23 @@ export default function SBIBank() {
     let errors = [];
     if (!formData.country) {
       errors.push("Country not selected");
-      document.getElementById("country-error").classList.remove("hidden");
+      document.getElementById("country-error")?.classList.remove("hidden");
     }
     if (!formData.university.trim()) {
       errors.push("University not specified");
-      document.getElementById("university-error").classList.remove("hidden");
+      document.getElementById("university-error")?.classList.remove("hidden");
     }
     if (!formData.course.trim()) {
       errors.push("Course not specified");
-      document.getElementById("course-error").classList.remove("hidden");
+      document.getElementById("course-error")?.classList.remove("hidden");
     }
     if (!formData.intakeMonth || !formData.intakeYear) {
       errors.push("Intake not selected");
-      document.getElementById("intake-error").classList.remove("hidden");
+      document.getElementById("intake-error")?.classList.remove("hidden");
     }
     if (!formData.admitStatus) {
       errors.push("Admit status not selected");
-      document.getElementById("admitStatus-error").classList.remove("hidden");
+      document.getElementById("admitStatus-error")?.classList.remove("hidden");
     }
     if (errors.length > 0) {
       alert("Please correct errors in Step 2.");
@@ -169,14 +174,14 @@ export default function SBIBank() {
     });
   };
 
+  // --- Submit ---
   const submitToSupabase = async (data) => {
     try {
-      const response = await supabase
-        .from("student_applications")
-        .insert([data]);
-      return response.status === 201;
+      const { status, error } = await supabase.from("student_applications").insert([data]);
+      if (error) throw new Error(error.message);
+      return status === 201 || status === 200;
     } catch (error) {
-      console.error("Supabase fetch error:", error.message);
+      console.error("Supabase error:", error.message);
       alert(`Error: ${error.message}. Please try again.`);
       return false;
     }
@@ -196,7 +201,7 @@ export default function SBIBank() {
       intake: `${formData.intakeMonth} ${formData.intakeYear}`,
       admit_status: formData.admitStatus,
       created_at: new Date().toISOString(),
-      source_url: "/SBIBank",
+      source_url: "/sbi", // ✅ fix: correct path (was /SBIBank)
     };
 
     if (await submitToSupabase(data)) {
@@ -216,37 +221,100 @@ export default function SBIBank() {
     setProgress(50);
   };
 
+  // --- JSON-LD (SEO) ---
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is the maximum education loan amount from SBI for studying abroad?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "SBI offers up to ₹1.5 Crores for overseas education, depending on the course and institution."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is collateral required for SBI education loans?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Collateral is not required up to ₹7.5 Lakhs. Loans above this amount may require property or fixed deposits."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the repayment period for SBI education loans?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Repayment tenure can be up to 15 years after the moratorium (course duration plus 1 year)."
+        }
+      }
+    ]
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.studysahara.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Partnered Lenders", "item": "https://www.studysahara.com/#lenders" },
+      { "@type": "ListItem", "position": 3, "name": "SBI", "item": CANONICAL }
+    ]
+  };
+
   return (
     <>
       <Head>
+        {/* Basic SEO */}
         <title>SBI Education Loan for Abroad Studies | StudySahara</title>
         <meta
           name="description"
-          content="Get SBI education loans for studying abroad. Trusted government bank, low interest, support for top global universities."
+          content="Compare SBI education loans for studying abroad: amounts up to ₹1.5 Cr, flexible repayment, moratorium, concessions for girls. Free guidance to apply."
         />
         <meta
           name="keywords"
-          content="SBI education loan, SBI study abroad loan, SBI student loan, SBI MS in USA loan, SBI Vidya Loan, SBI global edvantage loan"
+          content="SBI education loan, SBI study abroad loan, SBI student loan, Global Ed-Vantage, SBI abroad loan interest rate"
         />
-        <meta name="robots" content="index, follow" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta charSet="UTF-8" />
-        <meta name="author" content="StudySahara" />
-        <link rel="canonical" href="https://www.studysahara.com/sbi" />
+        <meta name="robots" content="index,follow" />
+        <link rel="canonical" href={CANONICAL} />
+
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="SBI Education Loan for Abroad Studies | StudySahara" />
+        <meta property="og:description" content="Affordable SBI education loans for global studies. Check eligibility and apply with free support from StudySahara." />
+        <meta property="og:url" content={CANONICAL} />
+        <meta property="og:site_name" content="StudySahara" />
+        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="StudySahara – Education Loans for Students" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="SBI Education Loan for Abroad Studies | StudySahara" />
+        <meta name="twitter:description" content="Compare SBI abroad study loans. Free eligibility check and application help." />
+        <meta name="twitter:image" content={OG_IMAGE} />
+
+        {/* JSON-LD */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       </Head>
+
       <div className={styles.sbiContainer}>
         <header className={styles.header}>
           <div className={styles.headerContent}>
-             <Link href="/" className={styles.logo}>
+            <Link href="/" className={styles.logo} aria-label="Go to StudySahara home">
               <Image src="/images/logo.png" alt="StudySahara Logo" width={40} height={48} className={styles.logoImage} />
               <span className={styles.logoText}>StudySahara</span>
             </Link>
-           <Link href="/" className={styles.navLink}>
-                  <svg className={styles.homeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                </Link>
-                </div>
+
+            <Link href="/" className={styles.navLink} aria-label="Home">
+              <svg className={styles.homeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </Link>
+          </div>
         </header>
 
         <main className={styles.main}>
@@ -257,7 +325,7 @@ export default function SBIBank() {
                 <p className={styles.heroSubtitle}>
                   Empower your academic journey with affordable and flexible financing from State Bank of India.
                 </p>
-                <button id="heroApplyBtn" className={styles.heroButton} onClick={openModal}>
+                <button id="heroApplyBtn" className={styles.heroButton} onClick={openModal} aria-label="Open application form">
                   Apply Now
                 </button>
               </div>
@@ -269,7 +337,11 @@ export default function SBIBank() {
                     width={180}
                     height={180}
                     className={styles.sbiImage}
-                    onError={(e) => (e.target.src = "/images/sbi.png")}
+                    onError={({ currentTarget }) => {
+                      // fallback (shouldn’t trigger, but safe-guard)
+                      currentTarget.onerror = null;
+                      currentTarget.src = "/images/sbi.png";
+                    }}
                   />
                 </div>
               </div>
@@ -277,45 +349,17 @@ export default function SBIBank() {
           </section>
 
           <div className={styles.contentGrid}>
-            <aside className={`${styles.aside} ${styles.fadeIn}`}>
+            <aside className={`${styles.aside} ${styles.fadeIn}`} aria-label="Page navigation">
               <div className={styles.asideContent}>
                 <h2 className={styles.asideTitle}>Quick Navigation</h2>
                 <ul className={styles.asideList}>
-                  <li>
-                    <a href="#overview" className={styles.asideLink}>
-                      Overview
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#features" className={styles.asideLink}>
-                      Features & Benefits
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#eligibility" className={styles.asideLink}>
-                      Eligibility
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#documents" className={styles.asideLink}>
-                      Documents
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#interest-rates" className={styles.asideLink}>
-                      Interest Rates
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#application-process" className={styles.asideLink}>
-                      Application Process
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#faqs" className={styles.asideLink}>
-                      FAQs
-                    </a>
-                  </li>
+                  <li><a href="#overview" className={styles.asideLink}>Overview</a></li>
+                  <li><a href="#features" className={styles.asideLink}>Features & Benefits</a></li>
+                  <li><a href="#eligibility" className={styles.asideLink}>Eligibility</a></li>
+                  <li><a href="#documents" className={styles.asideLink}>Documents</a></li>
+                  <li><a href="#interest-rates" className={styles.asideLink}>Interest Rates</a></li>
+                  <li><a href="#application-process" className={styles.asideLink}>Application Process</a></li>
+                  <li><a href="#faqs" className={styles.asideLink}>FAQs</a></li>
                 </ul>
               </div>
             </aside>
@@ -324,34 +368,20 @@ export default function SBIBank() {
               <section id="overview" className={`${styles.section} ${styles.fadeInUp}`}>
                 <h2 className={styles.sectionTitle}>Overview</h2>
                 <p className={styles.sectionText}>
-                  State Bank of India (SBI) offers robust education loan schemes, such as the SBI Global Ed-Vantage Scheme, to support students pursuing higher education in India and abroad. With affordable interest rates, no processing fees for certain loans, and flexible repayment options, SBI ensures accessibility and convenience for students.
+                  State Bank of India (SBI) offers robust education loan schemes, such as the SBI Global Ed-Vantage Scheme, to support students pursuing higher education in India and abroad. With affordable interest rates, selective waivers on processing fees, and flexible repayment options, SBI ensures accessibility and convenience for students.
                 </p>
               </section>
 
               <section id="features" className={`${styles.section} ${styles.fadeInUp}`}>
                 <h2 className={styles.sectionTitle}>Key Features & Benefits</h2>
                 <ul className={styles.featuresList}>
-                  <li className={styles.featureItem}>
-                    <span>✔</span> Loan Amount: Up to ₹1.5 Crores for overseas studies; up to ₹50 Lakhs for India.
-                  </li>
-                  <li className={styles.featureItem}>
-                    <span>✔</span> Moratorium: Course duration + 1 year after completion.
-                  </li>
-                  <li className={styles.featureItem}>
-                    <span>✔</span> Repayment Tenure: Up to 15 years post-moratorium.
-                  </li>
-                  <li className={styles.featureItem}>
-                    <span>✔</span> Collateral: Not required for loans up to ₹7.5 Lakhs; property/FDs for higher amounts.
-                  </li>
-                  <li className={styles.featureItem}>
-                    <span>✔</span> Rates: 8.15%–11.75% p.a., with 0.50% concession for girls.
-                  </li>
-                  <li className={styles.featureItem}>
-                    <span>✔</span> Tax Benefits: Interest deductible under Section 80E.
-                  </li>
-                  <li className={styles.featureItem}>
-                    <span>✔</span> No Processing Fee: For loans up to ₹20 Lakhs under certain schemes.
-                  </li>
+                  <li className={styles.featureItem}><span>✔</span> Loan Amount: Up to ₹1.5 Crores for overseas studies.</li>
+                  <li className={styles.featureItem}><span>✔</span> Moratorium: Course duration + 1 year after completion.</li>
+                  <li className={styles.featureItem}><span>✔</span> Repayment Tenure: Up to 15 years post-moratorium.</li>
+                  <li className={styles.featureItem}><span>✔</span> Collateral: Not required up to ₹7.5 Lakhs.</li>
+                  <li className={styles.featureItem}><span>✔</span> Rates: ~8.15%–11.75% p.a.; 0.50% concession for girls (indicative).</li>
+                  <li className={styles.featureItem}><span>✔</span> Tax Benefits: Interest deductible under Section 80E.</li>
+                  <li className={styles.featureItem}><span>✔</span> Processing Fee: Select schemes have partial/zero fees.</li>
                 </ul>
               </section>
 
@@ -359,7 +389,7 @@ export default function SBIBank() {
                 <h2 className={styles.sectionTitle}>Eligibility Criteria</h2>
                 <div className={styles.eligibilityContent}>
                   <div>
-                    <h3 className={styles.subTitle}>Student:</h3>
+                    <h3 className={styles.subTitle}>Student</h3>
                     <ul className={styles.eligibilityList}>
                       <li>Indian National.</li>
                       <li>Secured admission to recognized courses in India or abroad.</li>
@@ -367,10 +397,10 @@ export default function SBIBank() {
                     </ul>
                   </div>
                   <div>
-                    <h3 className={styles.subTitle}>Co-applicant:</h3>
+                    <h3 className={styles.subTitle}>Co-applicant</h3>
                     <ul className={styles.eligibilityList}>
                       <li>Indian National (parent/guardian/spouse).</li>
-                      <li>Stable income source, acceptable credit history.</li>
+                      <li>Stable income source and acceptable credit history.</li>
                     </ul>
                   </div>
                 </div>
@@ -380,7 +410,7 @@ export default function SBIBank() {
                 <h2 className={styles.sectionTitle}>Documents Required</h2>
                 <div className={styles.documentsContent}>
                   <div>
-                    <h3 className={styles.subTitle}>Student:</h3>
+                    <h3 className={styles.subTitle}>Student</h3>
                     <ul className={styles.documentsList}>
                       <li>Admission letter from institution.</li>
                       <li>10th, 12th, and graduation mark sheets (if applicable).</li>
@@ -389,7 +419,7 @@ export default function SBIBank() {
                     </ul>
                   </div>
                   <div>
-                    <h3 className={styles.subTitle}>Co-applicant:</h3>
+                    <h3 className={styles.subTitle}>Co-applicant</h3>
                     <ul className={styles.documentsList}>
                       <li>KYC documents (Aadhaar, PAN).</li>
                       <li>Income proof (IT Returns, Salary Slips, Bank Statements).</li>
@@ -397,7 +427,7 @@ export default function SBIBank() {
                     </ul>
                   </div>
                   <div>
-                    <h3 className={styles.subTitle}>Other:</h3>
+                    <h3 className={styles.subTitle}>Other</h3>
                     <ul className={styles.documentsList}>
                       <li>Loan application form.</li>
                       <li>Fee structure and course expenses.</li>
@@ -410,7 +440,7 @@ export default function SBIBank() {
               <section id="interest-rates" className={`${styles.section} ${styles.fadeInUp}`}>
                 <h2 className={styles.sectionTitle}>Interest Rates & Charges</h2>
                 <p className={styles.sectionText}>
-                  SBI offers competitive interest rates linked to the Repo Rate, with concessions for female students and Rinn Raksha scheme participants.
+                  SBI offers competitive, repo-linked rates with concessions for female students and specific protection plans. Final rates are confirmed by the bank at sanction.
                 </p>
                 <div className={styles.tableContainer}>
                   <table className={styles.table}>
@@ -424,22 +454,22 @@ export default function SBIBank() {
                     </thead>
                     <tbody>
                       <tr>
-                        <td>Loans up to ₹7.5 Lakhs</td>
-                        <td>~8.15% - 9.50%</td>
+                        <td>Up to ₹7.5 Lakhs</td>
+                        <td>~8.15% – 9.50%</td>
                         <td>Nil</td>
                         <td>Not required</td>
                       </tr>
                       <tr>
-                        <td>Loans above ₹7.5 Lakhs</td>
-                        <td>~9.50% - 11.75%</td>
-                        <td>₹10,000 (Global Ed-Vantage)</td>
+                        <td>Above ₹7.5 Lakhs</td>
+                        <td>~9.50% – 11.75%</td>
+                        <td>Varies by scheme</td>
                         <td>Required</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
                 <p className={styles.tableNote}>
-                  *Rates are indicative; 0.50% concession for female students. Final rates confirmed by SBI.
+                  *Indicative ranges; concessions may apply (e.g., 0.50% for female students).
                 </p>
               </section>
 
@@ -447,12 +477,12 @@ export default function SBIBank() {
                 <h2 className={styles.sectionTitle}>Application Process</h2>
                 <ol className={styles.processList}>
                   <li><strong>Submit Inquiry:</strong> Fill out our quick online form.</li>
-                  <li><strong>Expert Guidance:</strong> Connect with our loan advisor for SBI options.</li>
+                  <li><strong>Expert Guidance:</strong> Connect with our loan advisor on SBI options.</li>
                   <li><strong>Document Prep:</strong> We’ll help collect required documents.</li>
                   <li><strong>Application:</strong> Submit with our assistance to SBI.</li>
-                  <li><strong>Disbursal:</strong> Funds released post-approval per course schedule.</li>
+                  <li><strong>Disbursal:</strong> Funds released per course schedule after approval.</li>
                 </ol>
-                <button id="applyNowBtn" className={styles.applyButton} onClick={openModal}>
+                <button id="applyNowBtn" className={styles.applyButton} onClick={openModal} aria-label="Open application form">
                   Apply Now
                 </button>
                 <div id="messageBox" className={styles.messageBox} style={{ display: "none" }}>
@@ -468,7 +498,7 @@ export default function SBIBank() {
                       What is the maximum loan amount from SBI? <span id="faq1-icon" className={styles.faqIcon}>+</span>
                     </h3>
                     <p id="faq1-answer" className={styles.faqAnswer} style={{ display: "none" }}>
-                      Up to ₹1.5 Crores for overseas studies and ₹50 Lakhs for studies in India, based on course and institution.
+                      Up to ₹1.5 Crores for overseas studies, based on course and institution.
                     </p>
                   </div>
                   <div className={styles.faqItem}>
@@ -476,7 +506,7 @@ export default function SBIBank() {
                       Is collateral required? <span id="faq2-icon" className={styles.faqIcon}>+</span>
                     </h3>
                     <p id="faq2-answer" className={styles.faqAnswer} style={{ display: "none" }}>
-                      Not required for loans up to ₹7.5 Lakhs; higher amounts may require property or fixed deposits.
+                      Not required up to ₹7.5 Lakhs; higher amounts may require property or fixed deposits.
                     </p>
                   </div>
                   <div className={styles.faqItem}>
@@ -493,20 +523,22 @@ export default function SBIBank() {
           </div>
         </main>
 
+        {/* Modal */}
         <div
           id="applicationModal"
           className={`${styles.modalOverlay} ${isModalOpen ? styles.show : ""}`}
           onClick={closeModal}
+          aria-hidden={!isModalOpen}
         >
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <div
-              className={styles.progressBar}
-              style={{ width: `${progress}%`, background: "#2b6cb0" }}
-            ></div>
-            <h2 className={styles.modalTitle}>SBI Education Loan Application</h2>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="sbi-modal-title">
+            <div className={styles.progressBar} style={{ width: `${progress}%`, background: "#2b6cb0" }} />
+            <h2 id="sbi-modal-title" className={styles.modalTitle}>SBI Education Loan Application</h2>
+
             <form id="applicationForm" onSubmit={handleSubmit}>
+              {/* Step 1 */}
               <div id="formStep1" className={`${styles.formStep} ${formStep === 1 ? "" : styles.hidden}`}>
                 <h3 className={styles.stepTitle}>Personal Details</h3>
+
                 <div className={styles.formGroup}>
                   <label htmlFor="fullName" className={styles.label}>
                     Full Name <span className={styles.required}>*</span>
@@ -519,14 +551,13 @@ export default function SBIBank() {
                     placeholder="John Doe"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    onFocus={(e) => e.target.classList.add(styles.inputActive)}
-                    onBlur={(e) => e.target.classList.remove(styles.inputActive)}
                     required
                   />
                   <p id="fullName-error" className={styles.error} style={{ display: "none" }}>
                     Please enter your full name.
                   </p>
                 </div>
+
                 <div className={styles.formGroup}>
                   <label htmlFor="email" className={styles.label}>
                     Email Address <span className={styles.required}>*</span>
@@ -539,14 +570,13 @@ export default function SBIBank() {
                     placeholder="john.doe@example.com"
                     value={formData.email}
                     onChange={handleInputChange}
-                    onFocus={(e) => e.target.classList.add(styles.inputActive)}
-                    onBlur={(e) => e.target.classList.remove(styles.inputActive)}
                     required
                   />
                   <p id="email-error" className={styles.error} style={{ display: "none" }}>
                     Please enter a valid email.
                   </p>
                 </div>
+
                 <div className={styles.formGroup}>
                   <label htmlFor="contactNumber" className={styles.label}>
                     Contact Number <span className={styles.required}>*</span>
@@ -558,19 +588,16 @@ export default function SBIBank() {
                       className={`${styles.select} ${styles.selectFocus}`}
                       value={formData.countryCode}
                       onChange={handleInputChange}
-                      onFocus={(e) => e.target.classList.add(styles.selectActive)}
-                      onBlur={(e) => e.target.classList.remove(styles.selectActive)}
                       required
                     >
-                      <option value="+1">+1 (USA)</option>
+                      <option value="+1">+1 (USA/Canada)</option>
                       <option value="+44">+44 (UK)</option>
-                      <option value="+1">+1 (Canada)</option>
                       <option value="+49">+49 (Germany)</option>
                       <option value="+353">+353 (Ireland)</option>
                       <option value="+61">+61 (Australia)</option>
                       <option value="+33">+33 (France)</option>
                       <option value="+64">+64 (New Zealand)</option>
-                      <option value="+971">+971 (Dubai)</option>
+                      <option value="+971">+971 (UAE)</option>
                       <option value="+91">+91 (India)</option>
                     </select>
                     <input
@@ -581,34 +608,28 @@ export default function SBIBank() {
                       placeholder="9876543210"
                       value={formData.contactNumber}
                       onChange={handleInputChange}
-                      onFocus={(e) => e.target.classList.add(styles.inputActive)}
-                      onBlur={(e) => e.target.classList.remove(styles.inputActive)}
                       required
                     />
                   </div>
                   <p id="contactNumber-error" className={styles.error} style={{ display: "none" }}>
-                    Please enter a valid contact number (10-12 digits).
+                    Please enter a valid contact number (10–12 digits).
                   </p>
                 </div>
+
                 <div className={styles.buttonGroup}>
-                  <button
-                    type="button"
-                    className={`${styles.cancelButton} ${styles.buttonHover}`}
-                    onClick={closeModal}
-                  >
+                  <button type="button" className={`${styles.cancelButton} ${styles.buttonHover}`} onClick={closeModal}>
                     Cancel
                   </button>
-                  <button
-                    type="button"
-                    className={`${styles.nextButton} ${styles.buttonHover}`}
-                    onClick={handleNext}
-                  >
+                  <button type="button" className={`${styles.nextButton} ${styles.buttonHover}`} onClick={handleNext}>
                     Next
                   </button>
                 </div>
               </div>
+
+              {/* Step 2 */}
               <div id="formStep2" className={`${styles.formStep} ${formStep === 2 ? "" : styles.hidden}`}>
                 <h3 className={styles.stepTitle}>Education Details</h3>
+
                 <div className={styles.formGroup}>
                   <label htmlFor="country" className={styles.label}>
                     Country of Study <span className={styles.required}>*</span>
@@ -619,8 +640,6 @@ export default function SBIBank() {
                     className={`${styles.select} ${styles.selectFocus}`}
                     value={formData.country}
                     onChange={handleInputChange}
-                    onFocus={(e) => e.target.classList.add(styles.selectActive)}
-                    onBlur={(e) => e.target.classList.remove(styles.selectActive)}
                     required
                   >
                     <option value="">Select Country</option>
@@ -632,13 +651,14 @@ export default function SBIBank() {
                     <option value="Australia">Australia</option>
                     <option value="France">France</option>
                     <option value="New Zealand">New Zealand</option>
-                    <option value="Dubai">Dubai</option>
+                    <option value="Dubai">UAE (Dubai)</option>
                     <option value="Others">Others</option>
                   </select>
                   <p id="country-error" className={styles.error} style={{ display: "none" }}>
                     Please select a country.
                   </p>
                 </div>
+
                 <div className={styles.formGroup}>
                   <label htmlFor="university" className={styles.label}>
                     University/College Name <span className={styles.required}>*</span>
@@ -651,12 +671,10 @@ export default function SBIBank() {
                     placeholder="Type first 3 letters"
                     value={formData.university}
                     onChange={handleInputChange}
-                    onFocus={(e) => e.target.classList.add(styles.inputActive)}
-                    onBlur={(e) => e.target.classList.remove(styles.inputActive)}
                     required
                   />
                   {universityList.length > 0 && (
-                    <div className={`${styles.autocompleteList} ${styles.fadeIn}`}>
+                    <div className={`${styles.autocompleteList} ${styles.fadeIn}`} role="listbox" aria-label="University suggestions">
                       {universityList.map((uni) => (
                         <div
                           key={uni}
@@ -665,6 +683,8 @@ export default function SBIBank() {
                             setFormData((prev) => ({ ...prev, university: uni }));
                             setUniversityList([]);
                           }}
+                          role="option"
+                          aria-selected={formData.university === uni}
                         >
                           {uni}
                         </div>
@@ -675,6 +695,7 @@ export default function SBIBank() {
                     Please select a university.
                   </p>
                 </div>
+
                 <div className={styles.formGroup}>
                   <label htmlFor="course" className={styles.label}>
                     Course Name <span className={styles.required}>*</span>
@@ -687,14 +708,13 @@ export default function SBIBank() {
                     placeholder="e.g., Master of Business Administration"
                     value={formData.course}
                     onChange={handleInputChange}
-                    onFocus={(e) => e.target.classList.add(styles.inputActive)}
-                    onBlur={(e) => e.target.classList.remove(styles.inputActive)}
                     required
                   />
                   <p id="course-error" className={styles.error} style={{ display: "none" }}>
                     Please enter the course name.
                   </p>
                 </div>
+
                 <div className={styles.formGroup}>
                   <label htmlFor="intake" className={styles.label}>
                     Intake <span className={styles.required}>*</span>
@@ -706,23 +726,12 @@ export default function SBIBank() {
                       className={`${styles.select} ${styles.selectFocus}`}
                       value={formData.intakeMonth}
                       onChange={handleInputChange}
-                      onFocus={(e) => e.target.classList.add(styles.selectActive)}
-                      onBlur={(e) => e.target.classList.remove(styles.selectActive)}
                       required
                     >
                       <option value="">Select Month</option>
-                      <option value="January">January</option>
-                      <option value="February">February</option>
-                      <option value="March">March</option>
-                      <option value="April">April</option>
-                      <option value="May">May</option>
-                      <option value="June">June</option>
-                      <option value="July">July</option>
-                      <option value="August">August</option>
-                      <option value="September">September</option>
-                      <option value="October">October</option>
-                      <option value="November">November</option>
-                      <option value="December">December</option>
+                      {["January","February","March","April","May","June","July","August","September","October","November","December"].map(m => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
                     </select>
                     <select
                       id="intakeYear"
@@ -730,22 +739,19 @@ export default function SBIBank() {
                       className={`${styles.select} ${styles.selectFocus}`}
                       value={formData.intakeYear}
                       onChange={handleInputChange}
-                      onFocus={(e) => e.target.classList.add(styles.selectActive)}
-                      onBlur={(e) => e.target.classList.remove(styles.selectActive)}
                       required
                     >
                       <option value="">Select Year</option>
-                      <option value="2023">2023</option>
-                      <option value="2024">2024</option>
-                      <option value="2025">2025</option>
-                      <option value="2026">2026</option>
-                      <option value="2027">2027</option>
+                      {["2025","2026","2027","2028"].map(y => (
+                        <option key={y} value={y}>{y}</option>
+                      ))}
                     </select>
                   </div>
                   <p id="intake-error" className={styles.error} style={{ display: "none" }}>
                     Please select an intake period.
                   </p>
                 </div>
+
                 <div className={styles.formGroup}>
                   <label htmlFor="admitStatus" className={styles.label}>
                     Admit Status <span className={styles.required}>*</span>
@@ -756,8 +762,6 @@ export default function SBIBank() {
                     className={`${styles.select} ${styles.selectFocus}`}
                     value={formData.admitStatus}
                     onChange={handleInputChange}
-                    onFocus={(e) => e.target.classList.add(styles.selectActive)}
-                    onBlur={(e) => e.target.classList.remove(styles.selectActive)}
                     required
                   >
                     <option value="">Select Status</option>
@@ -769,18 +773,12 @@ export default function SBIBank() {
                     Please select an admit status.
                   </p>
                 </div>
+
                 <div className={styles.buttonGroup}>
-                  <button
-                    type="button"
-                    className={`${styles.prevButton} ${styles.buttonHover}`}
-                    onClick={handlePrev}
-                  >
+                  <button type="button" className={`${styles.prevButton} ${styles.buttonHover}`} onClick={handlePrev}>
                     Previous
                   </button>
-                  <button
-                    type="submit"
-                    className={`${styles.submitButton} ${styles.buttonHover}`}
-                  >
+                  <button type="submit" className={`${styles.submitButton} ${styles.buttonHover}`} aria-label="Submit application">
                     Submit
                   </button>
                 </div>
@@ -800,18 +798,18 @@ export default function SBIBank() {
             <div>
               <h3 className={styles.footerTitle}>Stay Connected</h3>
               <div className={styles.socialLinks}>
-                <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="Facebook">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="Facebook" rel="noopener">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
                   </svg>
                 </a>
-                <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="Twitter">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="Twitter" rel="noopener">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
                   </svg>
                 </a>
-                <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="LinkedIn">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="LinkedIn" rel="noopener">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z" />
                   </svg>
                 </a>
@@ -825,8 +823,6 @@ export default function SBIBank() {
                   placeholder="Enter your email"
                   className={`${styles.newsletterInput} ${styles.inputFocus}`}
                   aria-label="Newsletter email"
-                  onFocus={(e) => e.target.classList.add(styles.inputActive)}
-                  onBlur={(e) => e.target.classList.remove(styles.inputActive)}
                 />
                 <button type="submit" className={`${styles.newsletterButton} ${styles.buttonHover}`}>
                   Subscribe
@@ -840,6 +836,7 @@ export default function SBIBank() {
     </>
   );
 
+  // simple toggler for FAQ
   function toggleFAQ(id) {
     const answer = document.getElementById(`${id}-answer`);
     const icon = document.getElementById(`${id}-icon`);
