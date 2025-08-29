@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { createClient } from "@supabase/supabase-js";
 import Head from "next/head";
+import { createClient } from "@supabase/supabase-js";
 import styles from "./credila.module.css";
 
 const supabase = createClient(
@@ -16,6 +16,10 @@ export default function Credila() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formStep, setFormStep] = useState(1);
+  const [progress, setProgress] = useState(50);
+  const [universitiesData, setUniversitiesData] = useState({});
+  const [universityList, setUniversityList] = useState([]);
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -28,18 +32,16 @@ export default function Credila() {
     intakeYear: "",
     admitStatus: "",
   });
-  const [universitiesData, setUniversitiesData] = useState({});
-  const [universityList, setUniversityList] = useState([]);
-  const [progress, setProgress] = useState(50);
 
+  // ------- Load datasets / listeners -------
   useEffect(() => {
     fetch("/universities.json")
-      .then((response) => {
-        if (!response.ok) throw new Error(`Failed to load universities.json: ${response.status}`);
-        return response.json();
+      .then((r) => {
+        if (!r.ok) throw new Error(`Failed to load universities.json: ${r.status}`);
+        return r.json();
       })
       .then((data) => setUniversitiesData(data))
-      .catch((error) => console.error("Error loading universities:", error.message));
+      .catch((err) => console.error("Error loading universities:", err.message));
 
     const handleResize = () => {
       if (window.innerWidth > 768 && isSidebarOpen) setIsSidebarOpen(false);
@@ -48,9 +50,8 @@ export default function Credila() {
     return () => window.removeEventListener("resize", handleResize);
   }, [isSidebarOpen]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  // ------- UI helpers -------
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -60,6 +61,7 @@ export default function Credila() {
   const closeModal = () => {
     setIsModalOpen(false);
     setFormStep(1);
+    setProgress(50);
     setFormData({
       fullName: "",
       email: "",
@@ -72,19 +74,20 @@ export default function Credila() {
       intakeYear: "",
       admitStatus: "",
     });
-    setProgress(50);
+    setUniversityList([]);
     clearErrors();
     document.body.style.overflow = "auto";
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
     setFormData((prev) => ({ ...prev, [name]: value }));
-    console.log(`Updated ${name} to ${value}`);
+
     if (name === "university" && value.trim().length >= 3 && formData.country) {
-      const filtered = universitiesData[formData.country]?.filter((uni) =>
-        uni.toLowerCase().startsWith(value.trim().toLowerCase())
-      ) || [];
+      const filtered =
+        universitiesData[formData.country]
+          ?.filter((uni) => uni.toLowerCase().startsWith(value.trim().toLowerCase())) || [];
       setUniversityList(filtered);
     } else if (name === "country") {
       setFormData((prev) => ({ ...prev, university: "" }));
@@ -92,63 +95,7 @@ export default function Credila() {
     }
   };
 
-  const validateStep1 = () => {
-    clearErrors();
-    let errors = [];
-    if (!formData.fullName.trim()) {
-      errors.push("Full name is empty");
-      document.getElementById("fullName-error").classList.remove("hidden");
-    }
-    if (!formData.email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
-      errors.push("Invalid email");
-      document.getElementById("email-error").classList.remove("hidden");
-    }
-    const fullContactNumber = formData.countryCode + formData.contactNumber;
-    if (
-      !formData.countryCode ||
-      !formData.contactNumber.match(/^\d{10,12}$/) ||
-      !fullContactNumber.match(/^\+\d{1,3}\d{10,12}$/)
-    ) {
-      errors.push("Invalid contact number");
-      document.getElementById("contactNumber-error").classList.remove("hidden");
-    }
-    if (errors.length > 0) {
-      alert("Please correct errors in Step 1.");
-      return false;
-    }
-    return true;
-  };
-
-  const validateStep2 = () => {
-    clearErrors();
-    let errors = [];
-    if (!formData.country) {
-      errors.push("Country not selected");
-      document.getElementById("country-error").classList.remove("hidden");
-    }
-    if (!formData.university.trim()) {
-      errors.push("University not specified");
-      document.getElementById("university-error").classList.remove("hidden");
-    }
-    if (!formData.course.trim()) {
-      errors.push("Course not specified");
-      document.getElementById("course-error").classList.remove("hidden");
-    }
-    if (!formData.intakeMonth || !formData.intakeYear) {
-      errors.push("Intake not selected");
-      document.getElementById("intake-error").classList.remove("hidden");
-    }
-    if (!formData.admitStatus) {
-      errors.push("Admit status not selected");
-      document.getElementById("admitStatus-error").classList.remove("hidden");
-    }
-    if (errors.length > 0) {
-      alert("Please correct errors in Step 2.");
-      return false;
-    }
-    return true;
-  };
-
+  // ------- Validation -------
   const clearErrors = () => {
     [
       "fullName",
@@ -169,12 +116,69 @@ export default function Credila() {
     });
   };
 
+  const validateStep1 = () => {
+    clearErrors();
+    let errors = [];
+    if (!formData.fullName.trim()) {
+      errors.push("Full name is empty");
+      document.getElementById("fullName-error")?.classList.remove("hidden");
+    }
+    if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)) {
+      errors.push("Invalid email");
+      document.getElementById("email-error")?.classList.remove("hidden");
+    }
+    const fullContact = formData.countryCode + formData.contactNumber;
+    if (
+      !formData.countryCode ||
+      !/^\d{10,12}$/.test(formData.contactNumber) ||
+      !/^\+\d{1,3}\d{10,12}$/.test(fullContact)
+    ) {
+      errors.push("Invalid contact number");
+      document.getElementById("contactNumber-error")?.classList.remove("hidden");
+    }
+    if (errors.length) {
+      alert("Please correct errors in Step 1.");
+      return false;
+    }
+    return true;
+  };
+
+  const validateStep2 = () => {
+    clearErrors();
+    let errors = [];
+    if (!formData.country) {
+      errors.push("Country not selected");
+      document.getElementById("country-error")?.classList.remove("hidden");
+    }
+    if (!formData.university.trim()) {
+      errors.push("University not specified");
+      document.getElementById("university-error")?.classList.remove("hidden");
+    }
+    if (!formData.course.trim()) {
+      errors.push("Course not specified");
+      document.getElementById("course-error")?.classList.remove("hidden");
+    }
+    if (!formData.intakeMonth || !formData.intakeYear) {
+      errors.push("Intake not selected");
+      document.getElementById("intake-error")?.classList.remove("hidden");
+    }
+    if (!formData.admitStatus) {
+      errors.push("Admit status not selected");
+      document.getElementById("admitStatus-error")?.classList.remove("hidden");
+    }
+    if (errors.length) {
+      alert("Please correct errors in Step 2.");
+      return false;
+    }
+    return true;
+  };
+
+  // ------- Supabase -------
   const submitToSupabase = async (data) => {
     try {
-      const response = await supabase
-        .from("student_applications")
-        .insert([data]);
-      return response.status === 201;
+      const { status, error } = await supabase.from("student_applications").insert([data]);
+      if (error) throw error;
+      return status === 201 || status === 200;
     } catch (error) {
       console.error("Supabase fetch error:", error.message);
       alert(`Error: ${error.message}. Please try again.`);
@@ -182,28 +186,7 @@ export default function Credila() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateStep2()) return;
-
-    const data = {
-      full_name: formData.fullName.trim(),
-      email: formData.email.trim(),
-      contact_number: `${formData.countryCode}${formData.contactNumber}`,
-      country_of_study: formData.country,
-      university: formData.university.trim(),
-      course: formData.course.trim(),
-      intake: `${formData.intakeMonth} ${formData.intakeYear}`,
-      admit_status: formData.admitStatus,
-      created_at: new Date().toISOString(),
-      source_url: "/Credila",
-    };
-
-    if (await submitToSupabase(data)) {
-      window.location.href = "/success";
-    }
-  };
-
+  // ------- Form flow -------
   const handleNext = () => {
     if (validateStep1()) {
       setFormStep(2);
@@ -216,31 +199,167 @@ export default function Credila() {
     setProgress(50);
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateStep2()) return;
+
+    const payload = {
+      full_name: formData.fullName.trim(),
+      email: formData.email.trim(),
+      contact_number: `${formData.countryCode}${formData.contactNumber}`,
+      country_of_study: formData.country,
+      university: formData.university.trim(),
+      course: formData.course.trim(),
+      intake: `${formData.intakeMonth} ${formData.intakeYear}`,
+      admit_status: formData.admitStatus,
+      created_at: new Date().toISOString(),
+      source_url: "/credila", // ✅ normalized path
+    };
+
+    if (await submitToSupabase(payload)) {
+      window.location.href = "/success";
+    }
+  };
+
+  // ------- JSON-LD (SEO) -------
+  const faqJsonLd = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the maximum loan amount from Credila?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text":
+              "There is no upper limit; up to ₹1 crore is possible without collateral and higher amounts with collateral, depending on your profile and course."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is collateral required?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text":
+              "Not required for loans up to ₹1 crore; higher amounts may require property or liquid assets."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the repayment period?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text":
+              "Typically up to 12–15 years, with a moratorium of course duration plus 1 year or until employment."
+          }
+        }
+      ]
+    }),
+    []
+  );
+
+  const orgJsonLd = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "StudySahara",
+      "url": "https://www.studysahara.com",
+      "logo": "https://www.studysahara.com/images/logo.png",
+      "sameAs": []
+    }),
+    []
+  );
+
+  const breadcrumbJsonLd = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.studysahara.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Credila Education Loan",
+          "item": "https://www.studysahara.com/credila"
+        }
+      ]
+    }),
+    []
+  );
+
+  // ------- Render -------
   return (
     <>
       <Head>
+        {/* Primary */}
         <title>Credila Education Loan Without Collateral | StudySahara</title>
-        <meta name="description" content="Get HDFC Credila loans for MS, MBA & UG abroad. Loans without collateral or co-applicant available. Fast processing, expert support." />
-        <meta name="keywords" content="HDFC Credila loan, HDFC education loan, no collateral loan, study loan without co-applicant, Credila loan for USA, HDFC student loan abroad" />
+        <meta
+          name="description"
+          content="Get HDFC Credila loans for MS, MBA & UG abroad. Loans without collateral or co-applicant available. Fast processing, expert support."
+        />
+        <meta
+          name="keywords"
+          content="HDFC Credila loan, HDFC education loan, no collateral loan, study loan without co-applicant, Credila loan for USA, HDFC student loan abroad"
+        />
         <meta name="robots" content="index, follow" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta charSet="UTF-8" />
-        <meta name="author" content="StudySahara" />
-         <link rel="canonical" href="https://www.studysahara.com/credila" />
+        <link rel="canonical" href="https://www.studysahara.com/credila" />
+
+        {/* Open Graph */}
+        <meta property="og:title" content="Credila Education Loan Without Collateral | StudySahara" />
+        <meta
+          property="og:description"
+          content="Tailored Credila education loans for study abroad. Fast approvals, unsecured options, and expert help."
+        />
+        <meta property="og:url" content="https://www.studysahara.com/credila" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="StudySahara" />
+        <meta property="og:image" content="https://www.studysahara.com/og/credila.jpg" />
+        <meta property="og:image:alt" content="Credila Education Loan - StudySahara" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Credila Education Loan Without Collateral | StudySahara" />
+        <meta
+          name="twitter:description"
+          content="Tailored Credila education loans for study abroad. Fast approvals, unsecured options, and expert help."
+        />
+        <meta name="twitter:image" content="https://www.studysahara.com/og/credila.jpg" />
+
+        {/* Preload logo for faster LCP */}
+        <link rel="preload" as="image" href="/images/logo.png" imagesrcset="/images/logo.png" />
+
+        {/* JSON-LD */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       </Head>
+
       <div className={styles.PNBContainer}>
         <header className={styles.header}>
           <div className={styles.headerContent}>
             <Link href="/" className={styles.logo}>
-              <Image src="/images/logo.png" alt="StudySahara Logo" width={40} height={48} className={styles.logoImage} />
+              <Image
+                src="/images/logo.png"
+                alt="StudySahara Logo"
+                width={40}
+                height={48}
+                className={styles.logoImage}
+                priority
+              />
               <span className={styles.logoText}>StudySahara</span>
             </Link>
-           <Link href="/" className={styles.navLink}>
-                  <svg className={styles.homeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                </Link>
-                </div>
+            <Link href="/" className={styles.navLink} aria-label="Go to Home">
+              <svg className={styles.homeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </Link>
+          </div>
         </header>
 
         <main className={styles.main}>
@@ -263,7 +382,8 @@ export default function Credila() {
                     width={170}
                     height={110}
                     className={styles.PNBImage}
-                    onError={(e) => (e.target.src = "/images/credila.png")}
+                    priority
+                    onError={(e) => (e.currentTarget.src = "/images/credila.png")}
                   />
                 </div>
               </div>
@@ -313,15 +433,15 @@ export default function Credila() {
                   <div>
                     <h3 className={styles.subTitle}>Student:</h3>
                     <ul className={styles.eligibilityList}>
-                      <li>Indian citizen, minimum 18 years old or turning to be 18 years old</li>
-                      <li>Applying to the Universities or admitted to Universities in India/abroad.</li>
+                      <li>Indian citizen, minimum 18 years old or turning 18 soon.</li>
+                      <li>Applying to, or admitted at, recognized universities in India/abroad.</li>
                     </ul>
                   </div>
                   <div>
                     <h3 className={styles.subTitle}>Co-applicant:</h3>
                     <ul className={styles.eligibilityList}>
-                      <li>Indian citizen (can be NRI) (parent, sibling, spouse, or extended family).</li>
-                      <li>Income source (For Eg. salaried/pensioner or self employed or having rental income or having agricultural income,).</li>
+                      <li>Indian citizen (can be NRI): parent, sibling, spouse, or extended family.</li>
+                      <li>Stable income source (salaried/pensioner, self-employed, rental, agricultural, etc.).</li>
                     </ul>
                   </div>
                 </div>
@@ -333,26 +453,29 @@ export default function Credila() {
                   <div>
                     <h3 className={styles.subTitle}>Student:</h3>
                     <ul className={styles.documentsList}>
-                      <li>KYC (PAN, Passport, Aadhaar).</li>
-                      <li>Academic records (10th, 12th, graduation, entrance exam scores).</li>
+                      <li>KYC (PAN, Passport, Aadhaar)</li>
+                      <li>Academic records (10th, 12th, graduation, test scores)</li>
                       <li>Admission letter (optional)</li>
-                      <li>Passport-size photographs.</li>
+                      <li>Passport-size photographs</li>
                     </ul>
                   </div>
                   <div>
                     <h3 className={styles.subTitle}>Co-applicant:</h3>
                     <ul className={styles.documentsList}>
-                      <li>KYC (PAN, Aadhaar).</li>
-                      <li>Income proof (Latest 6 months of bank statement, salaried/pensioner - ITR Returns/Form 16 and salalry/pension slips/certificate. ITR Returns, Self Employed - Busniess address proof such as GST certificate/MSME/Udyog Adhaar. Rental income - rental agreement, Agricultural income - Agricultural income certificate)</li>
-                      <li>Address proof (utility bill/rental agreement).</li>
+                      <li>KYC (PAN, Aadhaar)</li>
+                      <li>
+                        Income proof (latest 6 months bank statement; salaried/pensioner: ITR/Form 16 & slips; self-employed:
+                        business proof like GST/MSME/Udyog Aadhaar; rental: agreement; agricultural: income certificate)
+                      </li>
+                      <li>Address proof (utility bill/rent agreement)</li>
                     </ul>
                   </div>
                   <div>
                     <h3 className={styles.subTitle}>Other:</h3>
                     <ul className={styles.documentsList}>
-                      <li>Loan application form.</li>
-                      <li>Course expense breakdown.</li>
-                      <li>Collateral documents (if applicable).</li>
+                      <li>Loan application form</li>
+                      <li>Course expense breakdown</li>
+                      <li>Collateral documents (if applicable)</li>
                     </ul>
                   </div>
                 </div>
@@ -361,7 +484,7 @@ export default function Credila() {
               <section id="interest-rates" className={`${styles.section} ${styles.fadeInUp}`}>
                 <h2 className={styles.sectionTitle}>Interest Rates & Charges</h2>
                 <p className={styles.sectionText}>
-                  Credila offers floating interest rates linked to its Benchmark Lending Rate (CBLR), with flexibility based on student and co-applicant profiles.
+                  Credila offers floating interest rates linked to its benchmark, with flexibility based on student and co-applicant profiles.
                 </p>
                 <div className={styles.tableContainer}>
                   <table className={styles.table}>
@@ -376,21 +499,21 @@ export default function Credila() {
                     <tbody>
                       <tr>
                         <td>Unsecured (up to ₹1 crore)</td>
-                        <td>starting at 10%</td>
-                        <td>1% of loan amount (negotiable with the help of StudySahara)</td>
+                        <td>Starting ~10%</td>
+                        <td>~1% of loan (often negotiable via StudySahara)</td>
                         <td>Not required</td>
                       </tr>
                       <tr>
                         <td>Secured (above ₹1 crore)</td>
-                        <td>Starting at 9.5%</td>
-                        <td>1% of loan amount(negotiable with the help of StudySahara)</td>
+                        <td>Starting ~9.5%</td>
+                        <td>~1% of loan (often negotiable via StudySahara)</td>
                         <td>Required</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
                 <p className={styles.tableNote}>
-                  *Rates are indicative and vary based on profile. Contact Credila for exact rates.
+                  *Indicative; varies by profile. Contact Credila for exact rates.
                 </p>
               </section>
 
@@ -419,7 +542,7 @@ export default function Credila() {
                       What is the maximum loan amount from Credila? <span id="faq1-icon" className={styles.faqIcon}>+</span>
                     </h3>
                     <p id="faq1-answer" className={styles.faqAnswer} style={{ display: "none" }}>
-                      No upper limit; up to ₹1 crore without collateral, higher amounts with collateral, based on course and profile.
+                      No upper limit; up to ₹1 crore without collateral, higher with collateral—subject to profile and course.
                     </p>
                   </div>
                   <div className={styles.faqItem}>
@@ -427,7 +550,7 @@ export default function Credila() {
                       Is collateral required? <span id="faq2-icon" className={styles.faqIcon}>+</span>
                     </h3>
                     <p id="faq2-answer" className={styles.faqAnswer} style={{ display: "none" }}>
-                      Not required for loans up to ₹1 crore; higher amounts may require property or liquid assets.
+                      Not for loans up to ₹1 crore; higher amounts may require property or liquid assets.
                     </p>
                   </div>
                   <div className={styles.faqItem}>
@@ -435,7 +558,7 @@ export default function Credila() {
                       What is the repayment period? <span id="faq3-icon" className={styles.faqIcon}>+</span>
                     </h3>
                     <p id="faq3-answer" className={styles.faqAnswer} style={{ display: "none" }}>
-                      Up to 12–15 years, with a moratorium of course duration + 1 year or until employment.
+                      Usually up to 12–15 years, with a moratorium of course duration + 1 year or until employment.
                     </p>
                   </div>
                 </div>
@@ -444,15 +567,25 @@ export default function Credila() {
           </div>
         </main>
 
-        <div id="applicationModal" className={`${styles.modalOverlay} ${isModalOpen ? styles.show : ""}`} onClick={closeModal}>
+        {/* Modal */}
+        <div
+          id="applicationModal"
+          className={`${styles.modalOverlay} ${isModalOpen ? styles.show : ""}`}
+          onClick={closeModal}
+        >
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.progressBar} style={{ width: `${progress}%`, background: "#2b6cb0" }}></div>
+            <div className={styles.progressBar} style={{ width: `${progress}%`, background: "#2b6cb0" }} />
             <h2 className={styles.modalTitle}>Credila Education Loan Application</h2>
+
             <form id="applicationForm" onSubmit={handleSubmit}>
+              {/* Step 1 */}
               <div id="formStep1" className={`${styles.formStep} ${formStep === 1 ? "" : styles.hidden}`}>
                 <h3 className={styles.stepTitle}>Personal Details</h3>
+
                 <div className={styles.formGroup}>
-                  <label htmlFor="fullName" className={styles.label}>Full Name <span className={styles.required}>*</span></label>
+                  <label htmlFor="fullName" className={styles.label}>
+                    Full Name <span className={styles.required}>*</span>
+                  </label>
                   <input
                     type="text"
                     id="fullName"
@@ -461,14 +594,19 @@ export default function Credila() {
                     placeholder="John Doe"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    onFocus={(e) => e.target.classList.add(styles.inputActive)}
-                    onBlur={(e) => e.target.classList.remove(styles.inputActive)}
+                    onFocus={(e) => e.currentTarget.classList.add(styles.inputActive)}
+                    onBlur={(e) => e.currentTarget.classList.remove(styles.inputActive)}
                     required
                   />
-                  <p id="fullName-error" className={styles.error} style={{ display: "none" }}>Please enter your full name.</p>
+                  <p id="fullName-error" className={styles.error} style={{ display: "none" }}>
+                    Please enter your full name.
+                  </p>
                 </div>
+
                 <div className={styles.formGroup}>
-                  <label htmlFor="email" className={styles.label}>Email Address <span className={styles.required}>*</span></label>
+                  <label htmlFor="email" className={styles.label}>
+                    Email Address <span className={styles.required}>*</span>
+                  </label>
                   <input
                     type="email"
                     id="email"
@@ -477,14 +615,19 @@ export default function Credila() {
                     placeholder="john.doe@example.com"
                     value={formData.email}
                     onChange={handleInputChange}
-                    onFocus={(e) => e.target.classList.add(styles.inputActive)}
-                    onBlur={(e) => e.target.classList.remove(styles.inputActive)}
+                    onFocus={(e) => e.currentTarget.classList.add(styles.inputActive)}
+                    onBlur={(e) => e.currentTarget.classList.remove(styles.inputActive)}
                     required
                   />
-                  <p id="email-error" className={styles.error} style={{ display: "none" }}>Please enter a valid email.</p>
+                  <p id="email-error" className={styles.error} style={{ display: "none" }}>
+                    Please enter a valid email.
+                  </p>
                 </div>
+
                 <div className={styles.formGroup}>
-                  <label htmlFor="contactNumber" className={styles.label}>Contact Number <span className={styles.required}>*</span></label>
+                  <label htmlFor="contactNumber" className={styles.label}>
+                    Contact Number <span className={styles.required}>*</span>
+                  </label>
                   <div className={styles.phoneInput}>
                     <select
                       id="countryCode"
@@ -492,8 +635,8 @@ export default function Credila() {
                       className={`${styles.select} ${styles.selectFocus}`}
                       value={formData.countryCode}
                       onChange={handleInputChange}
-                      onFocus={(e) => e.target.classList.add(styles.selectActive)}
-                      onBlur={(e) => e.target.classList.remove(styles.selectActive)}
+                      onFocus={(e) => e.currentTarget.classList.add(styles.selectActive)}
+                      onBlur={(e) => e.currentTarget.classList.remove(styles.selectActive)}
                       required
                     >
                       <option value="+1">+1 (USA)</option>
@@ -507,7 +650,9 @@ export default function Credila() {
                       <option value="+971">+971 (Dubai)</option>
                       <option value="+91">+91 (India)</option>
                     </select>
+
                     <span className={styles.selectedCode}>{formData.countryCode}</span>
+
                     <input
                       type="tel"
                       id="contactNumber"
@@ -516,30 +661,50 @@ export default function Credila() {
                       placeholder="9876543210"
                       value={formData.contactNumber}
                       onChange={handleInputChange}
-                      onFocus={(e) => e.target.classList.add(styles.inputActive)}
-                      onBlur={(e) => e.target.classList.remove(styles.inputActive)}
+                      onFocus={(e) => e.currentTarget.classList.add(styles.inputActive)}
+                      onBlur={(e) => e.currentTarget.classList.remove(styles.inputActive)}
                       required
                     />
                   </div>
-                  <p id="contactNumber-error" className={styles.error} style={{ display: "none" }}>Please enter a valid contact number (10-12 digits).</p>
+                  <p id="contactNumber-error" className={styles.error} style={{ display: "none" }}>
+                    Please enter a valid contact number (10–12 digits).
+                  </p>
                 </div>
+
                 <div className={styles.buttonGroup}>
-                  <button type="button" className={`${styles.cancelButton} ${styles.buttonHover}`} onClick={closeModal}>Cancel</button>
-                  <button type="button" className={`${styles.nextButton} ${styles.buttonHover}`} onClick={handleNext}>Next</button>
+                  <button
+                    type="button"
+                    className={`${styles.cancelButton} ${styles.buttonHover}`}
+                    onClick={closeModal}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.nextButton} ${styles.buttonHover}`}
+                    onClick={handleNext}
+                  >
+                    Next
+                  </button>
                 </div>
               </div>
+
+              {/* Step 2 */}
               <div id="formStep2" className={`${styles.formStep} ${formStep === 2 ? "" : styles.hidden}`}>
                 <h3 className={styles.stepTitle}>Education Details</h3>
+
                 <div className={styles.formGroup}>
-                  <label htmlFor="country" className={styles.label}>Country of Study <span className={styles.required}>*</span></label>
+                  <label htmlFor="country" className={styles.label}>
+                    Country of Study <span className={styles.required}>*</span>
+                  </label>
                   <select
                     id="country"
                     name="country"
                     className={`${styles.select} ${styles.selectFocus}`}
                     value={formData.country}
                     onChange={handleInputChange}
-                    onFocus={(e) => e.target.classList.add(styles.selectActive)}
-                    onBlur={(e) => e.target.classList.remove(styles.selectActive)}
+                    onFocus={(e) => e.currentTarget.classList.add(styles.selectActive)}
+                    onBlur={(e) => e.currentTarget.classList.remove(styles.selectActive)}
                     required
                   >
                     <option value="">Select Country</option>
@@ -554,10 +719,15 @@ export default function Credila() {
                     <option value="Dubai">Dubai</option>
                     <option value="Others">Others</option>
                   </select>
-                  <p id="country-error" className={styles.error} style={{ display: "none" }}>Please select a country.</p>
+                  <p id="country-error" className={styles.error} style={{ display: "none" }}>
+                    Please select a country.
+                  </p>
                 </div>
+
                 <div className={styles.formGroup}>
-                  <label htmlFor="university" className={styles.label}>University/College Name <span className={styles.required}>*</span></label>
+                  <label htmlFor="university" className={styles.label}>
+                    University/College Name <span className={styles.required}>*</span>
+                  </label>
                   <input
                     type="text"
                     id="university"
@@ -566,8 +736,8 @@ export default function Credila() {
                     placeholder="Type first 3 letters"
                     value={formData.university}
                     onChange={handleInputChange}
-                    onFocus={(e) => e.target.classList.add(styles.inputActive)}
-                    onBlur={(e) => e.target.classList.remove(styles.inputActive)}
+                    onFocus={(e) => e.currentTarget.classList.add(styles.inputActive)}
+                    onBlur={(e) => e.currentTarget.classList.remove(styles.inputActive)}
                     required
                   />
                   {universityList.length > 0 && (
@@ -586,10 +756,15 @@ export default function Credila() {
                       ))}
                     </div>
                   )}
-                  <p id="university-error" className={styles.error} style={{ display: "none" }}>Please select a university.</p>
+                  <p id="university-error" className={styles.error} style={{ display: "none" }}>
+                    Please select a university.
+                  </p>
                 </div>
+
                 <div className={styles.formGroup}>
-                  <label htmlFor="course" className={styles.label}>Course Name <span className={styles.required}>*</span></label>
+                  <label htmlFor="course" className={styles.label}>
+                    Course Name <span className={styles.required}>*</span>
+                  </label>
                   <input
                     type="text"
                     id="course"
@@ -598,14 +773,19 @@ export default function Credila() {
                     placeholder="e.g., Master of Science in Computer Science"
                     value={formData.course}
                     onChange={handleInputChange}
-                    onFocus={(e) => e.target.classList.add(styles.inputActive)}
-                    onBlur={(e) => e.target.classList.remove(styles.inputActive)}
+                    onFocus={(e) => e.currentTarget.classList.add(styles.inputActive)}
+                    onBlur={(e) => e.currentTarget.classList.remove(styles.inputActive)}
                     required
                   />
-                  <p id="course-error" className={styles.error} style={{ display: "none" }}>Please enter the course name.</p>
+                  <p id="course-error" className={styles.error} style={{ display: "none" }}>
+                    Please enter the course name.
+                  </p>
                 </div>
+
                 <div className={styles.formGroup}>
-                  <label htmlFor="intake" className={styles.label}>Intake <span className={styles.required}>*</span></label>
+                  <label htmlFor="intake" className={styles.label}>
+                    Intake <span className={styles.required}>*</span>
+                  </label>
                   <div className={styles.intakeInput}>
                     <select
                       id="intakeMonth"
@@ -613,23 +793,17 @@ export default function Credila() {
                       className={`${styles.select} ${styles.selectFocus}`}
                       value={formData.intakeMonth}
                       onChange={handleInputChange}
-                      onFocus={(e) => e.target.classList.add(styles.selectActive)}
-                      onBlur={(e) => e.target.classList.remove(styles.selectActive)}
+                      onFocus={(e) => e.currentTarget.classList.add(styles.selectActive)}
+                      onBlur={(e) => e.currentTarget.classList.remove(styles.selectActive)}
                       required
                     >
                       <option value="">Select Month</option>
-                      <option value="January">January</option>
-                      <option value="February">February</option>
-                      <option value="March">March</option>
-                      <option value="April">April</option>
-                      <option value="May">May</option>
-                      <option value="June">June</option>
-                      <option value="July">July</option>
-                      <option value="August">August</option>
-                      <option value="September">September</option>
-                      <option value="October">October</option>
-                      <option value="November">November</option>
-                      <option value="December">December</option>
+                      {[
+                        "January","February","March","April","May","June",
+                        "July","August","September","October","November","December",
+                      ].map((m) => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
                     </select>
                     <select
                       id="intakeYear"
@@ -637,30 +811,33 @@ export default function Credila() {
                       className={`${styles.select} ${styles.selectFocus}`}
                       value={formData.intakeYear}
                       onChange={handleInputChange}
-                      onFocus={(e) => e.target.classList.add(styles.selectActive)}
-                      onBlur={(e) => e.target.classList.remove(styles.selectActive)}
+                      onFocus={(e) => e.currentTarget.classList.add(styles.selectActive)}
+                      onBlur={(e) => e.currentTarget.classList.remove(styles.selectActive)}
                       required
                     >
                       <option value="">Select Year</option>
-                      <option value="2023">2023</option>
-                      <option value="2024">2024</option>
-                      <option value="2025">2025</option>
-                      <option value="2026">2026</option>
-                      <option value="2027">2027</option>
+                      {["2023","2024","2025","2026","2027"].map((y) => (
+                        <option key={y} value={y}>{y}</option>
+                      ))}
                     </select>
                   </div>
-                  <p id="intake-error" className={styles.error} style={{ display: "none" }}>Please select an intake period.</p>
+                  <p id="intake-error" className={styles.error} style={{ display: "none" }}>
+                    Please select an intake period.
+                  </p>
                 </div>
+
                 <div className={styles.formGroup}>
-                  <label htmlFor="admitStatus" className={styles.label}>Admit Status <span className={styles.required}>*</span></label>
+                  <label htmlFor="admitStatus" className={styles.label}>
+                    Admit Status <span className={styles.required}>*</span>
+                  </label>
                   <select
                     id="admitStatus"
                     name="admitStatus"
                     className={`${styles.select} ${styles.selectFocus}`}
                     value={formData.admitStatus}
                     onChange={handleInputChange}
-                    onFocus={(e) => e.target.classList.add(styles.selectActive)}
-                    onBlur={(e) => e.target.classList.remove(styles.selectActive)}
+                    onFocus={(e) => e.currentTarget.classList.add(styles.selectActive)}
+                    onBlur={(e) => e.currentTarget.classList.remove(styles.selectActive)}
                     required
                   >
                     <option value="">Select Status</option>
@@ -668,11 +845,22 @@ export default function Credila() {
                     <option value="Received Offer/Admit letter">Received Offer/Admit letter</option>
                     <option value="Yet to apply for the university">Yet to apply for the university</option>
                   </select>
-                  <p id="admitStatus-error" className={styles.error} style={{ display: "none" }}>Please select an admit status.</p>
+                  <p id="admitStatus-error" className={styles.error} style={{ display: "none" }}>
+                    Please select an admit status.
+                  </p>
                 </div>
+
                 <div className={styles.buttonGroup}>
-                  <button type="button" className={`${styles.prevButton} ${styles.buttonHover}`} onClick={handlePrev}>Previous</button>
-                  <button type="submit" className={`${styles.submitButton} ${styles.buttonHover}`}>Submit</button>
+                  <button
+                    type="button"
+                    className={`${styles.prevButton} ${styles.buttonHover}`}
+                    onClick={handlePrev}
+                  >
+                    Previous
+                  </button>
+                  <button type="submit" className={`${styles.submitButton} ${styles.buttonHover}`}>
+                    Submit
+                  </button>
                 </div>
               </div>
             </form>
@@ -691,17 +879,17 @@ export default function Credila() {
               <h3 className={styles.footerTitle}>Stay Connected</h3>
               <div className={styles.socialLinks}>
                 <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="Facebook">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
                   </svg>
                 </a>
                 <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="Twitter">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
                   </svg>
                 </a>
                 <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="LinkedIn">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z" />
                   </svg>
                 </a>
@@ -710,8 +898,17 @@ export default function Credila() {
             <div>
               <h3 className={styles.footerTitle}>Newsletter</h3>
               <form className={styles.newsletterForm}>
-                <input type="email" placeholder="Enter your email" className={`${styles.newsletterInput} ${styles.inputFocus}`} aria-label="Newsletter email" onFocus={(e) => e.target.classList.add(styles.inputActive)} onBlur={(e) => e.target.classList.remove(styles.inputActive)} />
-                <button type="submit" className={`${styles.newsletterButton} ${styles.buttonHover}`}>Subscribe</button>
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className={`${styles.newsletterInput} ${styles.inputFocus}`}
+                  aria-label="Newsletter email"
+                  onFocus={(e) => e.currentTarget.classList.add(styles.inputActive)}
+                  onBlur={(e) => e.currentTarget.classList.remove(styles.inputActive)}
+                />
+                <button type="submit" className={`${styles.newsletterButton} ${styles.buttonHover}`}>
+                  Subscribe
+                </button>
               </form>
             </div>
           </div>
