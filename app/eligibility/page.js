@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Head from 'next/head';
+import Script from 'next/script';
 import { createClient } from '@supabase/supabase-js';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from '../../styles/Eligibility.module.css';
@@ -60,7 +62,6 @@ export default function Eligibility() {
     { name: 'Earnest', logo: '/images/earnest.png', url: '/earnest' },
     { name: 'Sallie Mae', logo: '/images/salliemae.png', url: '/salliemae' },
     { name: 'Ascent', logo: '/images/ascent.png', url: '/ascent' },
-  
   ];
 
   const years = [2022, 2023, 2024, 2025, 2026];
@@ -225,7 +226,7 @@ export default function Eligibility() {
         <h2 className="text-3xl font-semibold text-gray-800 mb-4">You’re Eligible! 🎉</h2>
         <div className={styles.resultCard}>
           <p className="text-gray-700 text-lg mb-3"><strong>Loan Type:</strong> {result.loanType}</p>
-          <p className="text-gray-700 text-lg mb-3"><strong>Amount:</strong> INR {formData.loanAmount.toLocaleString()}</p>
+          <p className="text-gray-700 text-lg mb-3"><strong>Amount:</strong> INR {Number(formData.loanAmount || 0).toLocaleString()}</p>
           <p className="text-gray-700 text-lg mb-3"><strong>Interest Rate:</strong> {result.interestRate}</p>
           <p className="text-gray-700 text-lg"><strong>Repayment:</strong> {result.repayment}</p>
         </div>
@@ -235,24 +236,53 @@ export default function Eligibility() {
 
   return (
     <>
+      {/* ======= SEO / OG / Twitter ======= */}
+      <Head>
+        <title>Check Education Loan Eligibility | StudySahara</title>
+        <meta
+          name="description"
+          content="Find your education loan eligibility in minutes. See collateral/co-applicant requirements, minimum scores, and documents. Get guidance and faster approvals."
+        />
+        <link rel="canonical" href="https://www.studysahara.com/eligibility" />
+        <meta name="robots" content="index, follow" />
+
+        {/* Open Graph */}
+        <meta property="og:title" content="Check Education Loan Eligibility | StudySahara" />
+        <meta property="og:description" content="Check your study abroad loan eligibility and get tailored options with or without collateral." />
+        <meta property="og:url" content="https://www.studysahara.com/eligibility" />
+        <meta property="og:site_name" content="StudySahara" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://www.studysahara.com/images/og-banner.jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="StudySahara – Education Loans for Students" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Check Education Loan Eligibility | StudySahara" />
+        <meta name="twitter:description" content="Find your eligibility in minutes—get lender-ready with our guidance." />
+        <meta name="twitter:image" content="https://www.studysahara.com/images/og-banner.jpg" />
+      </Head>
+
       {isSuccess && <Confetti recycle={false} numberOfPieces={200} colors={['#14b8a6', '#f97316', '#3b82f6']} />}
       {isLoading && (
         <div className={styles.loadingOverlay}>
           <div className="animate-spin h-12 w-12 border-4 border-teal-600 border-t-transparent rounded-full"></div>
         </div>
       )}
+
       <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
         <div className={styles.container}>
           <Link href="/" className={styles.logo}>
-              <Image
-                src="/images/logo.png"
-                alt="StudySahara Logo"
-                width={40}
-                height={48}
-                className={styles.logoImage}
-              />
-              <h1 className={styles.logoText}>StudySahara</h1>
-            </Link>
+            <Image
+              src="/images/logo.png"
+              alt="StudySahara Logo"
+              width={40}
+              height={48}
+              className={styles.logoImage}
+            />
+            <h1 className={styles.logoText}>StudySahara</h1>
+          </Link>
           <div className={`${styles.hamburger} ${isMenuOpen ? styles.open : ''}`} onClick={toggleMenu}>
             <span></span>
             <span></span>
@@ -264,8 +294,8 @@ export default function Eligibility() {
                 Loan  Options
               </a>
               <ul className={`${styles['dropdown-menu']} ${isLoanDropdownOpen ? styles.show : ''}`}>
-                <li><Link href="/no-co-applicant-and-no-collateral">No Co-Applicant & No Collateral</Link></li>
-                <li><Link href="/co-applicant-and-no-collateral">Co-Applicant & No Collateral</Link></li>
+                <li><Link href="/no-co-applicant-and-no-collateral">No Co-Applicant &amp; No Collateral</Link></li>
+                <li><Link href="/co-applicant-and-no-collateral">Co-Applicant &amp; No Collateral</Link></li>
                 <li><Link href="/co-applicant-and-collateral">Co-Applicant and Collateral</Link></li>
                 <li><Link href="/us-co-applicant">US Co-Applicant</Link></li>
               </ul>
@@ -300,8 +330,8 @@ export default function Eligibility() {
               transition={{ duration: 0.5 }}
             >
               <div className={styles.formHeader}>
-                <h1 className="text-2xl font-semibold text-gray-800">Start Your Study Abroad Journey!</h1>
-                <p className="text-gray-600 mt-3">Check loan eligibility in a few simple steps.</p>
+                <h1 className="text-2xl font-semibold text-gray-800">Check Your Education Loan Eligibility</h1>
+                <p className="text-gray-600 mt-3">See if you qualify in minutes—no fees, no spam.</p>
               </div>
               <button
                 onClick={() => setView('form')}
@@ -309,6 +339,11 @@ export default function Eligibility() {
               >
                 <i className="fas fa-rocket mr-2"></i> Get Started
               </button>
+              <p className="text-sm text-gray-500 mt-3">
+                Or explore options:{" "}
+                <Link href="/no-co-applicant-and-no-collateral" className="underline">No Collateral</Link>{" "}
+                · <Link href="/co-applicant-and-collateral" className="underline">With Collateral</Link>
+              </p>
             </motion.div>
           )}
 
@@ -798,6 +833,67 @@ export default function Eligibility() {
           )}
         </AnimatePresence>
       </main>
+
+      {/* ======= Schema: Breadcrumb + FAQ ======= */}
+      <Script id="breadcrumb-eligibility" type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.studysahara.com/" },
+            { "@type": "ListItem", "position": 2, "name": "Loan Eligibility", "item": "https://www.studysahara.com/eligibility" }
+          ]
+        })}
+      </Script>
+
+      <Script id="faq-eligibility" type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What affects my education loan eligibility?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Typical factors include your admit/course/country, co-applicant income, credit history, collateral (if any), and requested loan amount."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I get a loan without collateral?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Several lenders offer unsecured loans based on your profile and university/course. We’ll match you to the best options."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do I need a co-applicant?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "It’s often preferred for unsecured loans in India. If required, we’ll suggest the strongest co-applicant profile and alternatives."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How fast can I get approved?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "With complete documents, many cases see approvals in 5–10 working days. Timelines vary by lender and profile."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do you charge any fees?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No. StudySahara’s guidance is free. We also help you access discounted processing fees where available."
+              }
+            }
+          ]
+        })}
+      </Script>
 
       <footer className={styles.footer}>
         <div className={styles.container}>
