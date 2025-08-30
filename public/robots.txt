@@ -4,3 +4,6 @@ Allow: /
 
 # Host
 Host: https://www.studysahara.com
+
+# Sitemaps
+Sitemap: https://www.studysahara.com/sitemap.xml

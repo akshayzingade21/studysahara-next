@@ -27,7 +27,7 @@ module.exports = {
               '/co-applicant-and-no-collateral',
               '/us-co-applicant',
               '/co-applicant-and-collateral',
-              '/PNB', // keep uppercase
+              '/pnb', // keep uppercase
             ].includes(path)
           ? 0.9
           : config.priority,

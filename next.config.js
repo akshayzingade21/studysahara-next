@@ -12,14 +12,7 @@ const nextConfig = {
         destination: "https://www.studysahara.com/:path*",
         permanent: true,
       },
-      
-        {
-        source: "/pnb",
-        has: [{ type: "host", value: "www.studysahara.com" }],
-        destination: "https://www.studysahara.com/PNB",
-        permanent: true,
-      },
-      
+
       // ---- Your existing redirects
       { source: "/index.html", destination: "/", permanent: true },
       { source: "/icici-bank", destination: "/icicibank", permanent: true },
@@ -27,7 +20,7 @@ const nextConfig = {
       { source: "/avanse-financial-services", destination: "/avanse", permanent: true },
       { source: "/auxilo-finserv", destination: "/auxilo", permanent: true },
       { source: "/union-bank", destination: "/unionbank", permanent: true },
-      { source: "/punjab-national-bank", destination: "/PNB", permanent: true }, // lowercased
+      { source: "/punjab-national-bank", destination: "/pnb", permanent: true }, // lowercased
       { source: "/idfc-first-bank", destination: "/idfc", permanent: true },
       { source: "/yes-bank", destination: "/yesbank", permanent: true },
       { source: "/incred-finance", destination: "/incred", permanent: true },

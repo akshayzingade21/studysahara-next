@@ -29,7 +29,7 @@ export default function Home() {
     { name: 'SBI', logo: '/images/sbi.png', url: '/sbi' },
     { name: 'Credila', logo: '/images/credila.png', url: '/credila' },
     { name: 'Union Bank', logo: '/images/unionbank.png', url: '/unionbank' },
-    { name: 'PNB', logo: '/images/pnb.png', url: '/PNB' },
+    { name: 'PNB', logo: '/images/pnb.png', url: '/pnb' },
     { name: 'ICICI Bank', logo: '/images/icicibank.png', url: '/icicibank' },
     { name: 'Avanse', logo: '/images/avanse.png', url: '/avanse' },
     { name: 'IDFC First Bank', logo: '/images/idfc.png', url: '/idfc' },
