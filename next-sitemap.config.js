@@ -5,7 +5,7 @@ module.exports = {
 
   // Force a single sitemap file (no index)
   generateIndexSitemap: false,
-  sitemapSize: 50000, // big enough to avoid splitting
+  sitemapSize: 50000, // large enough to avoid splitting
 
   // Crawl hints
   changefreq: 'weekly',
@@ -14,12 +14,14 @@ module.exports = {
   exclude: ['/askbot', '/success'],
 
   transform: async (config, path) => {
-    const normalized = path;
+    // ✅ Always normalize to lowercase so /PNB never leaks into sitemap
+    const normalized = path.toLowerCase();
+
     return {
-      loc: `${config.siteUrl}${path}`,
-      changefreq: path === '/' ? 'weekly' : config.changefreq,
+      loc: `${config.siteUrl}${normalized}`,
+      changefreq: normalized === '/' ? 'weekly' : config.changefreq,
       priority:
-        path === '/'
+        normalized === '/'
           ? 1.0
           : [
               '/eligibility',
@@ -27,15 +29,14 @@ module.exports = {
               '/co-applicant-and-no-collateral',
               '/us-co-applicant',
               '/co-applicant-and-collateral',
-              '/pnb', // keep uppercase
-            ].includes(path)
+              '/pnb', // ✅ lowercase only
+            ].includes(normalized)
           ? 0.9
           : config.priority,
       lastmod: new Date().toISOString(),
       alternateRefs: [],
     };
   },
-
 
   additionalPaths: async () => [],
 };
