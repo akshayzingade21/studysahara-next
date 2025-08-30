@@ -1,4 +1,4 @@
-// app/pnb/page.js
+// app/PNB/page.js
 "use client";
 
 import { useState, useEffect } from "react";
@@ -196,7 +196,7 @@ export default function PNB() {
       intake: `${formData.intakeMonth} ${formData.intakeYear}`,
       admit_status: formData.admitStatus,
       created_at: new Date().toISOString(),
-      source_url: "/pnb",
+      source_url: "/PNB",
     };
 
     if (await submitToSupabase(data)) {
@@ -216,7 +216,7 @@ export default function PNB() {
           name="keywords"
           content="PNB education loan, Punjab National Bank study loan, PNB abroad loan, PNB student loan, PNB education loan interest rate"
         />
-        <link rel="canonical" href="https://www.studysahara.com/pnb" />
+        <link rel="canonical" href="https://www.studysahara.com/PNB" />
         <meta name="robots" content="index, follow" />
         <meta name="author" content="StudySahara" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -314,7 +314,7 @@ export default function PNB() {
               <div className={styles.heroImage}>
                 <div className={styles.imageWrapper}>
                   <Image
-                    src="/images/pnb.png"
+                    src="/images/PNB.png"
                     alt="PNB Logo"
                     width={170}
                     height={110}
@@ -608,13 +608,13 @@ export default function PNB() {
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
-            aria-labelledby="pnb-modal-title"
+            aria-labelledby="PNB-modal-title"
           >
             <div
               className={styles.progressBar}
               style={{ width: `${progress}%`, background: "#2b6cb0" }}
             ></div>
-            <h2 id="pnb-modal-title" className={styles.modalTitle}>
+            <h2 id="PNB-modal-title" className={styles.modalTitle}>
               PNB Education Loan Application
             </h2>
 
