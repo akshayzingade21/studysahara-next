@@ -171,25 +171,6 @@ export default function Home() {
 
   return (
     <>
-      <Head>
-  <title>Study Abroad Education Loans for Indian Students | StudySahara</title>
-  <meta
-    name="description"
-    content="Compare education loans for USA, UK, Germany, Canada and more. Free eligibility check, clear guidance, and faster approvals with trusted lenders."
-  />
-  <link rel="canonical" href="https://studysahara.com/" />
-  <meta name="robots" content="index, follow" />
-
-  {/* Open Graph */}
-  <meta property="og:title" content="Study Abroad Education Loans for Indian Students | StudySahara" />
-  <meta property="og:description" content="Compare options with or without collateral and co-applicant. Free eligibility check and expert help." />
-  <meta property="og:url" content="https://studysahara.com/" />
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="StudySahara" />
-  <meta property="og:image" content="https://studysahara.com/og-banner.jpg" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-</Head>
 
       <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
         <div className={styles.container}>

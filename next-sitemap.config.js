@@ -14,7 +14,7 @@ module.exports = {
   exclude: ['/askbot', '/success'],
 
   transform: async (config, path) => {
-    const normalized = path.replace('/PNB', '/pnb');
+    const normalized = path;
     return {
       loc: `${config.siteUrl}${path}`,
       changefreq: path === '/' ? 'weekly' : config.changefreq,

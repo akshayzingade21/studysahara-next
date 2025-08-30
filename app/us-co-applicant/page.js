@@ -259,7 +259,7 @@ export default function LoanOptionUS() {
           <div className={styles.footerContent}>
             <div className={styles.footerSection}>
               <h3>Contact Us</h3>
-              <p>Email: support@studysahara.com</p>
+              <p>Email: hello@studysahara.com</p>
               <p>Address: No 51, 5th Floor, 5th Main Road, Above Alchemy Coffee Roasters, Bengaluru-560041</p>
             </div>
             <div className={styles.footerSection}>

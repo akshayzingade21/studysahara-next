@@ -223,7 +223,7 @@ transition: transform 0.3s ease;
 transform: scale(1.05);
 }
 
-.pnbImage {
+.PNBImage {
 width: 100%;
 height: auto;
 }
@@ -969,7 +969,7 @@ width: 100%;
 /* Mobile-specific optimizations */
 @media (max-width: 767px) {
   /* Adjust container padding for better spacing on small screens */
-  .pnbContainer {
+  .PNBContainer {
     padding: 0 10px;
   }
 
@@ -1045,7 +1045,7 @@ width: 100%;
     padding: 10px;
   }
 
-  .pnbImage {
+  .PNBImage {
     width: 90%;
   }
 

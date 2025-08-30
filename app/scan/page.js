@@ -20,7 +20,7 @@ export default function ScanPage() {
   const websiteUrl =
     "https://studysahara.com/?utm_source=qr&utm_medium=pamphlet&utm_campaign=expo2025";
   const whatsappUrl =
-    "https://wa.me/919741723972?text=Hi%2C%20I%20want%20education%20loan%20help%20for%20study%20abroad%20%5BExpo%202025%5D";
+  "https://wa.me/919741723972?text=Hi%2C%0AI%20want%20education%20loan%20assistance%20for%20study%20abroad";
 
   return (
     <main
