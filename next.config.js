@@ -1,11 +1,12 @@
 /** @type {import('next').NextConfig} */
+const isProd = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
+
 const nextConfig = {
-  // Keep clean URLs without trailing slash
   trailingSlash: false,
 
   async redirects() {
-    return [
-      // Host canonicalization: non-www -> www
+    const common = [
+      // Host canonicalization: non-www -> www (prod only via Vercel edge)
       {
         source: "/:path*",
         has: [{ type: "host", value: "studysahara.com" }],
@@ -13,14 +14,13 @@ const nextConfig = {
         permanent: true,
       },
 
-      // ---- Your existing redirects
       { source: "/index.html", destination: "/", permanent: true },
       { source: "/icici-bank", destination: "/icicibank", permanent: true },
       { source: "/axis-bank", destination: "/axisbank", permanent: true },
       { source: "/avanse-financial-services", destination: "/avanse", permanent: true },
       { source: "/auxilo-finserv", destination: "/auxilo", permanent: true },
       { source: "/union-bank", destination: "/unionbank", permanent: true },
-      { source: "/punjab-national-bank", destination: "/pnb", permanent: true }, // lowercased
+      { source: "/punjab-national-bank", destination: "/pnb", permanent: true },
       { source: "/idfc-first-bank", destination: "/idfc", permanent: true },
       { source: "/yes-bank", destination: "/yesbank", permanent: true },
       { source: "/incred-finance", destination: "/incred", permanent: true },
@@ -36,6 +36,19 @@ const nextConfig = {
       { source: "/check-loan-eligibility", destination: "/eligibility", permanent: true },
       { source: "/our-company-studysahara", destination: "/ourcompany", permanent: true },
     ];
+
+    // ✅ Only in production: 301 redirect /PNB -> /pnb (canonical)
+    const prodOnly = isProd ? [{ source: "/PNB", destination: "/pnb", permanent: true }] : [];
+
+    return [...prodOnly, ...common];
+  },
+
+  async rewrites() {
+    // ✅ Only in development: silently rewrite /PNB -> /pnb
+    if (!isProd) {
+      return [{ source: "/PNB", destination: "/pnb" }];
+    }
+    return [];
   },
 };
 
