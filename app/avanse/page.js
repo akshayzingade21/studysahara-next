@@ -1,3 +1,4 @@
+// app/avanse/page.js
 "use client";
 
 import { useState, useEffect } from "react";
@@ -13,6 +14,9 @@ const supabase = createClient(
 );
 
 export default function Avanse() {
+  const CANONICAL = "https://www.studysahara.com/avanse";
+  const OG_IMAGE = "https://www.studysahara.com/og/avanse.jpg";
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formStep, setFormStep] = useState(1);
@@ -48,9 +52,7 @@ export default function Avanse() {
     return () => window.removeEventListener("resize", handleResize);
   }, [isSidebarOpen]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -80,11 +82,11 @@ export default function Avanse() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    console.log(`Updated ${name} to ${value}`);
     if (name === "university" && value.trim().length >= 3 && formData.country) {
-      const filtered = universitiesData[formData.country]?.filter((uni) =>
-        uni.toLowerCase().startsWith(value.trim().toLowerCase())
-      ) || [];
+      const filtered =
+        universitiesData[formData.country]?.filter((uni) =>
+          uni.toLowerCase().startsWith(value.trim().toLowerCase())
+        ) || [];
       setUniversityList(filtered);
     } else if (name === "country") {
       setFormData((prev) => ({ ...prev, university: "" }));
@@ -94,14 +96,14 @@ export default function Avanse() {
 
   const validateStep1 = () => {
     clearErrors();
-    let errors = [];
+    const errors = [];
     if (!formData.fullName.trim()) {
       errors.push("Full name is empty");
-      document.getElementById("fullName-error").classList.remove("hidden");
+      document.getElementById("fullName-error")?.classList.remove("hidden");
     }
     if (!formData.email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
       errors.push("Invalid email");
-      document.getElementById("email-error").classList.remove("hidden");
+      document.getElementById("email-error")?.classList.remove("hidden");
     }
     const fullContactNumber = formData.countryCode + formData.contactNumber;
     if (
@@ -110,7 +112,7 @@ export default function Avanse() {
       !fullContactNumber.match(/^\+\d{1,3}\d{10,12}$/)
     ) {
       errors.push("Invalid contact number");
-      document.getElementById("contactNumber-error").classList.remove("hidden");
+      document.getElementById("contactNumber-error")?.classList.remove("hidden");
     }
     if (errors.length > 0) {
       alert("Please correct errors in Step 1.");
@@ -121,26 +123,26 @@ export default function Avanse() {
 
   const validateStep2 = () => {
     clearErrors();
-    let errors = [];
+    const errors = [];
     if (!formData.country) {
       errors.push("Country not selected");
-      document.getElementById("country-error").classList.remove("hidden");
+      document.getElementById("country-error")?.classList.remove("hidden");
     }
     if (!formData.university.trim()) {
       errors.push("University not specified");
-      document.getElementById("university-error").classList.remove("hidden");
+      document.getElementById("university-error")?.classList.remove("hidden");
     }
     if (!formData.course.trim()) {
       errors.push("Course not specified");
-      document.getElementById("course-error").classList.remove("hidden");
+      document.getElementById("course-error")?.classList.remove("hidden");
     }
     if (!formData.intakeMonth || !formData.intakeYear) {
       errors.push("Intake not selected");
-      document.getElementById("intake-error").classList.remove("hidden");
+      document.getElementById("intake-error")?.classList.remove("hidden");
     }
     if (!formData.admitStatus) {
       errors.push("Admit status not selected");
-      document.getElementById("admitStatus-error").classList.remove("hidden");
+      document.getElementById("admitStatus-error")?.classList.remove("hidden");
     }
     if (errors.length > 0) {
       alert("Please correct errors in Step 2.");
@@ -171,9 +173,7 @@ export default function Avanse() {
 
   const submitToSupabase = async (data) => {
     try {
-      const response = await supabase
-        .from("student_applications")
-        .insert([data]);
+      const response = await supabase.from("student_applications").insert([data]);
       return response.status === 201;
     } catch (error) {
       console.error("Supabase fetch error:", error.message);
@@ -196,7 +196,7 @@ export default function Avanse() {
       intake: `${formData.intakeMonth} ${formData.intakeYear}`,
       admit_status: formData.admitStatus,
       created_at: new Date().toISOString(),
-      source_url: "/Avanse",
+      source_url: "/avanse",
     };
 
     if (await submitToSupabase(data)) {
@@ -210,24 +210,130 @@ export default function Avanse() {
       setProgress(100);
     }
   };
-
   const handlePrev = () => {
     setFormStep(1);
     setProgress(50);
   };
 
+  // -------- JSON-LD --------
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.studysahara.com" },
+      { "@type": "ListItem", position: 2, name: "Avanse Education Loan", item: CANONICAL },
+    ],
+  };
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What is the maximum Avanse education loan amount?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Up to ₹1.2 crore without collateral; higher amounts available with acceptable security, depending on profile and course.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Is collateral required for Avanse education loans?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Collateral is not required up to ₹1.2 crore. For higher amounts, property or other security may be needed.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What is the repayment period?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Repayment tenure can be up to 15 years, with a moratorium of course duration plus ~1 year or until employment.",
+        },
+      },
+    ],
+  };
+
+  const loanJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LoanOrCredit",
+    name: "Avanse Education Loan",
+    url: CANONICAL,
+    provider: { "@type": "FinancialService", name: "Avanse Financial Services" },
+    areaServed: "IN",
+    loanType: "EducationLoan",
+    interestRate: {
+      "@type": "QuantitativeValue",
+      minValue: 10.5,
+      maxValue: 14.5,
+      unitText: "PERCENT",
+    },
+    offers: {
+      "@type": "Offer",
+      availability: "https://schema.org/InStock",
+      url: CANONICAL,
+      priceCurrency: "INR",
+      price: "0",
+    },
+  };
+
   return (
     <>
       <Head>
-        <title>Avanse Education Loan - StudySahara</title>
-        <meta name="description" content="Achieve your global education goals with Avanse Financial Services’ tailored loan solutions, offering 100% financing and flexible repayment." />
-        <meta name="keywords" content="Avanse education loan, study abroad loan, education financing, StudySahara, loan without collateral" />
+        {/* Primary SEO */}
+        <title>Avanse Education Loan | StudySahara</title>
+        <meta
+          name="description"
+          content="Avanse study-abroad loans with up to 100% funding, quick processing, and flexible repayment. Compare options and apply with free guidance."
+        />
+        <meta
+          name="keywords"
+          content="Avanse education loan, Avanse study loan, education financing, unsecured student loan, StudySahara"
+        />
         <meta name="robots" content="index, follow" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta charSet="UTF-8" />
+        <link rel="canonical" href={CANONICAL} />
         <meta name="author" content="StudySahara" />
-        <link rel="canonical" href="https://www.studysahara.com/avanse" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charSet="UTF-8" />
+
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Avanse Education Loan | StudySahara" />
+        <meta
+          property="og:description"
+          content="Get Avanse education loans (unsecured up to ₹1.2 crore). Check eligibility, documents, rates & apply with expert help."
+        />
+        <meta property="og:url" content={CANONICAL} />
+        <meta property="og:site_name" content="StudySahara" />
+        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Avanse Education Loan - StudySahara" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Avanse Education Loan | StudySahara" />
+        <meta
+          name="twitter:description"
+          content="Avanse loans for study in the US, UK, Canada, Germany & more. Unsecured options, fast processing."
+        />
+        <meta name="twitter:image" content={OG_IMAGE} />
+
+        {/* Performance: Preload logo & hero image */}
+        <link rel="preload" as="image" href="/images/logo.png" />
+        <link rel="preload" as="image" href="/images/avanse.png" />
+
+        {/* JSON-LD */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(loanJsonLd) }} />
       </Head>
+
       <div className={styles.avanseContainer}>
         <header className={styles.header}>
           <div className={styles.headerContent}>
@@ -235,12 +341,12 @@ export default function Avanse() {
               <Image src="/images/logo.png" alt="StudySahara Logo" width={40} height={48} className={styles.logoImage} />
               <span className={styles.logoText}>StudySahara</span>
             </Link>
-           <Link href="/" className={styles.navLink}>
-                  <svg className={styles.homeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                </Link>
-                </div>
+            <Link href="/" className={styles.navLink} aria-label="Go to home">
+              <svg className={styles.homeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </Link>
+          </div>
         </header>
 
         <main className={styles.main}>
@@ -259,11 +365,11 @@ export default function Avanse() {
                 <div className={styles.imageWrapper}>
                   <Image
                     src="/images/avanse.png"
-                    alt="Avanse Logo"
+                    alt="Avanse Financial Services logo"
                     width={180}
                     height={180}
                     className={styles.avanseImage}
-                    onError={(e) => (e.target.src = "/images/avanse.png")}
+                    priority
                   />
                 </div>
               </div>
@@ -290,19 +396,22 @@ export default function Avanse() {
               <section id="overview" className={`${styles.section} ${styles.fadeInUp}`}>
                 <h2 className={styles.sectionTitle}>Overview</h2>
                 <p className={styles.sectionText}>
-                  Avanse Financial Services is a leading education-focused NBFC in India, providing loans up to ₹75 lakh without collateral and higher with security for studies in India and abroad. Supporting over 3,400 institutions across 40 countries, Avanse offers 100% financing, pre-visa disbursement, and score-based benefits for a seamless loan experience.
+                  Avanse Financial Services is a leading education-focused NBFC in India, providing loans up to ₹1.2 crore without
+                  collateral and higher with security for studies in India and abroad. Supporting 3,400+ institutions across 40+
+                  countries, Avanse offers 100% financing, pre-visa disbursement, and score-based benefits for a seamless loan
+                  experience.
                 </p>
               </section>
 
               <section id="features" className={`${styles.section} ${styles.fadeInUp}`}>
                 <h2 className={styles.sectionTitle}>Key Features & Benefits</h2>
                 <ul className={styles.featuresList}>
-                  <li className={styles.featureItem}><span>✔</span> Loan Amount: Up to ₹75 lakh unsecured; higher with collateral.</li>
-                  <li className={styles.featureItem}><span>✔</span> Moratorium: Course duration + 6 months or until employment.</li>
+                  <li className={styles.featureItem}><span>✔</span> Loan Amount: Up to ₹1.2 crore unsecured; higher with collateral.</li>
+                  <li className={styles.featureItem}><span>✔</span> Moratorium: Course duration + 1 year or until employment (whichever is early).</li>
                   <li className={styles.featureItem}><span>✔</span> Repayment Tenure: Up to 15 years, flexible plans.</li>
                   <li className={styles.featureItem}><span>✔</span> Collateral: Optional; unsecured loans based on profile.</li>
-                  <li className={styles.featureItem}><span>✔</span> Rates: 11.5%–14.5% p.a., lower for secured loans.</li>
-                  <li className={styles.featureItem}><span>✔</span> Tax Benefits: Interest deductible under Section 80E.</li>
+                  <li className={styles.featureItem}><span>✔</span> Rates: starting from ~9.5%.</li>
+                  <li className={styles.featureItem}><span>✔</span> Tax Benefits: Interest deductible under Section 80C.</li>
                   <li className={styles.featureItem}><span>✔</span> Pre-visa Disbursement: Funds before visa for planning ease.</li>
                 </ul>
               </section>
@@ -314,15 +423,15 @@ export default function Avanse() {
                     <h3 className={styles.subTitle}>Student:</h3>
                     <ul className={styles.eligibilityList}>
                       <li>Indian citizen, minimum 18 years old.</li>
-                      <li>Confirmed admission to recognized technical/professional courses in India/abroad.</li>
-                      <li>Strong academic record and entrance exam scores (e.g., GRE, GMAT, TOEFL).</li>
+                      <li>Confirmed admission to recognized technical/professional courses.</li>
+                      <li>Solid academics and relevant test scores (GRE/GMAT/TOEFL/IELTS, as applicable).</li>
                     </ul>
                   </div>
                   <div>
                     <h3 className={styles.subTitle}>Co-applicant:</h3>
                     <ul className={styles.eligibilityList}>
                       <li>Indian citizen (parent, sibling, spouse, or extended family).</li>
-                      <li>Stable income and good credit history.</li>
+                      <li>Stable income source (salaried/pensioner, self-employed, rental, agricultural, etc.)</li>
                     </ul>
                   </div>
                 </div>
@@ -344,8 +453,8 @@ export default function Avanse() {
                     <h3 className={styles.subTitle}>Co-applicant:</h3>
                     <ul className={styles.documentsList}>
                       <li>KYC (Aadhaar, PAN, Passport).</li>
-                      <li>Income proof (ITR, salary slips, 6 months’ bank statements).</li>
-                      <li>Address proof (utility bill, Aadhaar).</li>
+                      <li>Income proof documents.</li>
+                      <li>Address proof (any utility billor rent agreement).</li>
                     </ul>
                   </div>
                   <div>
@@ -362,7 +471,7 @@ export default function Avanse() {
               <section id="interest-rates" className={`${styles.section} ${styles.fadeInUp}`}>
                 <h2 className={styles.sectionTitle}>Interest Rates & Charges</h2>
                 <p className={styles.sectionText}>
-                  Avanse offers competitive floating interest rates tailored to the student’s academic profile and co-applicant’s financial strength.
+                  Avanse offers competitive floating rates tailored to the student’s academic profile and co-applicant’s financial strength.
                 </p>
                 <div className={styles.tableContainer}>
                   <table className={styles.table}>
@@ -376,23 +485,21 @@ export default function Avanse() {
                     </thead>
                     <tbody>
                       <tr>
-                        <td>Unsecured (up to ₹75 lakh)</td>
-                        <td>~11.5% - 14.5%</td>
-                        <td>0.5%–2% + GST</td>
+                        <td>Unsecured (up to ₹1.2 crore)</td>
+                        <td>~10.5%</td>
+                        <td>~1% of loan (often negotiable via StudySahara)</td>
                         <td>Not required</td>
                       </tr>
                       <tr>
                         <td>Secured (above ₹75 lakh)</td>
-                        <td>~10.5% - 13.5%</td>
-                        <td>0.5%–2% + GST</td>
+                        <td>~9.5%</td>
+                        <td>~1% of loan (often negotiable via StudySahara)</td>
                         <td>Required</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
-                <p className={styles.tableNote}>
-                  *Rates are indicative and vary based on profile. Contact Avanse for exact rates.
-                </p>
+                <p className={styles.tableNote}>*Rates are indicative and vary by profile.</p>
               </section>
 
               <section id="application-process" className={`${styles.section} ${styles.fadeInUp}`}>
@@ -420,7 +527,7 @@ export default function Avanse() {
                       What is the maximum loan amount from Avanse? <span id="faq1-icon" className={styles.faqIcon}>+</span>
                     </h3>
                     <p id="faq1-answer" className={styles.faqAnswer} style={{ display: "none" }}>
-                      Up to ₹75 lakh without collateral; higher amounts with collateral, based on course and profile.
+                      Up to ₹1.2 crore without collateral; higher amounts with collateral, based on course and profile.
                     </p>
                   </div>
                   <div className={styles.faqItem}>
@@ -428,7 +535,7 @@ export default function Avanse() {
                       Is collateral required? <span id="faq2-icon" className={styles.faqIcon}>+</span>
                     </h3>
                     <p id="faq2-answer" className={styles.faqAnswer} style={{ display: "none" }}>
-                      Not required for loans up to ₹75 lakh; required for higher amounts.
+                      Not required for loans up to ₹1.2 crore; required for higher amounts.
                     </p>
                   </div>
                   <div className={styles.faqItem}>
@@ -436,7 +543,7 @@ export default function Avanse() {
                       What is the repayment period? <span id="faq3-icon" className={styles.faqIcon}>+</span>
                     </h3>
                     <p id="faq3-answer" className={styles.faqAnswer} style={{ display: "none" }}>
-                      Up to 15 years, with a moratorium of course duration + 6 months or until employment.
+                      Up to 15 years, with a moratorium of course duration + 1 year or until employment (whivhever is early).
                     </p>
                   </div>
                 </div>
@@ -445,7 +552,11 @@ export default function Avanse() {
           </div>
         </main>
 
-        <div id="applicationModal" className={`${styles.modalOverlay} ${isModalOpen ? styles.show : ""}`} onClick={closeModal}>
+        <div
+          id="applicationModal"
+          className={`${styles.modalOverlay} ${isModalOpen ? styles.show : ""}`}
+          onClick={closeModal}
+        >
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div className={styles.progressBar} style={{ width: `${progress}%`, background: "#008080" }}></div>
             <h2 className={styles.modalTitle}>Avanse Education Loan Application</h2>
@@ -522,13 +633,16 @@ export default function Avanse() {
                       required
                     />
                   </div>
-                  <p id="contactNumber-error" className={styles.error} style={{ display: "none" }}>Please enter a valid contact number (10-12 digits).</p>
+                  <p id="contactNumber-error" className={styles.error} style={{ display: "none" }}>
+                    Please enter a valid contact number (10-12 digits).
+                  </p>
                 </div>
                 <div className={styles.buttonGroup}>
                   <button type="button" className={`${styles.cancelButton} ${styles.buttonHover}`} onClick={closeModal}>Cancel</button>
                   <button type="button" className={`${styles.nextButton} ${styles.buttonHover}`} onClick={handleNext}>Next</button>
                 </div>
               </div>
+
               <div id="formStep2" className={`${styles.formStep} ${formStep === 2 ? "" : styles.hidden}`}>
                 <h3 className={styles.stepTitle}>Education Details</h3>
                 <div className={styles.formGroup}>
@@ -619,18 +733,12 @@ export default function Avanse() {
                       required
                     >
                       <option value="">Select Month</option>
-                      <option value="January">January</option>
-                      <option value="February">February</option>
-                      <option value="March">March</option>
-                      <option value="April">April</option>
-                      <option value="May">May</option>
-                      <option value="June">June</option>
-                      <option value="July">July</option>
-                      <option value="August">August</option>
-                      <option value="September">September</option>
-                      <option value="October">October</option>
-                      <option value="November">November</option>
-                      <option value="December">December</option>
+                      {[
+                        "January","February","March","April","May","June",
+                        "July","August","September","October","November","December",
+                      ].map((m) => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
                     </select>
                     <select
                       id="intakeYear"
@@ -643,11 +751,9 @@ export default function Avanse() {
                       required
                     >
                       <option value="">Select Year</option>
-                      <option value="2023">2023</option>
-                      <option value="2024">2024</option>
-                      <option value="2025">2025</option>
-                      <option value="2026">2026</option>
-                      <option value="2027">2027</option>
+                      {["2023","2024","2025","2026","2027"].map((y) => (
+                        <option key={y} value={y}>{y}</option>
+                      ))}
                     </select>
                   </div>
                   <p id="intake-error" className={styles.error} style={{ display: "none" }}>Please select an intake period.</p>
@@ -692,17 +798,17 @@ export default function Avanse() {
               <h3 className={styles.footerTitle}>Stay Connected</h3>
               <div className={styles.socialLinks}>
                 <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="Facebook">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
                   </svg>
                 </a>
                 <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="Twitter">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
                   </svg>
                 </a>
                 <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="LinkedIn">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z" />
                   </svg>
                 </a>
@@ -711,7 +817,14 @@ export default function Avanse() {
             <div>
               <h3 className={styles.footerTitle}>Newsletter</h3>
               <form className={styles.newsletterForm}>
-                <input type="email" placeholder="Enter your email" className={`${styles.newsletterInput} ${styles.inputFocus}`} aria-label="Newsletter email" onFocus={(e) => e.target.classList.add(styles.inputActive)} onBlur={(e) => e.target.classList.remove(styles.inputActive)} />
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className={`${styles.newsletterInput} ${styles.inputFocus}`}
+                  aria-label="Newsletter email"
+                  onFocus={(e) => e.target.classList.add(styles.inputActive)}
+                  onBlur={(e) => e.target.classList.remove(styles.inputActive)}
+                />
                 <button type="submit" className={`${styles.newsletterButton} ${styles.buttonHover}`}>Subscribe</button>
               </form>
             </div>

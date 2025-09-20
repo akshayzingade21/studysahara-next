@@ -296,49 +296,79 @@ export default function Credila() {
   // ------- Render -------
   return (
     <>
-      <Head>
-        {/* Primary */}
-        <title>Credila Education Loan Without Collateral | StudySahara</title>
-        <meta
-          name="description"
-          content="Get HDFC Credila loans for MS, MBA & UG abroad. Loans without collateral or co-applicant available. Fast processing, expert support."
-        />
-        <meta
-          name="keywords"
-          content="HDFC Credila loan, HDFC education loan, no collateral loan, study loan without co-applicant, Credila loan for USA, HDFC student loan abroad"
-        />
-        <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://www.studysahara.com/credila" />
+     <Head>
+  {/* Primary */}
+  <title>Credila Education Loan Without Collateral | StudySahara</title>
+  <meta
+    name="description"
+    content="Get HDFC Credila loans for MS, MBA & UG abroad. Loans without collateral or co-applicant available. Fast processing, expert support."
+  />
+  <meta
+    name="keywords"
+    content="HDFC Credila loan, HDFC education loan, no collateral loan, study loan without co-applicant, Credila loan for USA, HDFC student loan abroad"
+  />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://www.studysahara.com/credila" />
 
-        {/* Open Graph */}
-        <meta property="og:title" content="Credila Education Loan Without Collateral | StudySahara" />
-        <meta
-          property="og:description"
-          content="Tailored Credila education loans for study abroad. Fast approvals, unsecured options, and expert help."
-        />
-        <meta property="og:url" content="https://www.studysahara.com/credila" />
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="StudySahara" />
-        <meta property="og:image" content="https://www.studysahara.com/og/credila.jpg" />
-        <meta property="og:image:alt" content="Credila Education Loan - StudySahara" />
+  {/* Open Graph */}
+  <meta property="og:title" content="Credila Education Loan Without Collateral | StudySahara" />
+  <meta
+    property="og:description"
+    content="Tailored Credila education loans for study abroad. Fast approvals, unsecured options, and expert help."
+  />
+  <meta property="og:url" content="https://www.studysahara.com/credila" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="StudySahara" />
+  <meta property="og:image" content="https://www.studysahara.com/og/credila.jpg" />
+  <meta property="og:image:alt" content="Credila Education Loan - StudySahara" />
 
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Credila Education Loan Without Collateral | StudySahara" />
-        <meta
-          name="twitter:description"
-          content="Tailored Credila education loans for study abroad. Fast approvals, unsecured options, and expert help."
-        />
-        <meta name="twitter:image" content="https://www.studysahara.com/og/credila.jpg" />
+  {/* Twitter */}
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Credila Education Loan Without Collateral | StudySahara" />
+  <meta
+    name="twitter:description"
+    content="Tailored Credila education loans for study abroad. Fast approvals, unsecured options, and expert help."
+  />
+  <meta name="twitter:image" content="https://www.studysahara.com/og/credila.jpg" />
 
-        {/* Preload logo for faster LCP */}
-        <link rel="preload" as="image" href="/images/logo.png" imagesrcset="/images/logo.png" />
+  {/* Preload logo for faster LCP */}
+  <link rel="preload" as="image" href="/images/logo.png" imagesrcset="/images/logo.png" />
 
-        {/* JSON-LD */}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
-      </Head>
+  {/* JSON-LD (existing) */}
+  <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
+  <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+  <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+
+  {/* JSON-LD: LoanOrCredit (NEW) */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "LoanOrCredit",
+        name: "Credila Education Loan",
+        url: "https://www.studysahara.com/credila",
+        brand: "HDFC Credila Financial Services",
+        provider: { "@type": "BankOrCreditUnion", name: "HDFC Credila" },
+        areaServed: "IN",
+        loanType: "EducationLoan",
+        interestRate: {
+          "@type": "QuantitativeValue",
+          minValue: 9.5,
+          maxValue: 12.5,
+          unitText: "PERCENT",
+        },
+        offers: {
+          "@type": "Offer",
+          availability: "https://schema.org/InStock",
+          url: "https://www.studysahara.com/credila",
+          priceCurrency: "INR",
+          price: "0",
+        },
+      }),
+    }}
+  />
+</Head>
 
       <div className={styles.PNBContainer}>
         <header className={styles.header}>
@@ -421,7 +451,7 @@ export default function Credila() {
                   <li className={styles.featureItem}><span>✔</span> Moratorium: Course duration + 1 year or until employment, whichever is earlier.</li>
                   <li className={styles.featureItem}><span>✔</span> Repayment Tenure: Up to 12–15 years, flexible options.</li>
                   <li className={styles.featureItem}><span>✔</span> Collateral: Optional; non-collateral loans available based on profile.</li>
-                  <li className={styles.featureItem}><span>✔</span> Rates: 9.75%–12.5% p.a., lower for secured loans.</li>
+                  <li className={styles.featureItem}><span>✔</span> Rates: starting at 9.5%.</li>
                   <li className={styles.featureItem}><span>✔</span> Tax Benefits: Interest deductible under Section 80E for 8 years.</li>
                   <li className={styles.featureItem}><span>✔</span> Pre-approval: Loan sanction before admission for planning ease.</li>
                 </ul>
@@ -440,8 +470,8 @@ export default function Credila() {
                   <div>
                     <h3 className={styles.subTitle}>Co-applicant:</h3>
                     <ul className={styles.eligibilityList}>
-                      <li>Indian citizen (can be NRI): parent, sibling, spouse, or extended family.</li>
-                      <li>Stable income source (salaried/pensioner, self-employed, rental, agricultural, etc.).</li>
+                      <li>Indian citizen : parent, sibling, spouse, or extended family.</li>
+                      <li>Stable income source (salaried/pensioner, self-employed, rental, agricultural, etc.)</li>
                     </ul>
                   </div>
                 </div>
@@ -464,9 +494,7 @@ export default function Credila() {
                     <ul className={styles.documentsList}>
                       <li>KYC (PAN, Aadhaar)</li>
                       <li>
-                        Income proof (latest 6 months bank statement; salaried/pensioner: ITR/Form 16 & slips; self-employed:
-                        business proof like GST/MSME/Udyog Aadhaar; rental: agreement; agricultural: income certificate)
-                      </li>
+                        Income proof documents</li>
                       <li>Address proof (utility bill/rent agreement)</li>
                     </ul>
                   </div>
@@ -499,7 +527,7 @@ export default function Credila() {
                     <tbody>
                       <tr>
                         <td>Unsecured (up to ₹1 crore)</td>
-                        <td>Starting ~10%</td>
+                        <td>Starting ~10.75%</td>
                         <td>~1% of loan (often negotiable via StudySahara)</td>
                         <td>Not required</td>
                       </tr>

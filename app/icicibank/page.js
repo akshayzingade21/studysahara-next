@@ -1,3 +1,4 @@
+// app/icicibank/page.js
 "use client";
 
 import { useState, useEffect } from "react";
@@ -13,6 +14,9 @@ const supabase = createClient(
 );
 
 export default function IciciBank() {
+  const CANONICAL = "https://www.studysahara.com/icicibank";
+  const OG_IMAGE = "https://www.studysahara.com/og/icicibank.jpg";
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formStep, setFormStep] = useState(1);
@@ -48,9 +52,7 @@ export default function IciciBank() {
     return () => window.removeEventListener("resize", handleResize);
   }, [isSidebarOpen]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -80,11 +82,11 @@ export default function IciciBank() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    console.log(`Updated ${name} to ${value}`);
     if (name === "university" && value.trim().length >= 3 && formData.country) {
-      const filtered = universitiesData[formData.country]?.filter((uni) =>
-        uni.toLowerCase().startsWith(value.trim().toLowerCase())
-      ) || [];
+      const filtered =
+        universitiesData[formData.country]?.filter((uni) =>
+          uni.toLowerCase().startsWith(value.trim().toLowerCase())
+        ) || [];
       setUniversityList(filtered);
     } else if (name === "country") {
       setFormData((prev) => ({ ...prev, university: "" }));
@@ -97,11 +99,11 @@ export default function IciciBank() {
     let errors = [];
     if (!formData.fullName.trim()) {
       errors.push("Full name is empty");
-      document.getElementById("fullName-error").classList.remove("hidden");
+      document.getElementById("fullName-error")?.classList.remove("hidden");
     }
     if (!formData.email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
       errors.push("Invalid email");
-      document.getElementById("email-error").classList.remove("hidden");
+      document.getElementById("email-error")?.classList.remove("hidden");
     }
     const fullContactNumber = formData.countryCode + formData.contactNumber;
     if (
@@ -110,7 +112,7 @@ export default function IciciBank() {
       !fullContactNumber.match(/^\+\d{1,3}\d{10,12}$/)
     ) {
       errors.push("Invalid contact number");
-      document.getElementById("contactNumber-error").classList.remove("hidden");
+      document.getElementById("contactNumber-error")?.classList.remove("hidden");
     }
     if (errors.length > 0) {
       alert("Please correct errors in Step 1.");
@@ -124,23 +126,23 @@ export default function IciciBank() {
     let errors = [];
     if (!formData.country) {
       errors.push("Country not selected");
-      document.getElementById("country-error").classList.remove("hidden");
+      document.getElementById("country-error")?.classList.remove("hidden");
     }
     if (!formData.university.trim()) {
       errors.push("University not specified");
-      document.getElementById("university-error").classList.remove("hidden");
+      document.getElementById("university-error")?.classList.remove("hidden");
     }
     if (!formData.course.trim()) {
       errors.push("Course not specified");
-      document.getElementById("course-error").classList.remove("hidden");
+      document.getElementById("course-error")?.classList.remove("hidden");
     }
     if (!formData.intakeMonth || !formData.intakeYear) {
       errors.push("Intake not selected");
-      document.getElementById("intake-error").classList.remove("hidden");
+      document.getElementById("intake-error")?.classList.remove("hidden");
     }
     if (!formData.admitStatus) {
       errors.push("Admit status not selected");
-      document.getElementById("admitStatus-error").classList.remove("hidden");
+      document.getElementById("admitStatus-error")?.classList.remove("hidden");
     }
     if (errors.length > 0) {
       alert("Please correct errors in Step 2.");
@@ -171,9 +173,7 @@ export default function IciciBank() {
 
   const submitToSupabase = async (data) => {
     try {
-      const response = await supabase
-        .from("student_applications")
-        .insert([data]);
+      const response = await supabase.from("student_applications").insert([data]);
       return response.status === 201;
     } catch (error) {
       console.error("Supabase fetch error:", error.message);
@@ -196,7 +196,7 @@ export default function IciciBank() {
       intake: `${formData.intakeMonth} ${formData.intakeYear}`,
       admit_status: formData.admitStatus,
       created_at: new Date().toISOString(),
-      source_url: "/ICICIBank",
+      source_url: "/icicibank",
     };
 
     if (await submitToSupabase(data)) {
@@ -216,18 +216,125 @@ export default function IciciBank() {
     setProgress(50);
   };
 
+  // --------- JSON-LD (SEO) ----------
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.studysahara.com" },
+      { "@type": "ListItem", position: 2, name: "ICICI Bank Education Loan", item: CANONICAL },
+    ],
+  };
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What is the maximum ICICI Bank education loan amount?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Up to ₹1 crore for studies in India and up to ₹3 crore for studies abroad, depending on profile and eligibility.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Is collateral required for ICICI Bank education loans?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Collateral is not required for loans up to ₹1 crore for premier institutes; higher amounts may require security based on profile.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What is the repayment period and moratorium?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Repayment tenure can be up to 15 years, with a moratorium of course duration plus 12 months or 6 months post-employment.",
+        },
+      },
+    ],
+  };
+
+  const loanJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LoanOrCredit",
+    name: "ICICI Bank Education Loan",
+    url: CANONICAL,
+    provider: { "@type": "BankOrCreditUnion", name: "ICICI Bank" },
+    areaServed: "IN",
+    loanType: "EducationLoan",
+    interestRate: {
+      "@type": "QuantitativeValue",
+      minValue: 10.75,
+      maxValue: 13.0,
+      unitText: "PERCENT",
+    },
+    offers: {
+      "@type": "Offer",
+      availability: "https://schema.org/InStock",
+      url: CANONICAL,
+      priceCurrency: "INR",
+      price: "0",
+    },
+  };
+
   return (
     <>
       <Head>
-        <title>ICICI Bank Education Loan - StudySahara</title>
-        <meta name="description" content="Pursue your academic dreams with ICICI Bank’s education loans, offering up to ₹3 crore for international studies and flexible terms." />
-        <meta name="keywords" content="ICICI Bank education loan, study abroad loan, education financing, StudySahara, loan without collateral" />
+        {/* Primary */}
+        <title>ICICI Bank Education Loan | StudySahara</title>
+        <meta
+          name="description"
+          content="Pursue your academic dreams with ICICI Bank education loans—up to ₹3 crore for overseas studies, flexible repayment, and quick digital sanction."
+        />
+        <meta
+          name="keywords"
+          content="ICICI Bank education loan, study abroad loan, education financing, StudySahara, loan without collateral"
+        />
         <meta name="robots" content="index, follow" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta charSet="UTF-8" />
+        <link rel="canonical" href={CANONICAL} />
         <meta name="author" content="StudySahara" />
-         <link rel="canonical" href="https://www.studysahara.com/icicibank" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charSet="UTF-8" />
+
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="ICICI Bank Education Loan | StudySahara" />
+        <meta
+          property="og:description"
+          content="ICICI Bank education loans for India & abroad. Compare amounts, rates, and repayment—get free guidance from StudySahara."
+        />
+        <meta property="og:url" content={CANONICAL} />
+        <meta property="og:site_name" content="StudySahara" />
+        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="ICICI Bank Education Loan - StudySahara" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="ICICI Bank Education Loan | StudySahara" />
+        <meta
+          name="twitter:description"
+          content="ICICI Bank education loans with flexible repayment and fast digital sanction. Get free help to apply."
+        />
+        <meta name="twitter:image" content={OG_IMAGE} />
+
+        {/* Performance: Preload logo & hero */}
+        <link rel="preload" as="image" href="/images/logo.png" />
+        <link rel="preload" as="image" href="/images/icicibank.png" />
+
+        {/* JSON-LD */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(loanJsonLd) }} />
       </Head>
+
       <div className={styles.iciciContainer}>
         <header className={styles.header}>
           <div className={styles.headerContent}>
@@ -235,12 +342,12 @@ export default function IciciBank() {
               <Image src="/images/logo.png" alt="StudySahara Logo" width={40} height={48} className={styles.logoImage} />
               <span className={styles.logoText}>StudySahara</span>
             </Link>
-            <Link href="/" className={styles.navLink}>
-                  <svg className={styles.homeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                </Link>
-                </div>
+            <Link href="/" className={styles.navLink} aria-label="Go to home">
+              <svg className={styles.homeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </Link>
+          </div>
         </header>
 
         <main className={styles.main}>
@@ -249,8 +356,8 @@ export default function IciciBank() {
               <div className={styles.heroText}>
                 <h1 className={styles.heroTitle}>ICICI Bank Education Loan</h1>
                 <p className={styles.heroSubtitle}>
-                  Pursue your academic dreams with ICICI Bank’s education loans, offering
-                  up to ₹3 crore for international studies and flexible terms.
+                  Pursue your academic dreams with ICICI Bank’s education loans, offering up to ₹3 crore for international
+                  studies and flexible terms.
                 </p>
                 <button id="heroApplyBtn" className={styles.heroButton} onClick={openModal}>
                   Apply Now
@@ -264,7 +371,7 @@ export default function IciciBank() {
                     width={180}
                     height={180}
                     className={styles.iciciImage}
-                    onError={(e) => (e.target.src = "/images/icicibank.png")}
+                    priority
                   />
                 </div>
               </div>
@@ -291,7 +398,9 @@ export default function IciciBank() {
               <section id="overview" className={`${styles.section} ${styles.fadeInUp}`}>
                 <h2 className={styles.sectionTitle}>Overview</h2>
                 <p className={styles.sectionText}>
-                  ICICI Bank, a leading private-sector bank, offers education loans up to ₹3 crore for international studies and ₹1 crore for domestic studies. With a fully digital application process and no-collateral options, ICICI supports students globally.
+                  ICICI Bank, a leading private-sector bank, offers education loans up to ₹3 crore for international studies and
+                  ₹1 crore for domestic studies. With a fully digital application process and no-collateral options, ICICI supports
+                  students globally.
                 </p>
               </section>
 
@@ -391,9 +500,7 @@ export default function IciciBank() {
                     </tbody>
                   </table>
                 </div>
-                <p className={styles.tableNote}>
-                  *Rates vary based on profile. Contact ICICI Bank for exact rates.
-                </p>
+                <p className={styles.tableNote}>*Rates vary based on profile. Contact ICICI Bank for exact rates.</p>
               </section>
 
               <section id="application-process" className={`${styles.section} ${styles.fadeInUp}`}>
@@ -446,7 +553,11 @@ export default function IciciBank() {
           </div>
         </main>
 
-        <div id="applicationModal" className={`${styles.modalOverlay} ${isModalOpen ? styles.show : ""}`} onClick={closeModal}>
+        <div
+          id="applicationModal"
+          className={`${styles.modalOverlay} ${isModalOpen ? styles.show : ""}`}
+          onClick={closeModal}
+        >
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div className={styles.progressBar} style={{ width: `${progress}%`, background: "#008080" }}></div>
             <h2 className={styles.modalTitle}>ICICI Bank Education Loan Application</h2>
@@ -454,7 +565,9 @@ export default function IciciBank() {
               <div id="formStep1" className={`${styles.formStep} ${formStep === 1 ? "" : styles.hidden}`}>
                 <h3 className={styles.stepTitle}>Personal Details</h3>
                 <div className={styles.formGroup}>
-                  <label htmlFor="fullName" className={styles.label}>Full Name <span className={styles.required}>*</span></label>
+                  <label htmlFor="fullName" className={styles.label}>
+                    Full Name <span className={styles.required}>*</span>
+                  </label>
                   <input
                     type="text"
                     id="fullName"
@@ -467,10 +580,14 @@ export default function IciciBank() {
                     onBlur={(e) => e.target.classList.remove(styles.inputActive)}
                     required
                   />
-                  <p id="fullName-error" className={styles.error} style={{ display: "none" }}>Please enter your full name.</p>
+                  <p id="fullName-error" className={styles.error} style={{ display: "none" }}>
+                    Please enter your full name.
+                  </p>
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor="email" className={styles.label}>Email Address <span className={styles.required}>*</span></label>
+                  <label htmlFor="email" className={styles.label}>
+                    Email Address <span className={styles.required}>*</span>
+                  </label>
                   <input
                     type="email"
                     id="email"
@@ -483,10 +600,14 @@ export default function IciciBank() {
                     onBlur={(e) => e.target.classList.remove(styles.inputActive)}
                     required
                   />
-                  <p id="email-error" className={styles.error} style={{ display: "none" }}>Please enter a valid email.</p>
+                  <p id="email-error" className={styles.error} style={{ display: "none" }}>
+                    Please enter a valid email.
+                  </p>
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor="contactNumber" className={styles.label}>Contact Number <span className={styles.required}>*</span></label>
+                  <label htmlFor="contactNumber" className={styles.label}>
+                    Contact Number <span className={styles.required}>*</span>
+                  </label>
                   <div className={styles.phoneInput}>
                     <select
                       id="countryCode"
@@ -523,17 +644,26 @@ export default function IciciBank() {
                       required
                     />
                   </div>
-                  <p id="contactNumber-error" className={styles.error} style={{ display: "none" }}>Please enter a valid contact number (10-12 digits).</p>
+                  <p id="contactNumber-error" className={styles.error} style={{ display: "none" }}>
+                    Please enter a valid contact number (10-12 digits).
+                  </p>
                 </div>
                 <div className={styles.buttonGroup}>
-                  <button type="button" className={`${styles.cancelButton} ${styles.buttonHover}`} onClick={closeModal}>Cancel</button>
-                  <button type="button" className={`${styles.nextButton} ${styles.buttonHover}`} onClick={handleNext}>Next</button>
+                  <button type="button" className={`${styles.cancelButton} ${styles.buttonHover}`} onClick={closeModal}>
+                    Cancel
+                  </button>
+                  <button type="button" className={`${styles.nextButton} ${styles.buttonHover}`} onClick={handleNext}>
+                    Next
+                  </button>
                 </div>
               </div>
+
               <div id="formStep2" className={`${styles.formStep} ${formStep === 2 ? "" : styles.hidden}`}>
                 <h3 className={styles.stepTitle}>Education Details</h3>
                 <div className={styles.formGroup}>
-                  <label htmlFor="country" className={styles.label}>Country of Study <span className={styles.required}>*</span></label>
+                  <label htmlFor="country" className={styles.label}>
+                    Country of Study <span className={styles.required}>*</span>
+                  </label>
                   <select
                     id="country"
                     name="country"
@@ -556,10 +686,14 @@ export default function IciciBank() {
                     <option value="Dubai">Dubai</option>
                     <option value="Others">Others</option>
                   </select>
-                  <p id="country-error" className={styles.error} style={{ display: "none" }}>Please select a country.</p>
+                  <p id="country-error" className={styles.error} style={{ display: "none" }}>
+                    Please select a country.
+                  </p>
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor="university" className={styles.label}>University/College Name <span className={styles.required}>*</span></label>
+                  <label htmlFor="university" className={styles.label}>
+                    University/College Name <span className={styles.required}>*</span>
+                  </label>
                   <input
                     type="text"
                     id="university"
@@ -588,10 +722,14 @@ export default function IciciBank() {
                       ))}
                     </div>
                   )}
-                  <p id="university-error" className={styles.error} style={{ display: "none" }}>Please select a university.</p>
+                  <p id="university-error" className={styles.error} style={{ display: "none" }}>
+                    Please select a university.
+                  </p>
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor="course" className={styles.label}>Course Name <span className={styles.required}>*</span></label>
+                  <label htmlFor="course" className={styles.label}>
+                    Course Name <span className={styles.required}>*</span>
+                  </label>
                   <input
                     type="text"
                     id="course"
@@ -604,10 +742,14 @@ export default function IciciBank() {
                     onBlur={(e) => e.target.classList.remove(styles.inputActive)}
                     required
                   />
-                  <p id="course-error" className={styles.error} style={{ display: "none" }}>Please enter the course name.</p>
+                  <p id="course-error" className={styles.error} style={{ display: "none" }}>
+                    Please enter the course name.
+                  </p>
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor="intake" className={styles.label}>Intake <span className={styles.required}>*</span></label>
+                  <label htmlFor="intake" className={styles.label}>
+                    Intake <span className={styles.required}>*</span>
+                  </label>
                   <div className={styles.intakeInput}>
                     <select
                       id="intakeMonth"
@@ -620,18 +762,12 @@ export default function IciciBank() {
                       required
                     >
                       <option value="">Select Month</option>
-                      <option value="January">January</option>
-                      <option value="February">February</option>
-                      <option value="March">March</option>
-                      <option value="April">April</option>
-                      <option value="May">May</option>
-                      <option value="June">June</option>
-                      <option value="July">July</option>
-                      <option value="August">August</option>
-                      <option value="September">September</option>
-                      <option value="October">October</option>
-                      <option value="November">November</option>
-                      <option value="December">December</option>
+                      {[
+                        "January","February","March","April","May","June",
+                        "July","August","September","October","November","December",
+                      ].map((m) => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
                     </select>
                     <select
                       id="intakeYear"
@@ -644,17 +780,19 @@ export default function IciciBank() {
                       required
                     >
                       <option value="">Select Year</option>
-                      <option value="2023">2023</option>
-                      <option value="2024">2024</option>
-                      <option value="2025">2025</option>
-                      <option value="2026">2026</option>
-                      <option value="2027">2027</option>
+                      {["2023","2024","2025","2026","2027"].map((y) => (
+                        <option key={y} value={y}>{y}</option>
+                      ))}
                     </select>
                   </div>
-                  <p id="intake-error" className={styles.error} style={{ display: "none" }}>Please select an intake period.</p>
+                  <p id="intake-error" className={styles.error} style={{ display: "none" }}>
+                    Please select an intake period.
+                  </p>
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor="admitStatus" className={styles.label}>Admit Status <span className={styles.required}>*</span></label>
+                  <label htmlFor="admitStatus" className={styles.label}>
+                    Admit Status <span className={styles.required}>*</span>
+                  </label>
                   <select
                     id="admitStatus"
                     name="admitStatus"
@@ -670,11 +808,17 @@ export default function IciciBank() {
                     <option value="Received Offer/Admit letter">Received Offer/Admit letter</option>
                     <option value="Yet to apply for the university">Yet to apply for the university</option>
                   </select>
-                  <p id="admitStatus-error" className={styles.error} style={{ display: "none" }}>Please select an admit status.</p>
+                  <p id="admitStatus-error" className={styles.error} style={{ display: "none" }}>
+                    Please select an admit status.
+                  </p>
                 </div>
                 <div className={styles.buttonGroup}>
-                  <button type="button" className={`${styles.prevButton} ${styles.buttonHover}`} onClick={handlePrev}>Previous</button>
-                  <button type="submit" className={`${styles.submitButton} ${styles.buttonHover}`}>Submit</button>
+                  <button type="button" className={`${styles.prevButton} ${styles.buttonHover}`} onClick={handlePrev}>
+                    Previous
+                  </button>
+                  <button type="submit" className={`${styles.submitButton} ${styles.buttonHover}`}>
+                    Submit
+                  </button>
                 </div>
               </div>
             </form>
@@ -693,17 +837,17 @@ export default function IciciBank() {
               <h3 className={styles.footerTitle}>Stay Connected</h3>
               <div className={styles.socialLinks}>
                 <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="Facebook">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
                   </svg>
                 </a>
                 <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="Twitter">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
-                    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
                   </svg>
                 </a>
                 <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="LinkedIn">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z" />
                   </svg>
                 </a>
@@ -712,8 +856,17 @@ export default function IciciBank() {
             <div>
               <h3 className={styles.footerTitle}>Newsletter</h3>
               <form className={styles.newsletterForm}>
-                <input type="email" placeholder="Enter your email" className={`${styles.newsletterInput} ${styles.inputFocus}`} aria-label="Newsletter email" onFocus={(e) => e.target.classList.add(styles.inputActive)} onBlur={(e) => e.target.classList.remove(styles.inputActive)} />
-                <button type="submit" className={`${styles.newsletterButton} ${styles.buttonHover}`}>Subscribe</button>
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className={`${styles.newsletterInput} ${styles.inputFocus}`}
+                  aria-label="Newsletter email"
+                  onFocus={(e) => e.target.classList.add(styles.inputActive)}
+                  onBlur={(e) => e.target.classList.remove(styles.inputActive)}
+                />
+                <button type="submit" className={`${styles.newsletterButton} ${styles.buttonHover}`}>
+                  Subscribe
+                </button>
               </form>
             </div>
           </div>

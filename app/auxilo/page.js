@@ -1,3 +1,4 @@
+// app/auxilo/page.js
 "use client";
 
 import { useState, useEffect } from "react";
@@ -13,6 +14,9 @@ const supabase = createClient(
 );
 
 export default function Auxilo() {
+  const CANONICAL = "https://www.studysahara.com/auxilo";
+  const OG_IMAGE = "https://www.studysahara.com/og/auxilo.jpg";
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formStep, setFormStep] = useState(1);
@@ -48,9 +52,7 @@ export default function Auxilo() {
     return () => window.removeEventListener("resize", handleResize);
   }, [isSidebarOpen]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -80,11 +82,11 @@ export default function Auxilo() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    console.log(`Updated ${name} to ${value}`);
     if (name === "university" && value.trim().length >= 3 && formData.country) {
-      const filtered = universitiesData[formData.country]?.filter((uni) =>
-        uni.toLowerCase().startsWith(value.trim().toLowerCase())
-      ) || [];
+      const filtered =
+        universitiesData[formData.country]?.filter((uni) =>
+          uni.toLowerCase().startsWith(value.trim().toLowerCase())
+        ) || [];
       setUniversityList(filtered);
     } else if (name === "country") {
       setFormData((prev) => ({ ...prev, university: "" }));
@@ -94,23 +96,24 @@ export default function Auxilo() {
 
   const validateStep1 = () => {
     clearErrors();
-    let errors = [];
+    const errors = [];
     if (!formData.fullName.trim()) {
       errors.push("Full name is empty");
-      document.getElementById("fullName-error").classList.remove("hidden");
+      document.getElementById("fullName-error")?.classList.remove("hidden");
     }
     if (!formData.email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
       errors.push("Invalid email");
-      document.getElementById("email-error").classList.remove("hidden");
+      document.getElementById("email-error")?.classList.remove("hidden");
     }
     const fullContactNumber = formData.countryCode + formData.contactNumber;
     if (
       !formData.countryCode ||
       !formData.contactNumber.match(/^\d{10,12}$/) ||
-      !fullContactNumber.match(/^\+\d{1,3}\d{10,12}$/)
+      !fullContactNumber.match(/^\+\d{1,3}\d{10,12}$/
+      )
     ) {
       errors.push("Invalid contact number");
-      document.getElementById("contactNumber-error").classList.remove("hidden");
+      document.getElementById("contactNumber-error")?.classList.remove("hidden");
     }
     if (errors.length > 0) {
       alert("Please correct errors in Step 1.");
@@ -121,26 +124,26 @@ export default function Auxilo() {
 
   const validateStep2 = () => {
     clearErrors();
-    let errors = [];
+    const errors = [];
     if (!formData.country) {
       errors.push("Country not selected");
-      document.getElementById("country-error").classList.remove("hidden");
+      document.getElementById("country-error")?.classList.remove("hidden");
     }
     if (!formData.university.trim()) {
       errors.push("University not specified");
-      document.getElementById("university-error").classList.remove("hidden");
+      document.getElementById("university-error")?.classList.remove("hidden");
     }
     if (!formData.course.trim()) {
       errors.push("Course not specified");
-      document.getElementById("course-error").classList.remove("hidden");
+      document.getElementById("course-error")?.classList.remove("hidden");
     }
     if (!formData.intakeMonth || !formData.intakeYear) {
       errors.push("Intake not selected");
-      document.getElementById("intake-error").classList.remove("hidden");
+      document.getElementById("intake-error")?.classList.remove("hidden");
     }
     if (!formData.admitStatus) {
       errors.push("Admit status not selected");
-      document.getElementById("admitStatus-error").classList.remove("hidden");
+      document.getElementById("admitStatus-error")?.classList.remove("hidden");
     }
     if (errors.length > 0) {
       alert("Please correct errors in Step 2.");
@@ -171,9 +174,7 @@ export default function Auxilo() {
 
   const submitToSupabase = async (data) => {
     try {
-      const response = await supabase
-        .from("student_applications")
-        .insert([data]);
+      const response = await supabase.from("student_applications").insert([data]);
       return response.status === 201;
     } catch (error) {
       console.error("Supabase fetch error:", error.message);
@@ -196,7 +197,7 @@ export default function Auxilo() {
       intake: `${formData.intakeMonth} ${formData.intakeYear}`,
       admit_status: formData.admitStatus,
       created_at: new Date().toISOString(),
-      source_url: "/Auxilo",
+      source_url: "/auxilo",
     };
 
     if (await submitToSupabase(data)) {
@@ -210,30 +211,130 @@ export default function Auxilo() {
       setProgress(100);
     }
   };
-
   const handlePrev = () => {
     setFormStep(1);
     setProgress(50);
   };
 
+  // -------- JSON-LD --------
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.studysahara.com" },
+      { "@type": "ListItem", position: 2, name: "Auxilo Education Loan", item: CANONICAL },
+    ],
+  };
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What is the maximum Auxilo education loan amount?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Up to ₹65 lakh without collateral; up to ₹1 crore with collateral, depending on the profile and course.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Is collateral required for Auxilo loans?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Collateral is not required up to ₹65 lakh. For higher amounts, suitable security may be required.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What is the repayment period?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Up to 15 years for unsecured loans and up to 20 years for secured loans, with a moratorium of course duration plus ~12 months.",
+        },
+      },
+    ],
+  };
+
+  const loanJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LoanOrCredit",
+    name: "Auxilo Education Loan",
+    url: CANONICAL,
+    provider: { "@type": "FinancialService", name: "Auxilo Finserve" },
+    areaServed: "IN",
+    loanType: "EducationLoan",
+    interestRate: {
+      "@type": "QuantitativeValue",
+      minValue: 10,
+      maxValue: 14,
+      unitText: "PERCENT",
+    },
+    offers: {
+      "@type": "Offer",
+      availability: "https://schema.org/InStock",
+      url: CANONICAL,
+      priceCurrency: "INR",
+      price: "0",
+    },
+  };
+
   return (
     <>
       <Head>
-        <title>Auxilo Education Loan – StudySahara</title>
+        {/* Primary SEO */}
+        <title>Auxilo Education Loan | StudySahara</title>
         <meta
           name="description"
-          content="Auxilo education loans tailored for global education. Offers non-collateral loan options. Perfect for US, UK, Canada, Germany & more."
+          content="Auxilo education loans for study abroad: unsecured up to ₹65L, quick processing, and flexible repayment. Check eligibility, documents & apply with free help."
         />
         <meta
           name="keywords"
-          content="Auxilo loan, Auxilo education loan, Auxilo study abroad loan, Auxilo MS loan, education loan without security, fast abroad loan India"
+          content="Auxilo education loan, Auxilo study loan, unsecured student loan, study abroad finance, StudySahara"
         />
         <meta name="robots" content="index, follow" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta charSet="UTF-8" />
+        <link rel="canonical" href={CANONICAL} />
         <meta name="author" content="StudySahara" />
-        <link rel="canonical" href="https://www.studysahara.com/auxilo" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charSet="UTF-8" />
+
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Auxilo Education Loan | StudySahara" />
+        <meta
+          property="og:description"
+          content="Get Auxilo study-abroad loans (unsecured up to ₹65L). Compare features, eligibility & apply with expert guidance."
+        />
+        <meta property="og:url" content={CANONICAL} />
+        <meta property="og:site_name" content="StudySahara" />
+        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Auxilo Education Loan - StudySahara" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Auxilo Education Loan | StudySahara" />
+        <meta
+          name="twitter:description"
+          content="Auxilo loans for US, UK, Canada, Germany & more. Unsecured options, fast sanctions."
+        />
+        <meta name="twitter:image" content={OG_IMAGE} />
+
+        {/* Performance: Preload logo & hero image */}
+        <link rel="preload" as="image" href="/images/logo.png" />
+        <link rel="preload" as="image" href="/images/auxilo.png" />
+
+        {/* JSON-LD */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(loanJsonLd) }} />
       </Head>
+
       <div className={styles.auxiloContainer}>
         <header className={styles.header}>
           <div className={styles.headerContent}>
@@ -247,12 +348,12 @@ export default function Auxilo() {
               />
               <span className={styles.logoText}>StudySahara</span>
             </Link>
-            <Link href="/" className={styles.navLink}>
-                  <svg className={styles.homeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                </Link>
-                </div>
+            <Link href="/" className={styles.navLink} aria-label="Go to home">
+              <svg className={styles.homeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </Link>
+          </div>
         </header>
 
         <main className={styles.main}>
@@ -272,11 +373,11 @@ export default function Auxilo() {
                 <div className={styles.imageWrapper}>
                   <Image
                     src="/images/auxilo.png"
-                    alt="Auxilo Finserv Logo"
+                    alt="Auxilo Finserv logo"
                     width={180}
                     height={180}
                     className={styles.auxiloImage}
-                    onError={(e) => (e.target.src = "/images/auxilo.png")}
+                    priority
                   />
                 </div>
               </div>
@@ -288,27 +389,13 @@ export default function Auxilo() {
               <div className={styles.asideContent}>
                 <h2 className={styles.asideTitle}>Quick Navigation</h2>
                 <ul className={styles.asideList}>
-                  <li>
-                    <a href="#overview" className={styles.asideLink}>Overview</a>
-                  </li>
-                  <li>
-                    <a href="#features" className={styles.asideLink}>Features & Benefits</a>
-                  </li>
-                  <li>
-                    <a href="#eligibility" className={styles.asideLink}>Eligibility</a>
-                  </li>
-                  <li>
-                    <a href="#documents" className={styles.asideLink}>Documents</a>
-                  </li>
-                  <li>
-                    <a href="#interest-rates" className={styles.asideLink}>Interest Rates</a>
-                  </li>
-                  <li>
-                    <a href="#application-process" className={styles.asideLink}>Application Process</a>
-                  </li>
-                  <li>
-                    <a href="#faqs" className={styles.asideLink}>FAQs</a>
-                  </li>
+                  <li><a href="#overview" className={styles.asideLink}>Overview</a></li>
+                  <li><a href="#features" className={styles.asideLink}>Features & Benefits</a></li>
+                  <li><a href="#eligibility" className={styles.asideLink}>Eligibility</a></li>
+                  <li><a href="#documents" className={styles.asideLink}>Documents</a></li>
+                  <li><a href="#interest-rates" className={styles.asideLink}>Interest Rates</a></li>
+                  <li><a href="#application-process" className={styles.asideLink}>Application Process</a></li>
+                  <li><a href="#faqs" className={styles.asideLink}>FAQs</a></li>
                 </ul>
               </div>
             </aside>
@@ -317,8 +404,8 @@ export default function Auxilo() {
               <section id="overview" className={`${styles.section} ${styles.fadeInUp}`}>
                 <h2 className={styles.sectionTitle}>Overview</h2>
                 <p className={styles.sectionText}>
-                  Auxilo Finserv is a leading education-focused NBFC in India, offering loans up to ₹65
-                  lakh without collateral and up to ₹1 crore with security for studies in India and
+                  Auxilo Finserv is a leading education-focused NBFC in India, offering loans up to ₹75
+                  lakh without collateral and up to ₹1.5 crore with security for studies in India and
                   abroad. Supporting over 1,000 institutions globally, Auxilo provides 100% financing,
                   quick sanctions in 3–7 days, and flexible repayment options.
                 </p>
@@ -327,27 +414,13 @@ export default function Auxilo() {
               <section id="features" className={`${styles.section} ${styles.fadeInUp}`}>
                 <h2 className={styles.sectionTitle}>Key Features & Benefits</h2>
                 <ul className={styles.featuresList}>
-                  <li className={styles.featureItem}>
-                    <span>✔</span> Loan Amount: Up to ₹65 lakh unsecured; ₹1 crore secured.
-                  </li>
-                  <li className={styles.featureItem}>
-                    <span>✔</span> Moratorium: Course duration + 12 months.
-                  </li>
-                  <li className={styles.featureItem}>
-                    <span>✔</span> Repayment Tenure: Up to 15 years (unsecured), 20 years (secured).
-                  </li>
-                  <li className={styles.featureItem}>
-                    <span>✔</span> Collateral: Optional; unsecured loans based on profile.
-                  </li>
-                  <li className={styles.featureItem}>
-                    <span>✔</span> Rates: 11%–14% p.a., lower for secured loans.
-                  </li>
-                  <li className={styles.featureItem}>
-                    <span>✔</span> Tax Benefits: Interest deductible under Section 80E.
-                  </li>
-                  <li className={styles.featureItem}>
-                    <span>✔</span> Fast Processing: Loan sanctions in 3–7 days with doorstep collection.
-                  </li>
+                  <li className={styles.featureItem}><span>✔</span> Loan Amount: Up to ₹75 lakh unsecured; ₹1.5 crore secured.</li>
+                  <li className={styles.featureItem}><span>✔</span> Moratorium: Course duration + 12 months.</li>
+                  <li className={styles.featureItem}><span>✔</span> Repayment Tenure: Up to 15 years (unsecured).</li>
+                  <li className={styles.featureItem}><span>✔</span> Collateral: Optional; unsecured loans based on profile.</li>
+                  <li className={styles.featureItem}><span>✔</span> Rates: 11%–12.5% p.a. for unsecured loans.</li>
+                  <li className={styles.featureItem}><span>✔</span> Tax Benefits: Interest deductible under Section 80C.</li>
+                  <li className={styles.featureItem}><span>✔</span> Fast Processing: Loan sanctions in 3–7 days with doorstep collection.</li>
                 </ul>
               </section>
 
@@ -359,14 +432,14 @@ export default function Auxilo() {
                     <ul className={styles.eligibilityList}>
                       <li>Indian citizen, minimum 18 years old.</li>
                       <li>Confirmed admission to recognized technical/professional courses in India/abroad.</li>
-                      <li>Strong academic record and entrance exam scores (e.g., GRE, GMAT, IELTS).</li>
+                      <li>Strong academic record and entrance exam scores - optional (e.g., GRE, GMAT, IELTS).</li>
                     </ul>
                   </div>
                   <div>
                     <h3 className={styles.subTitle}>Co-applicant:</h3>
                     <ul className={styles.eligibilityList}>
-                      <li>Indian citizen (parent, guardian, or relative).</li>
-                      <li>Stable income and good credit score.</li>
+                      <li>Indian citizen (parent, sibling, spouse, or extended family).</li>
+                      <li>Stable income source (salaried/pensioner, self-employed, rental, agricultural, etc.)</li>
                     </ul>
                   </div>
                 </div>
@@ -388,7 +461,7 @@ export default function Auxilo() {
                     <h3 className={styles.subTitle}>Co-applicant:</h3>
                     <ul className={styles.documentsList}>
                       <li>KYC (Aadhaar, PAN, Passport).</li>
-                      <li>Income proof (ITR, salary slips, 6 months’ bank statements).</li>
+                      <li>Income proof documents.</li>
                       <li>Address proof (utility bill, Aadhaar).</li>
                     </ul>
                   </div>
@@ -421,15 +494,15 @@ export default function Auxilo() {
                     </thead>
                     <tbody>
                       <tr>
-                        <td>Unsecured (up to ₹65 lakh)</td>
-                        <td>~11% - 14%</td>
-                        <td>0.35%–2% + GST</td>
+                        <td>Unsecured (up to ₹75 lakh)</td>
+                        <td>~11% - 12.5%</td>
+                        <td>~1% of loan (often negotiable via StudySahara)</td>
                         <td>Not required</td>
                       </tr>
                       <tr>
-                        <td>Secured (up to ₹1 crore)</td>
-                        <td>~10% - 13%</td>
-                        <td>0.35%–2% + GST</td>
+                        <td>Secured (up to ₹1.5 crore)</td>
+                        <td>~10% - 11%</td>
+                        <td>~1% of loan (often negotiable via StudySahara)</td>
                         <td>Required</td>
                       </tr>
                     </tbody>
@@ -443,21 +516,11 @@ export default function Auxilo() {
               <section id="application-process" className={`${styles.section} ${styles.fadeInUp}`}>
                 <h2 className={styles.sectionTitle}>Application Process</h2>
                 <ol className={styles.processList}>
-                  <li>
-                    <strong>Submit Inquiry:</strong> Fill out our quick online form.
-                  </li>
-                  <li>
-                    <strong>Expert Guidance:</strong> Connect with our loan advisor for Auxilo options.
-                  </li>
-                  <li>
-                    <strong>Document Prep:</strong> We’ll assist with doorstep document collection.
-                  </li>
-                  <li>
-                    <strong>Application:</strong> Submit online with our support to Auxilo.
-                  </li>
-                  <li>
-                    <strong>Disbursal:</strong> Funds released post-approval, with fast processing.
-                  </li>
+                  <li><strong>Submit Inquiry:</strong> Fill out our quick online form.</li>
+                  <li><strong>Expert Guidance:</strong> Connect with our loan advisor for Auxilo options.</li>
+                  <li><strong>Document Prep:</strong> We’ll assist with doorstep document collection.</li>
+                  <li><strong>Application:</strong> Submit online with our support to Auxilo.</li>
+                  <li><strong>Disbursal:</strong> Funds released post-approval, with fast processing.</li>
                 </ol>
                 <button id="applyNowBtn" className={styles.applyButton} onClick={openModal}>
                   Apply Now
@@ -471,40 +534,27 @@ export default function Auxilo() {
                 <h2 className={styles.sectionTitle}>Frequently Asked Questions</h2>
                 <div className={styles.faqs}>
                   <div className={styles.faqItem}>
-                    <h3
-                      className={styles.faqQuestion}
-                      onClick={() => toggleFAQ("faq1")}
-                    >
-                      What is the maximum loan amount from Auxilo?{" "}
-                      <span id="faq1-icon" className={styles.faqIcon}>+</span>
+                    <h3 className={styles.faqQuestion} onClick={() => toggleFAQ("faq1")}>
+                      What is the maximum loan amount from Auxilo? <span id="faq1-icon" className={styles.faqIcon}>+</span>
                     </h3>
                     <p id="faq1-answer" className={styles.faqAnswer} style={{ display: "none" }}>
-                      Up to ₹65 lakh without collateral; up to ₹1 crore with collateral, based on
-                      course and profile.
+                      Up to ₹75 lakh without collateral; up to ₹1.5 crore with collateral, based on course and profile.
                     </p>
                   </div>
                   <div className={styles.faqItem}>
-                    <h3
-                      className={styles.faqQuestion}
-                      onClick={() => toggleFAQ("faq2")}
-                    >
+                    <h3 className={styles.faqQuestion} onClick={() => toggleFAQ("faq2")}>
                       Is collateral required? <span id="faq2-icon" className={styles.faqIcon}>+</span>
                     </h3>
                     <p id="faq2-answer" className={styles.faqAnswer} style={{ display: "none" }}>
-                      Not required for loans up to ₹65 lakh; required for higher amounts.
+                      Not required for loans up to ₹75 lakh; required for higher amounts.
                     </p>
                   </div>
                   <div className={styles.faqItem}>
-                    <h3
-                      className={styles.faqQuestion}
-                      onClick={() => toggleFAQ("faq3")}
-                    >
-                      What is the repayment period?{" "}
-                      <span id="faq3-icon" className={styles.faqIcon}>+</span>
+                    <h3 className={styles.faqQuestion} onClick={() => toggleFAQ("faq3")}>
+                      What is the repayment period? <span id="faq3-icon" className={styles.faqIcon}>+</span>
                     </h3>
                     <p id="faq3-answer" className={styles.faqAnswer} style={{ display: "none" }}>
-                      Up to 15 years for unsecured loans and 20 years for secured loans, with a
-                      moratorium of course duration + 12 months.
+                      Up to 15 years, with a moratorium of course duration + 12 months.
                     </p>
                   </div>
                 </div>
@@ -519,18 +569,13 @@ export default function Auxilo() {
           onClick={closeModal}
         >
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <div
-              className={styles.progressBar}
-              style={{ width: `${progress}%`, background: "#008080" }}
-            ></div>
+            <div className={styles.progressBar} style={{ width: `${progress}%`, background: "#008080" }}></div>
             <h2 className={styles.modalTitle}>Auxilo Finserv Education Loan Application</h2>
             <form id="applicationForm" onSubmit={handleSubmit}>
               <div id="formStep1" className={`${styles.formStep} ${formStep === 1 ? "" : styles.hidden}`}>
                 <h3 className={styles.stepTitle}>Personal Details</h3>
                 <div className={styles.formGroup}>
-                  <label htmlFor="fullName" className={styles.label}>
-                    Full Name <span className={styles.required}>*</span>
-                  </label>
+                  <label htmlFor="fullName" className={styles.label}>Full Name <span className={styles.required}>*</span></label>
                   <input
                     type="text"
                     id="fullName"
@@ -543,14 +588,10 @@ export default function Auxilo() {
                     onBlur={(e) => e.target.classList.remove(styles.inputActive)}
                     required
                   />
-                  <p id="fullName-error" className={styles.error} style={{ display: "none" }}>
-                    Please enter your full name.
-                  </p>
+                  <p id="fullName-error" className={styles.error} style={{ display: "none" }}>Please enter your full name.</p>
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor="email" className={styles.label}>
-                    Email Address <span className={styles.required}>*</span>
-                  </label>
+                  <label htmlFor="email" className={styles.label}>Email Address <span className={styles.required}>*</span></label>
                   <input
                     type="email"
                     id="email"
@@ -568,9 +609,7 @@ export default function Auxilo() {
                   </p>
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor="contactNumber" className={styles.label}>
-                    Contact Number <span className={styles.required}>*</span>
-                  </label>
+                  <label htmlFor="contactNumber" className={styles.label}>Contact Number <span className={styles.required}>*</span></label>
                   <div className={styles.phoneInput}>
                     <select
                       id="countryCode"
@@ -612,28 +651,15 @@ export default function Auxilo() {
                   </p>
                 </div>
                 <div className={styles.buttonGroup}>
-                  <button
-                    type="button"
-                    className={`${styles.cancelButton} ${styles.buttonHover}`}
-                    onClick={closeModal}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.nextButton} ${styles.buttonHover}`}
-                    onClick={handleNext}
-                  >
-                    Next
-                  </button>
+                  <button type="button" className={`${styles.cancelButton} ${styles.buttonHover}`} onClick={closeModal}>Cancel</button>
+                  <button type="button" className={`${styles.nextButton} ${styles.buttonHover}`} onClick={handleNext}>Next</button>
                 </div>
               </div>
+
               <div id="formStep2" className={`${styles.formStep} ${formStep === 2 ? "" : styles.hidden}`}>
                 <h3 className={styles.stepTitle}>Education Details</h3>
                 <div className={styles.formGroup}>
-                  <label htmlFor="country" className={styles.label}>
-                    Country of Study <span className={styles.required}>*</span>
-                  </label>
+                  <label htmlFor="country" className={styles.label}>Country of Study <span className={styles.required}>*</span></label>
                   <select
                     id="country"
                     name="country"
@@ -656,14 +682,10 @@ export default function Auxilo() {
                     <option value="Dubai">Dubai</option>
                     <option value="Others">Others</option>
                   </select>
-                  <p id="country-error" className={styles.error} style={{ display: "none" }}>
-                    Please select a country.
-                  </p>
+                  <p id="country-error" className={styles.error} style={{ display: "none" }}>Please select a country.</p>
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor="university" className={styles.label}>
-                    University/College Name <span className={styles.required}>*</span>
-                  </label>
+                  <label htmlFor="university" className={styles.label}>University/College Name <span className={styles.required}>*</span></label>
                   <input
                     type="text"
                     id="university"
@@ -692,14 +714,10 @@ export default function Auxilo() {
                       ))}
                     </div>
                   )}
-                  <p id="university-error" className={styles.error} style={{ display: "none" }}>
-                    Please select a university.
-                  </p>
+                  <p id="university-error" className={styles.error} style={{ display: "none" }}>Please select a university.</p>
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor="course" className={styles.label}>
-                    Course Name <span className={styles.required}>*</span>
-                  </label>
+                  <label htmlFor="course" className={styles.label}>Course Name <span className={styles.required}>*</span></label>
                   <input
                     type="text"
                     id="course"
@@ -712,14 +730,10 @@ export default function Auxilo() {
                     onBlur={(e) => e.target.classList.remove(styles.inputActive)}
                     required
                   />
-                  <p id="course-error" className={styles.error} style={{ display: "none" }}>
-                    Please enter the course name.
-                  </p>
+                  <p id="course-error" className={styles.error} style={{ display: "none" }}>Please enter the course name.</p>
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor="intake" className={styles.label}>
-                    Intake <span className={styles.required}>*</span>
-                  </label>
+                  <label htmlFor="intake" className={styles.label}>Intake <span className={styles.required}>*</span></label>
                   <div className={styles.intakeInput}>
                     <select
                       id="intakeMonth"
@@ -732,18 +746,9 @@ export default function Auxilo() {
                       required
                     >
                       <option value="">Select Month</option>
-                      <option value="January">January</option>
-                      <option value="February">February</option>
-                      <option value="March">March</option>
-                      <option value="April">April</option>
-                      <option value="May">May</option>
-                      <option value="June">June</option>
-                      <option value="July">July</option>
-                      <option value="August">August</option>
-                      <option value="September">September</option>
-                      <option value="October">October</option>
-                      <option value="November">November</option>
-                      <option value="December">December</option>
+                      {["January","February","March","April","May","June","July","August","September","October","November","December"].map(m=>(
+                        <option key={m} value={m}>{m}</option>
+                      ))}
                     </select>
                     <select
                       id="intakeYear"
@@ -756,11 +761,9 @@ export default function Auxilo() {
                       required
                     >
                       <option value="">Select Year</option>
-                      <option value="2023">2023</option>
-                      <option value="2024">2024</option>
-                      <option value="2025">2025</option>
-                      <option value="2026">2026</option>
-                      <option value="2027">2027</option>
+                      {["2023","2024","2025","2026","2027"].map(y=>(
+                        <option key={y} value={y}>{y}</option>
+                      ))}
                     </select>
                   </div>
                   <p id="intake-error" className={styles.error} style={{ display: "none" }}>
@@ -768,9 +771,7 @@ export default function Auxilo() {
                   </p>
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor="admitStatus" className={styles.label}>
-                    Admit Status <span className={styles.required}>*</span>
-                  </label>
+                  <label htmlFor="admitStatus" className={styles.label}>Admit Status <span className={styles.required}>*</span></label>
                   <select
                     id="admitStatus"
                     name="admitStatus"
@@ -784,28 +785,15 @@ export default function Auxilo() {
                     <option value="">Select Status</option>
                     <option value="Applied for the university">Applied for the university</option>
                     <option value="Received Offer/Admit letter">Received Offer/Admit letter</option>
-                    <option value="Yet to apply for the university">
-                      Yet to apply for the university
-                    </option>
+                    <option value="Yet to apply for the university">Yet to apply for the university</option>
                   </select>
                   <p id="admitStatus-error" className={styles.error} style={{ display: "none" }}>
                     Please select an admit status.
                   </p>
                 </div>
                 <div className={styles.buttonGroup}>
-                  <button
-                    type="button"
-                    className={`${styles.prevButton} ${styles.buttonHover}`}
-                    onClick={handlePrev}
-                  >
-                    Previous
-                  </button>
-                  <button
-                    type="submit"
-                    className={`${styles.submitButton} ${styles.buttonHover}`}
-                  >
-                    Submit
-                  </button>
+                  <button type="button" className={`${styles.prevButton} ${styles.buttonHover}`} onClick={handlePrev}>Previous</button>
+                  <button type="submit" className={`${styles.submitButton} ${styles.buttonHover}`}>Submit</button>
                 </div>
               </div>
             </form>
@@ -823,30 +811,18 @@ export default function Auxilo() {
             <div>
               <h3 className={styles.footerTitle}>Stay Connected</h3>
               <div className={styles.socialLinks}>
-                <a
-                  href="#"
-                  className={`${styles.socialLink} ${styles.socialHover}`}
-                  aria-label="Facebook"
-                >
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="Facebook">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
                   </svg>
                 </a>
-                <a
-                  href="#"
-                  className={`${styles.socialLink} ${styles.socialHover}`}
-                  aria-label="Twitter"
-                >
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="Twitter">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
-                  </svg>
+                  </svg> 
                 </a>
-                <a
-                  href="#"
-                  className={`${styles.socialLink} ${styles.socialHover}`}
-                  aria-label="LinkedIn"
-                >
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="LinkedIn">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z" />
                   </svg>
                 </a>
@@ -863,12 +839,7 @@ export default function Auxilo() {
                   onFocus={(e) => e.target.classList.add(styles.inputActive)}
                   onBlur={(e) => e.target.classList.remove(styles.inputActive)}
                 />
-                <button
-                  type="submit"
-                  className={`${styles.newsletterButton} ${styles.buttonHover}`}
-                >
-                  Subscribe
-                </button>
+                <button type="submit" className={`${styles.newsletterButton} ${styles.buttonHover}`}>Subscribe</button>
               </form>
             </div>
           </div>

@@ -1,0 +1,217 @@
+/* Scoped design tokens (inherit to children) */
+.page{
+  --brand:#003087;
+  --ink:#0f172a;
+  --muted:#475569;
+  --line:#e2e8f0;
+  --bg:#f8fafc;
+  --white:#fff;
+  --shadow:0 10px 20px rgba(0,0,0,.06);
+  --shadow-lg:0 18px 40px rgba(0,0,0,.12);
+
+  min-height:100svh;
+  background: linear-gradient(180deg,#f8fafc, #ffffff);
+  color: var(--ink);
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* Decorative background */
+.bgDecor{
+  position:fixed; inset:0; pointer-events:none; z-index:-1;
+  background:
+    radial-gradient(600px 300px at -10% -10%, rgba(0,48,135,.12), transparent 60%),
+    radial-gradient(700px 320px at 110% 110%, rgba(99,102,241,.12), transparent 60%);
+}
+
+/* Header */
+.header{ position:sticky; top:0; backdrop-filter:saturate(180%) blur(8px); background:rgba(255,255,255,.7); border-bottom:1px solid var(--line); z-index:30; }
+.headerInner{ max-width:1120px; margin-inline:auto; display:flex; align-items:center; justify-content:space-between; padding:10px 16px; }
+.brand{ display:flex; align-items:center; gap:10px; }
+.logo{ border-radius:10px; }
+.brandText{ font-weight:700; letter-spacing:.2px; }
+.trustBadge{ display:flex; align-items:center; gap:8px; color:var(--muted); font-size:12px; padding:6px 10px; border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.7); }
+
+/* Form at top */
+.formWrap{ padding:14px 16px; }
+.formCard{ max-width:760px; margin-inline:auto; background:rgba(255,255,255,.95); border:1px solid var(--line); border-radius:20px; padding:18px; box-shadow:var(--shadow-lg); }
+.formTitle{ font-size:22px; font-weight:700; }
+.formSub{ color:var(--muted); margin-top:4px; }
+.form{ margin-top:14px; display:grid; gap:12px; }
+.twoCol{ display:grid; gap:12px; grid-template-columns:1fr; }
+.threeCol{ display:grid; gap:12px; grid-template-columns:1fr; }
+
+.field{ display:grid; gap:6px; font-size:14px; }
+.fieldLabel{ font-weight:600; }
+.req{ color:#dc2626; }
+.input{
+  border:1px solid var(--line); border-radius:12px; padding:12px;
+  background:#fff; font:inherit; color:inherit;
+}
+.input:focus{ outline:none; box-shadow:0 0 0 2px rgba(0,48,135,.25); border-color:var(--brand); }
+
+/* Autocomplete */
+.autoWrap{ position:relative; }
+.autoMenu{
+  position:absolute; top:100%; left:0; right:0; margin-top:6px;
+  max-height:220px; overflow:auto; background:#fff; border:1px solid var(--line);
+  border-radius:12px; box-shadow:var(--shadow);
+  z-index:60; /* high to ensure it's above other sections */
+}
+.autoItem{
+  display:block; width:100%; text-align:left; padding:10px 12px; font-size:14px;
+  background:#fff; border:none; cursor:pointer;
+}
+.autoItem:hover{ background:#f8fafc; }
+.autoOther{ border-top:1px solid #f1f5f9; }
+.autoHint{
+  display:flex; align-items:flex-start; gap:6px; margin-top:6px;
+  color:#64748b; font-size:12px;
+}
+
+/* MULTI-SELECT LOAN TYPE CHIPS */
+.fieldset{ margin-top:6px; }
+.legend{ font-weight:700; margin-bottom:8px; }
+.chipGroup{ display:flex; flex-wrap:wrap; gap:8px; }
+.chip{
+  display:inline-flex; align-items:center; gap:8px;
+  background:#fff; border:1px solid var(--line); border-radius:999px;
+  padding:8px 12px; cursor:pointer; font-weight:600;
+}
+.chipActive{ border-color:var(--brand); box-shadow:0 0 0 2px rgba(0,48,135,.12); }
+.dotSm{ width:10px; height:10px; border-radius:999px; background:#cbd5e1; }
+.dotOn{ background:var(--brand); }
+.hintSmall{ color:#64748b; font-size:12px; margin-top:6px; }
+
+/* Consent & alerts */
+.consent{ display:flex; align-items:flex-start; gap:10px; color:var(--muted); font-size:13px; }
+.consent input{ margin-top:3px; }
+.alertError{ background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; padding:10px 12px; border-radius:10px; font-size:14px; }
+.alertSuccess{ background:#ecfdf5; border:1px solid #bbf7d0; color:#065f46; padding:10px 12px; border-radius:10px; font-size:14px; }
+.submitBtn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  background:var(--brand); color:#fff; border:none; border-radius:14px; padding:12px 18px; font-weight:700; cursor:pointer;
+}
+.submitBtn:hover{ opacity:.95; }
+.spinner{ animation:spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.disclaimer{ color:#94a3b8; font-size:12px; }
+
+/* Hero */
+.hero{ padding:10px 16px 0; }
+.heroGrid{ max-width:1120px; margin-inline:auto; display:grid; grid-template-columns:1fr; gap:16px; align-items:center; }
+.heroContent{}
+.heroTitle{ font-size:28px; line-height:1.2; font-weight:800; letter-spacing:-.2px; }
+.heroTitle span{ color:var(--brand); }
+.heroSub{ margin-top:8px; color:var(--muted); max-width:640px; }
+.ctaRow{ margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; }
+.primaryBtn, .secondaryBtn{ border-radius:14px; padding:10px 14px; font-weight:600; border:1px solid transparent; }
+.primaryBtn{ background:var(--brand); color:#fff; box-shadow:0 8px 22px rgba(0,48,135,.22); }
+.primaryBtn:hover{ opacity:.95; }
+.secondaryBtn{ background:#fff; color:var(--ink); border-color:var(--line); }
+.secondaryBtn:hover{ background:#f1f5f9; }
+
+/* 🔥 Highlight the three hero points strongly */
+.heroChips{ display:grid; grid-template-columns:1fr; gap:10px; margin-top:12px; max-width:720px; }
+.chipStrong{
+  display:flex; align-items:center; gap:10px;
+  background: linear-gradient(135deg, var(--brand), #1d4ed8);
+  color:#fff; border:1px solid rgba(255,255,255,.15);
+  padding:10px 12px; border-radius:14px; box-shadow:var(--shadow-lg);
+  font-weight:800; letter-spacing:.1px;
+}
+
+/* Hero art & stats */
+.heroArtWrap{ display:flex; justify-content:center; }
+.heroArt{ width:100%; height:auto; border-radius:16px; box-shadow:var(--shadow-lg); border:1px solid var(--line); background:#fff; }
+.statsBar{ max-width:680px; margin:12px auto 0; display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.statsBar>div{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px 10px; text-align:center; box-shadow:var(--shadow); }
+.statK{ font-weight:800; font-size:18px; }
+.statV{ color:var(--muted); font-size:12px; margin-top:2px; }
+
+/* Partners */
+.partners{ padding:18px 16px; }
+.sectionTitle{ text-align:center; font-size:22px; font-weight:800; }
+.sectionSub{ text-align:center; color:var(--muted); margin-top:6px; }
+
+/* 4-per-row grid on ALL screens */
+.logosGrid{
+  margin-top:12px; max-width:1024px; margin-inline:auto;
+  display:grid; gap:10px; grid-template-columns:repeat(4, minmax(0, 1fr));
+  align-items:center;
+}
+
+/* Center last row with two logos (columns 2 and 3) */
+.logosGrid > .logoCard:nth-last-child(2){ grid-column:2; }
+.logosGrid > .logoCard:last-child{ grid-column:3; }
+
+.logoCard{
+  background:#fff; border:1px solid var(--line); border-radius:12px;
+  padding:8px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow);
+}
+.bankLogo{ object-fit:contain; width:100%; max-width:110px; height:auto; }
+
+/* How it works */
+.how{ padding:16px 16px; }
+.howGrid{ max-width:1120px; margin-inline:auto; display:grid; grid-template-columns:1fr; gap:10px; margin-top:12px; }
+.howCard{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px; box-shadow:var(--shadow); }
+.howTitle{ font-weight:700; }
+.howBody{ color:var(--muted); margin-top:4px; }
+
+/* Options (unchanged) */
+.options{ padding:18px 16px; }
+.cards{ max-width:1120px; margin-inline:auto; margin-top:12px; display:grid; gap:12px; grid-template-columns:1fr; }
+.card{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px; box-shadow:var(--shadow); transition: transform .2s ease, box-shadow .2s ease; }
+.card:hover{ transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+.cardTop{ display:flex; align-items:center; gap:10px; }
+.iconWrap{ border:1px solid var(--line); border-radius:12px; padding:8px; background:#fff; }
+.cardTitle{ font-weight:700; }
+.cardList{ margin-top:10px; display:grid; gap:8px; color:#0f172a; font-size:14px; }
+.cardList li{ display:flex; align-items:flex-start; gap:8px; }
+.dot{ width:6px; height:6px; border-radius:999px; background:#0f172a; margin-top:6px; display:inline-block; }
+.cardBtn{ margin-top:12px; width:100%; border-radius:12px; background:var(--brand); color:#fff; border:none; padding:10px 12px; font-weight:700; cursor:pointer; }
+.cardBtn:hover{ opacity:.95; }
+
+/* Why us */
+.why{ padding:16px 16px; }
+.whyGrid{ max-width:1120px; margin-inline:auto; display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:12px; }
+.whyCard{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px; box-shadow:var(--shadow); display:flex; align-items:center; gap:8px; font-weight:600; }
+
+/* FAQ */
+.faq{ padding:18px 16px; }
+.faqBox{ max-width:960px; margin:12px auto 0; border:1px solid var(--line); border-radius:16px; background:#fff; overflow:hidden; }
+.faqItem{ padding:12px; border-top:1px solid var(--line); }
+.faqItem:first-child{ border-top:none; }
+.faqSummary{ cursor:pointer; list-style:none; font-weight:700; display:flex; align-items:center; justify-content:space-between; }
+.faqChevron{ color:#94a3b8; transition: transform .2s ease; margin-left:8px; }
+.faqItem[open] .faqChevron{ transform: rotate(180deg); }
+.faqAnswer{ margin-top:8px; color:#64748b; font-size:14px; }
+
+/* Sticky mobile CTA */
+.stickyCta{ position:fixed; left:0; right:0; bottom:0; display:block; z-index:50; }
+.stickyCta button{
+  width:calc(100% - 24px); margin:0 12px 12px;
+  border:none; background:var(--brand); color:#fff; padding:14px;
+  border-radius:14px; font-weight:800; box-shadow:var(--shadow-lg);
+}
+
+/* Footer */
+.footer{ max-width:1120px; margin:20px auto 40px; padding:0 16px; text-align:center; color:#94a3b8; font-size:12px; }
+
+/* Responsive tweaks that keep 4-per-row logos on all sizes */
+@media (max-width: 480px){
+  .logoCard{ padding:6px; }
+  .bankLogo{ max-width:72px; } /* ensure 4-up fits on small phones */
+}
+
+@media (min-width: 640px){
+  .heroChips{ grid-template-columns:1fr; } /* keep stacked for emphasis */
+}
+@media (min-width: 768px){
+  .twoCol{ grid-template-columns:1fr 1fr; }
+  .threeCol{ grid-template-columns:repeat(3,1fr); }
+  .heroGrid{ grid-template-columns:1.1fr .9fr; gap:28px; }
+}
+@media (min-width: 1024px){
+  .cards{ grid-template-columns:repeat(4,1fr); }
+}

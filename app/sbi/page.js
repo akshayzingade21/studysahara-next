@@ -265,41 +265,71 @@ export default function SBIBank() {
 
   return (
     <>
-      <Head>
-        {/* Basic SEO */}
-        <title>SBI Education Loan for Abroad Studies | StudySahara</title>
-        <meta
-          name="description"
-          content="Compare SBI education loans for studying abroad: amounts up to ₹1.5 Cr, flexible repayment, moratorium, concessions for girls. Free guidance to apply."
-        />
-        <meta
-          name="keywords"
-          content="SBI education loan, SBI study abroad loan, SBI student loan, Global Ed-Vantage, SBI abroad loan interest rate"
-        />
-        <meta name="robots" content="index,follow" />
-        <link rel="canonical" href={CANONICAL} />
+     <Head>
+  {/* Basic SEO */}
+  <title>SBI Education Loan for Abroad Studies | StudySahara</title>
+  <meta
+    name="description"
+    content="Compare SBI education loans for studying abroad: amounts up to ₹1.5 Cr, flexible repayment, moratorium, concessions for girls. Free guidance to apply."
+  />
+  <meta
+    name="keywords"
+    content="SBI education loan, SBI study abroad loan, SBI student loan, Global Ed-Vantage, SBI abroad loan interest rate"
+  />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href={CANONICAL} />
 
-        {/* Open Graph */}
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content="SBI Education Loan for Abroad Studies | StudySahara" />
-        <meta property="og:description" content="Affordable SBI education loans for global studies. Check eligibility and apply with free support from StudySahara." />
-        <meta property="og:url" content={CANONICAL} />
-        <meta property="og:site_name" content="StudySahara" />
-        <meta property="og:image" content={OG_IMAGE} />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="StudySahara – Education Loans for Students" />
+  {/* Open Graph */}
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="SBI Education Loan for Abroad Studies | StudySahara" />
+  <meta property="og:description" content="Affordable SBI education loans for global studies. Check eligibility and apply with free support from StudySahara." />
+  <meta property="og:url" content={CANONICAL} />
+  <meta property="og:site_name" content="StudySahara" />
+  <meta property="og:image" content={OG_IMAGE} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="StudySahara – Education Loans for Students" />
 
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="SBI Education Loan for Abroad Studies | StudySahara" />
-        <meta name="twitter:description" content="Compare SBI abroad study loans. Free eligibility check and application help." />
-        <meta name="twitter:image" content={OG_IMAGE} />
+  {/* Twitter */}
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SBI Education Loan for Abroad Studies | StudySahara" />
+  <meta name="twitter:description" content="Compare SBI abroad study loans. Free eligibility check and application help." />
+  <meta name="twitter:image" content={OG_IMAGE} />
 
-        {/* JSON-LD */}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
-      </Head>
+  {/* JSON-LD (existing) */}
+  <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+  <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+
+  {/* JSON-LD: LoanOrCredit (ADD THIS) */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "LoanOrCredit",
+        name: "SBI Education Loan",
+        url: CANONICAL,
+        brand: "State Bank of India",
+        provider: { "@type": "BankOrCreditUnion", name: "State Bank of India" },
+        areaServed: "IN",
+        loanType: "EducationLoan",
+        interestRate: {
+          "@type": "QuantitativeValue",
+          minValue: 8.15,
+          maxValue: 11.75,
+          unitText: "PERCENT",
+        },
+        offers: {
+          "@type": "Offer",
+          availability: "https://schema.org/InStock",
+          url: CANONICAL,
+          priceCurrency: "INR",
+          price: "0",
+        },
+      }),
+    }}
+  />
+</Head>
 
       <div className={styles.sbiContainer}>
         <header className={styles.header}>
@@ -377,11 +407,12 @@ export default function SBIBank() {
                 <ul className={styles.featuresList}>
                   <li className={styles.featureItem}><span>✔</span> Loan Amount: Up to ₹1.5 Crores for overseas studies.</li>
                   <li className={styles.featureItem}><span>✔</span> Moratorium: Course duration + 1 year after completion.</li>
+                  <li className={styles.featureItem}><span>✔</span> Interest Payment during Moratorium: Optional </li>
                   <li className={styles.featureItem}><span>✔</span> Repayment Tenure: Up to 15 years post-moratorium.</li>
-                  <li className={styles.featureItem}><span>✔</span> Collateral: Not required up to ₹7.5 Lakhs.</li>
-                  <li className={styles.featureItem}><span>✔</span> Rates: ~8.15%–11.75% p.a.; 0.50% concession for girls (indicative).</li>
+                  <li className={styles.featureItem}><span>✔</span> Non Collateral Loan: up to ₹50 Lakhs (for selected universities).</li>
+                  <li className={styles.featureItem}><span>✔</span> Rates: ~9.15% p.a.; additionally 0.50% concession for girls (indicative).</li>
                   <li className={styles.featureItem}><span>✔</span> Tax Benefits: Interest deductible under Section 80E.</li>
-                  <li className={styles.featureItem}><span>✔</span> Processing Fee: Select schemes have partial/zero fees.</li>
+                  <li className={styles.featureItem}><span>✔</span> Processing Fee: Flat ₹10,000 + GST (irrespective of the loan amount).</li>
                 </ul>
               </section>
 
@@ -399,8 +430,8 @@ export default function SBIBank() {
                   <div>
                     <h3 className={styles.subTitle}>Co-applicant</h3>
                     <ul className={styles.eligibilityList}>
-                      <li>Indian National (parent/guardian/spouse).</li>
-                      <li>Stable income source and acceptable credit history.</li>
+                      <li>Indian citizen : parent, sibling, spouse, or extended family.</li>
+                      <li>Stable income source (salaried/pensioner, self-employed, rental, agricultural, etc).</li>
                     </ul>
                   </div>
                 </div>
@@ -422,7 +453,7 @@ export default function SBIBank() {
                     <h3 className={styles.subTitle}>Co-applicant</h3>
                     <ul className={styles.documentsList}>
                       <li>KYC documents (Aadhaar, PAN).</li>
-                      <li>Income proof (IT Returns, Salary Slips, Bank Statements).</li>
+                      <li>Income proof documents.</li>
                       <li>Passport-size photographs.</li>
                     </ul>
                   </div>
@@ -454,15 +485,15 @@ export default function SBIBank() {
                     </thead>
                     <tbody>
                       <tr>
-                        <td>Up to ₹7.5 Lakhs</td>
-                        <td>~8.15% – 9.50%</td>
-                        <td>Nil</td>
+                        <td>Up to ₹50 Lakhs</td>
+                        <td>~9.15% </td>
+                        <td>₹10,000 + GST</td>
                         <td>Not required</td>
                       </tr>
                       <tr>
-                        <td>Above ₹7.5 Lakhs</td>
-                        <td>~9.50% – 11.75%</td>
-                        <td>Varies by scheme</td>
+                        <td>Above ₹50 Lakhs</td>
+                        <td>~9.15%</td>
+                        <td>₹10,000 + GST</td>
                         <td>Required</td>
                       </tr>
                     </tbody>
@@ -506,7 +537,7 @@ export default function SBIBank() {
                       Is collateral required? <span id="faq2-icon" className={styles.faqIcon}>+</span>
                     </h3>
                     <p id="faq2-answer" className={styles.faqAnswer} style={{ display: "none" }}>
-                      Not required up to ₹7.5 Lakhs; higher amounts may require property or fixed deposits.
+                      Not required up to ₹50 Lakhs (for selected universities); higher amounts may require property or fixed deposits.
                     </p>
                   </div>
                   <div className={styles.faqItem}>

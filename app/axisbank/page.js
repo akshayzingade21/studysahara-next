@@ -1,3 +1,4 @@
+// app/axisbank/page.js
 "use client";
 
 import { useState, useEffect } from "react";
@@ -13,6 +14,9 @@ const supabase = createClient(
 );
 
 export default function AxisBank() {
+  const CANONICAL = "https://www.studysahara.com/axisbank";
+  const OG_IMAGE = "https://www.studysahara.com/og/axisbank.jpg";
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formStep, setFormStep] = useState(1);
@@ -48,9 +52,7 @@ export default function AxisBank() {
     return () => window.removeEventListener("resize", handleResize);
   }, [isSidebarOpen]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -80,11 +82,11 @@ export default function AxisBank() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    console.log(`Updated ${name} to ${value}`);
     if (name === "university" && value.trim().length >= 3 && formData.country) {
-      const filtered = universitiesData[formData.country]?.filter((uni) =>
-        uni.toLowerCase().startsWith(value.trim().toLowerCase())
-      ) || [];
+      const filtered =
+        universitiesData[formData.country]?.filter((uni) =>
+          uni.toLowerCase().startsWith(value.trim().toLowerCase())
+        ) || [];
       setUniversityList(filtered);
     } else if (name === "country") {
       setFormData((prev) => ({ ...prev, university: "" }));
@@ -97,11 +99,11 @@ export default function AxisBank() {
     let errors = [];
     if (!formData.fullName.trim()) {
       errors.push("Full name is empty");
-      document.getElementById("fullName-error").classList.remove("hidden");
+      document.getElementById("fullName-error")?.classList.remove("hidden");
     }
     if (!formData.email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
       errors.push("Invalid email");
-      document.getElementById("email-error").classList.remove("hidden");
+      document.getElementById("email-error")?.classList.remove("hidden");
     }
     const fullContactNumber = formData.countryCode + formData.contactNumber;
     if (
@@ -110,7 +112,7 @@ export default function AxisBank() {
       !fullContactNumber.match(/^\+\d{1,3}\d{10,12}$/)
     ) {
       errors.push("Invalid contact number");
-      document.getElementById("contactNumber-error").classList.remove("hidden");
+      document.getElementById("contactNumber-error")?.classList.remove("hidden");
     }
     if (errors.length > 0) {
       alert("Please correct errors in Step 1.");
@@ -124,28 +126,25 @@ export default function AxisBank() {
     let errors = [];
     if (!formData.country) {
       errors.push("Country not selected");
-      document.getElementById("country-error").classList.remove("hidden");
+      document.getElementById("country-error")?.classList.remove("hidden");
     }
     if (!formData.university.trim()) {
       errors.push("University not specified");
-      document.getElementById("university-error").classList.remove("hidden");
+      document.getElementById("university-error")?.classList.remove("hidden");
     }
     if (!formData.course.trim()) {
       errors.push("Course not specified");
-      document.getElementById("course-error").classList.remove("hidden");
+      document.getElementById("course-error")?.classList.remove("hidden");
     }
     if (!formData.intakeMonth || !formData.intakeYear) {
       errors.push("Intake not selected");
-      document.getElementById("intake-error").classList.remove("hidden");
+      document.getElementById("intake-error")?.classList.remove("hidden");
     }
     if (!formData.admitStatus) {
       errors.push("Admit status not selected");
-      document.getElementById("admitStatus-error").classList.remove("hidden");
+      document.getElementById("admitStatus-error")?.classList.remove("hidden");
     }
-    if (errors.length > 0) {
-      alert("Please correct errors in Step 2.");
-      return false;
-    }
+    if (errors.length > 0) return alert("Please correct errors in Step 2."), false;
     return true;
   };
 
@@ -171,9 +170,7 @@ export default function AxisBank() {
 
   const submitToSupabase = async (data) => {
     try {
-      const response = await supabase
-        .from("student_applications")
-        .insert([data]);
+      const response = await supabase.from("student_applications").insert([data]);
       return response.status === 201;
     } catch (error) {
       console.error("Supabase fetch error:", error.message);
@@ -196,7 +193,7 @@ export default function AxisBank() {
       intake: `${formData.intakeMonth} ${formData.intakeYear}`,
       admit_status: formData.admitStatus,
       created_at: new Date().toISOString(),
-      source_url: "/AxisBank",
+      source_url: "/axisbank",
     };
 
     if (await submitToSupabase(data)) {
@@ -210,24 +207,130 @@ export default function AxisBank() {
       setProgress(100);
     }
   };
-
   const handlePrev = () => {
     setFormStep(1);
     setProgress(50);
   };
 
+  // ---------- JSON-LD ----------
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.studysahara.com" },
+      { "@type": "ListItem", position: 2, name: "Axis Bank Education Loan", item: CANONICAL },
+    ],
+  };
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What is the maximum Axis Bank education loan amount?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Up to about ₹1.5 crore for overseas studies, depending on the course, institute, and profile.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Is collateral required for Axis Bank education loans?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Collateral is typically not required up to ₹7.5 lakhs. Higher amounts may need property or fixed deposits as security.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What is the repayment period?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Repayment tenure can be up to 15 years, including the moratorium period.",
+        },
+      },
+    ],
+  };
+
+  const loanJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LoanOrCredit",
+    name: "Axis Bank Education Loan",
+    url: CANONICAL,
+    provider: { "@type": "BankOrCreditUnion", name: "Axis Bank" },
+    areaServed: "IN",
+    loanType: "EducationLoan",
+    interestRate: {
+      "@type": "QuantitativeValue",
+      minValue: 9.5,
+      maxValue: 11.5,
+      unitText: "PERCENT",
+    },
+    offers: {
+      "@type": "Offer",
+      availability: "https://schema.org/InStock",
+      url: CANONICAL,
+      priceCurrency: "INR",
+      price: "0",
+    },
+  };
+
   return (
     <>
       <Head>
-        <title>Axis Bank Education Loan - StudySahara</title>
-        <meta name="description" content="Secure Axis Bank education loans for studying in the US, UK, Canada, Germany & more. Affordable interest, minimal documentation." />
-        <meta name="keywords" content="Axis education loan, Axis bank study loan, Axis student loan abroad, Axis bank non collateral loan, Axis MS USA loan, Axis overseas loan" />
+        {/* Primary SEO */}
+        <title>Axis Bank Education Loan | StudySahara</title>
+        <meta
+          name="description"
+          content="Secure Axis Bank education loans for study in the US, UK, Canada, Germany & more. Competitive rates, flexible repayment, guided application."
+        />
+        <meta
+          name="keywords"
+          content="Axis education loan, Axis Bank study loan, Axis student loan abroad, Axis Bank non collateral loan, Axis MS USA loan, Axis overseas loan"
+        />
         <meta name="robots" content="index, follow" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta charSet="UTF-8" />
+        <link rel="canonical" href={CANONICAL} />
         <meta name="author" content="StudySahara" />
-        <link rel="canonical" href="https://www.studysahara.com/axisbank" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charSet="UTF-8" />
+
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Axis Bank Education Loan | StudySahara" />
+        <meta
+          property="og:description"
+          content="Axis Bank education loans with quick processing and flexible repayment. Compare options and apply with free guidance."
+        />
+        <meta property="og:url" content={CANONICAL} />
+        <meta property="og:site_name" content="StudySahara" />
+        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Axis Bank Education Loan - StudySahara" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Axis Bank Education Loan | StudySahara" />
+        <meta
+          name="twitter:description"
+          content="Study abroad with Axis Bank education loans. Check eligibility, documents, interest rates and apply."
+        />
+        <meta name="twitter:image" content={OG_IMAGE} />
+
+        {/* Performance: Preload logo & hero image */}
+        <link rel="preload" as="image" href="/images/logo.png" />
+        <link rel="preload" as="image" href="/images/axisbank.png" />
+
+        {/* JSON-LD */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(loanJsonLd) }} />
       </Head>
+
       <div className={styles.axisbankContainer}>
         <header className={styles.header}>
           <div className={styles.headerContent}>
@@ -235,12 +338,12 @@ export default function AxisBank() {
               <Image src="/images/logo.png" alt="StudySahara Logo" width={40} height={48} className={styles.logoImage} />
               <span className={styles.logoText}>StudySahara</span>
             </Link>
-            <Link href="/" className={styles.navLink}>
-                  <svg className={styles.homeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                </Link>
-                </div>
+            <Link href="/" className={styles.navLink} aria-label="Go to home">
+              <svg className={styles.homeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </Link>
+          </div>
         </header>
 
         <main className={styles.main}>
@@ -263,7 +366,7 @@ export default function AxisBank() {
                     width={180}
                     height={180}
                     className={styles.axisbankImage}
-                    onError={(e) => (e.target.src = "/images/axisbank.png")}
+                    priority
                   />
                 </div>
               </div>
@@ -290,7 +393,9 @@ export default function AxisBank() {
               <section id="overview" className={`${styles.section} ${styles.fadeInUp}`}>
                 <h2 className={styles.sectionTitle}>Overview</h2>
                 <p className={styles.sectionText}>
-                  Axis Bank, a premier private bank in India, offers tailored education loans to fuel your academic ambitions at home or abroad. With competitive rates, flexible repayment options, and swift processing, we make your study dreams achievable.
+                  Axis Bank, a premier private bank in India, offers tailored education loans to fuel your academic ambitions at
+                  home or abroad. With competitive rates, flexible repayment options, and swift processing, we make your study
+                  dreams achievable.
                 </p>
               </section>
 
@@ -394,9 +499,7 @@ export default function AxisBank() {
                     </tbody>
                   </table>
                 </div>
-                <p className={styles.tableNote}>
-                  *Rates are indicative and subject to change.
-                </p>
+                <p className={styles.tableNote}>*Rates are indicative and subject to change.</p>
               </section>
 
               <section id="application-process" className={`${styles.section} ${styles.fadeInUp}`}>
@@ -449,7 +552,11 @@ export default function AxisBank() {
           </div>
         </main>
 
-        <div id="applicationModal" className={`${styles.modalOverlay} ${isModalOpen ? styles.show : ""}`} onClick={closeModal}>
+        <div
+          id="applicationModal"
+          className={`${styles.modalOverlay} ${isModalOpen ? styles.show : ""}`}
+          onClick={closeModal}
+        >
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div className={styles.progressBar} style={{ width: `${progress}%`, background: "#008080" }}></div>
             <h2 className={styles.modalTitle}>Axis Bank Education Loan Application</h2>
@@ -526,13 +633,16 @@ export default function AxisBank() {
                       required
                     />
                   </div>
-                  <p id="contactNumber-error" className={styles.error} style={{ display: "none" }}>Please enter a valid contact number (10-12 digits).</p>
+                  <p id="contactNumber-error" className={styles.error} style={{ display: "none" }}>
+                    Please enter a valid contact number (10-12 digits).
+                  </p>
                 </div>
                 <div className={styles.buttonGroup}>
                   <button type="button" className={`${styles.cancelButton} ${styles.buttonHover}`} onClick={closeModal}>Cancel</button>
                   <button type="button" className={`${styles.nextButton} ${styles.buttonHover}`} onClick={handleNext}>Next</button>
                 </div>
               </div>
+
               <div id="formStep2" className={`${styles.formStep} ${formStep === 2 ? "" : styles.hidden}`}>
                 <h3 className={styles.stepTitle}>Education Details</h3>
                 <div className={styles.formGroup}>
@@ -623,18 +733,12 @@ export default function AxisBank() {
                       required
                     >
                       <option value="">Select Month</option>
-                      <option value="January">January</option>
-                      <option value="February">February</option>
-                      <option value="March">March</option>
-                      <option value="April">April</option>
-                      <option value="May">May</option>
-                      <option value="June">June</option>
-                      <option value="July">July</option>
-                      <option value="August">August</option>
-                      <option value="September">September</option>
-                      <option value="October">October</option>
-                      <option value="November">November</option>
-                      <option value="December">December</option>
+                      {[
+                        "January","February","March","April","May","June",
+                        "July","August","September","October","November","December",
+                      ].map((m) => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
                     </select>
                     <select
                       id="intakeYear"
@@ -647,11 +751,9 @@ export default function AxisBank() {
                       required
                     >
                       <option value="">Select Year</option>
-                      <option value="2023">2023</option>
-                      <option value="2024">2024</option>
-                      <option value="2025">2025</option>
-                      <option value="2026">2026</option>
-                      <option value="2027">2027</option>
+                      {["2023","2024","2025","2026","2027"].map((y) => (
+                        <option key={y} value={y}>{y}</option>
+                      ))}
                     </select>
                   </div>
                   <p id="intake-error" className={styles.error} style={{ display: "none" }}>Please select an intake period.</p>
@@ -696,17 +798,17 @@ export default function AxisBank() {
               <h3 className={styles.footerTitle}>Stay Connected</h3>
               <div className={styles.socialLinks}>
                 <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="Facebook">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
                   </svg>
                 </a>
                 <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="Twitter">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
                   </svg>
                 </a>
                 <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="LinkedIn">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z" />
                   </svg>
                 </a>
@@ -715,8 +817,17 @@ export default function AxisBank() {
             <div>
               <h3 className={styles.footerTitle}>Newsletter</h3>
               <form className={styles.newsletterForm}>
-                <input type="email" placeholder="Enter your email" className={`${styles.newsletterInput} ${styles.inputFocus}`} aria-label="Newsletter email" onFocus={(e) => e.target.classList.add(styles.inputActive)} onBlur={(e) => e.target.classList.remove(styles.inputActive)} />
-                <button type="submit" className={`${styles.newsletterButton} ${styles.buttonHover}`}>Subscribe</button>
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className={`${styles.newsletterInput} ${styles.inputFocus}`}
+                  aria-label="Newsletter email"
+                  onFocus={(e) => e.target.classList.add(styles.inputActive)}
+                  onBlur={(e) => e.target.classList.remove(styles.inputActive)}
+                />
+                <button type="submit" className={`${styles.newsletterButton} ${styles.buttonHover}`}>
+                  Subscribe
+                </button>
               </form>
             </div>
           </div>

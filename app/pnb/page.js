@@ -1,4 +1,4 @@
-// app/PNB/page.js
+// app/pnb/page.js
 "use client";
 
 import { useState, useEffect } from "react";
@@ -13,7 +13,7 @@ const supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmYnlibmxtZ250aWdnZXRvbmFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NDg3NjIsImV4cCI6MjA2NDEyNDc2Mn0.KNeuwHnFp0H97w2jOgE9vOaOhfwNuHwSdiRlB9tphqo"
 );
 
-export default function PNB() {
+export default function pnb() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formStep, setFormStep] = useState(1);
   const [progress, setProgress] = useState(50);
@@ -196,7 +196,7 @@ export default function PNB() {
       intake: `${formData.intakeMonth} ${formData.intakeYear}`,
       admit_status: formData.admitStatus,
       created_at: new Date().toISOString(),
-      source_url: "/PNB",
+      source_url: "/pnb",
     };
 
     if (await submitToSupabase(data)) {
@@ -207,61 +207,140 @@ export default function PNB() {
   return (
     <>
       <Head>
-        <title>PNB Education Loan for Abroad Studies | StudySahara</title>
-        <meta
-          name="description"
-          content="Apply for PNB education loans for studying abroad. Competitive rates, flexible repayment, and expert assistance from StudySahara."
-        />
-        <meta
-          name="keywords"
-          content="PNB education loan, Punjab National Bank study loan, PNB abroad loan, PNB student loan, PNB education loan interest rate"
-        />
-        <link rel="canonical" href="https://www.studysahara.com/PNB" />
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="StudySahara" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {/* JSON-LD FAQ (basic) */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              mainEntity: [
-                {
-                  "@type": "Question",
-                  name: "What is the maximum PNB loan amount?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text:
-                      "PNB can fund large education loan amounts depending on the course, country and collateral. Unsecured and secured options are available.",
-                  },
-                },
-                {
-                  "@type": "Question",
-                  name: "Is collateral required with PNB?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text:
-                      "Collateral may not be required for lower amounts. Higher loan amounts typically need acceptable collateral or co-borrower strength.",
-                  },
-                },
-                {
-                  "@type": "Question",
-                  name: "What is the repayment period?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text:
-                      "Repayment tenure commonly extends up to 15 years after the moratorium (course duration plus buffer).",
-                  },
-                },
-              ],
-            }),
-          }}
-        />
-      </Head>
+  {/* Primary SEO */}
+  <title>PNB Education Loan for Abroad Studies | StudySahara</title>
+  <meta
+    name="description"
+    content="Apply for Punjab National Bank (PNB) education loans for studying abroad. Flexible repayment, concessions, and expert assistance from StudySahara."
+  />
+  <meta
+    name="keywords"
+    content="PNB education loan, Punjab National Bank study loan, PNB abroad loan, PNB student loan, PNB education loan interest rate"
+  />
+  <link rel="canonical" href="https://www.studysahara.com/pnb" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="StudySahara" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-      <div className={styles.PNBContainer}>
+  {/* Open Graph */}
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="PNB Education Loan for Abroad Studies | StudySahara" />
+  <meta
+    property="og:description"
+    content="Punjab National Bank education loans for abroad studies. Compare amounts, rates, and repayment with StudySahara’s free guidance."
+  />
+  <meta property="og:url" content="https://www.studysahara.com/pnb" />
+  <meta property="og:site_name" content="StudySahara" />
+  <meta property="og:image" content="https://www.studysahara.com/og/pnb.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="PNB Education Loan - StudySahara" />
+
+  {/* Twitter */}
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="PNB Education Loan for Abroad Studies | StudySahara" />
+  <meta
+    name="twitter:description"
+    content="PNB education loans for global studies with flexible repayment. Free guidance to apply via StudySahara."
+  />
+  <meta name="twitter:image" content="https://www.studysahara.com/og/pnb.jpg" />
+
+  {/* JSON-LD FAQ (existing) */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "What is the maximum PNB loan amount?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text:
+                "Punjab National Bank can fund large education loan amounts depending on the course, country and collateral. Both unsecured and secured options are available.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Is collateral required with PNB?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text:
+                "Collateral may not be required for smaller loans. Higher loan amounts typically need acceptable collateral or co-borrower strength.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "What is the repayment period?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text:
+                "Repayment tenure can extend up to 15 years after the moratorium (course duration plus buffer).",
+            },
+          },
+        ],
+      }),
+    }}
+  />
+
+  {/* JSON-LD Breadcrumb */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://www.studysahara.com",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "PNB Education Loan",
+            item: "https://www.studysahara.com/pnb",
+          },
+        ],
+      }),
+    }}
+  />
+
+  {/* JSON-LD LoanOrCredit */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "LoanOrCredit",
+        name: "PNB Education Loan",
+        url: "https://www.studysahara.com/pnb",
+        provider: { "@type": "BankOrCreditUnion", name: "Punjab National Bank" },
+        areaServed: "IN",
+        loanType: "EducationLoan",
+        interestRate: {
+          "@type": "QuantitativeValue",
+          minValue: 8.75,
+          maxValue: 10.5,
+          unitText: "PERCENT",
+        },
+        offers: {
+          "@type": "Offer",
+          availability: "https://schema.org/InStock",
+          url: "https://www.studysahara.com/pnb",
+          priceCurrency: "INR",
+          price: "0",
+        },
+      }),
+    }}
+  />
+</Head>
+
+      <div className={styles.pnbContainer}>
         <header className={styles.header}>
           <div className={styles.headerContent}>
             <Link href="/" className={styles.logo}>
@@ -298,7 +377,7 @@ export default function PNB() {
           <section className={`${styles.hero} ${styles.fadeIn}`}>
             <div className={styles.heroContent}>
               <div className={styles.heroText}>
-                <h1 className={styles.heroTitle}>PNB Education Loan</h1>
+                <h1 className={styles.heroTitle}>pnb Education Loan</h1>
                 <p className={styles.heroSubtitle}>
                   Finance your global education with Punjab National Bank’s trusted
                   study loan options and flexible repayment plans.
@@ -314,11 +393,11 @@ export default function PNB() {
               <div className={styles.heroImage}>
                 <div className={styles.imageWrapper}>
                   <Image
-                    src="/images/PNB.png"
+                    src="/images/pnb.png"
                     alt="PNB Logo"
-                    width={170}
+                    width={140}
                     height={110}
-                    className={styles.PNBImage}
+                    className={styles.pnbImage}
                   />
                 </div>
               </div>
@@ -379,10 +458,10 @@ export default function PNB() {
               >
                 <h2 className={styles.sectionTitle}>Overview</h2>
                 <p className={styles.sectionText}>
-                  Punjab National Bank (PNB) provides education loans that support
+                  Punjab National Bank (pnb) provides education loans that support
                   undergraduate, postgraduate and professional programs in India
                   and abroad. With competitive interest rates, sensible moratorium,
-                  and long tenures, PNB is a dependable option for students planning
+                  and long tenures, pnb is a dependable option for students planning
                   overseas education.
                 </p>
               </section>
@@ -473,7 +552,7 @@ export default function PNB() {
               >
                 <h2 className={styles.sectionTitle}>Interest Rates & Charges</h2>
                 <p className={styles.sectionText}>
-                  PNB links education loan rates to benchmark lending rates. Actual
+                  pnb links education loan rates to benchmark lending rates. Actual
                   pricing depends on program, security and applicant profile.
                 </p>
                 <div className={styles.tableContainer}>
@@ -504,7 +583,7 @@ export default function PNB() {
                 </div>
                 <p className={styles.tableNote}>
                   *Rates/fees are indicative and vary by profile and scheme. Final
-                  sanction terms are issued by PNB.
+                  sanction terms are issued by pnb.
                 </p>
               </section>
 
@@ -515,9 +594,9 @@ export default function PNB() {
                 <h2 className={styles.sectionTitle}>Application Process</h2>
                 <ol className={styles.processList}>
                   <li><strong>Submit Inquiry:</strong> Share your basic details online.</li>
-                  <li><strong>Shortlisting:</strong> Our advisor maps suitable PNB options.</li>
+                  <li><strong>Shortlisting:</strong> Our advisor maps suitable pnb options.</li>
                   <li><strong>Documents:</strong> We help compile & review your file.</li>
-                  <li><strong>Application:</strong> Apply via PNB with our guidance.</li>
+                  <li><strong>Application:</strong> Apply via pnb with our guidance.</li>
                   <li><strong>Sanction & Disbursal:</strong> Receive sanction; funds as per schedule.</li>
                 </ol>
                 <button
@@ -544,7 +623,7 @@ export default function PNB() {
                       className={styles.faqQuestion}
                       onClick={() => toggleFAQ("faq1")}
                     >
-                      What is the maximum loan amount with PNB?
+                      What is the maximum loan amount with pnb?
                       <span id="faq1-icon" className={styles.faqIcon}>+</span>
                     </h3>
                     <p
@@ -552,7 +631,7 @@ export default function PNB() {
                       className={styles.faqAnswer}
                       style={{ display: "none" }}
                     >
-                      PNB can fund significant amounts based on the course,
+                      pnb can fund significant amounts based on the course,
                       institution and collateral/guarantor strength.
                     </p>
                   </div>
@@ -608,14 +687,14 @@ export default function PNB() {
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
-            aria-labelledby="PNB-modal-title"
+            aria-labelledby="pnb-modal-title"
           >
             <div
               className={styles.progressBar}
               style={{ width: `${progress}%`, background: "#2b6cb0" }}
             ></div>
-            <h2 id="PNB-modal-title" className={styles.modalTitle}>
-              PNB Education Loan Application
+            <h2 id="pnb-modal-title" className={styles.modalTitle}>
+              pnb Education Loan Application
             </h2>
 
             <form id="applicationForm" onSubmit={handleSubmit}>

@@ -1,3 +1,4 @@
+// app/unionbank/page.js
 "use client";
 
 import { useState, useEffect } from "react";
@@ -13,6 +14,9 @@ const supabase = createClient(
 );
 
 export default function UnionBank() {
+  const CANONICAL = "https://www.studysahara.com/unionbank";
+  const OG_IMAGE = "https://www.studysahara.com/og/unionbank.jpg";
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formStep, setFormStep] = useState(1);
@@ -34,29 +38,26 @@ export default function UnionBank() {
 
   useEffect(() => {
     fetch("/universities.json")
-      .then((response) => {
-        if (!response.ok) throw new Error(`Failed to load universities.json: ${response.status}`);
-        return response.json();
+      .then((res) => {
+        if (!res.ok) throw new Error(`Failed to load universities.json: ${res.status}`);
+        return res.json();
       })
       .then((data) => setUniversitiesData(data))
-      .catch((error) => console.error("Error loading universities:", error.message));
+      .catch((err) => console.error("Error loading universities:", err.message));
 
-    const handleResize = () => {
+    const onResize = () => {
       if (window.innerWidth > 768 && isSidebarOpen) setIsSidebarOpen(false);
     };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, [isSidebarOpen]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const openModal = () => {
     setIsModalOpen(true);
     document.body.style.overflow = "hidden";
   };
-
   const closeModal = () => {
     setIsModalOpen(false);
     setFormStep(1);
@@ -80,11 +81,11 @@ export default function UnionBank() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    console.log(`Updated ${name} to ${value}`);
     if (name === "university" && value.trim().length >= 3 && formData.country) {
-      const filtered = universitiesData[formData.country]?.filter((uni) =>
-        uni.toLowerCase().startsWith(value.trim().toLowerCase())
-      ) || [];
+      const filtered =
+        universitiesData[formData.country]?.filter((uni) =>
+          uni.toLowerCase().startsWith(value.trim().toLowerCase())
+        ) || [];
       setUniversityList(filtered);
     } else if (name === "country") {
       setFormData((prev) => ({ ...prev, university: "" }));
@@ -94,14 +95,14 @@ export default function UnionBank() {
 
   const validateStep1 = () => {
     clearErrors();
-    let errors = [];
+    const errors = [];
     if (!formData.fullName.trim()) {
-      errors.push("Full name is empty");
-      document.getElementById("fullName-error").classList.remove("hidden");
+      errors.push("name");
+      document.getElementById("fullName-error")?.classList.remove("hidden");
     }
     if (!formData.email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
-      errors.push("Invalid email");
-      document.getElementById("email-error").classList.remove("hidden");
+      errors.push("email");
+      document.getElementById("email-error")?.classList.remove("hidden");
     }
     const fullContactNumber = formData.countryCode + formData.contactNumber;
     if (
@@ -109,10 +110,10 @@ export default function UnionBank() {
       !formData.contactNumber.match(/^\d{10,12}$/) ||
       !fullContactNumber.match(/^\+\d{1,3}\d{10,12}$/)
     ) {
-      errors.push("Invalid contact number");
-      document.getElementById("contactNumber-error").classList.remove("hidden");
+      errors.push("phone");
+      document.getElementById("contactNumber-error")?.classList.remove("hidden");
     }
-    if (errors.length > 0) {
+    if (errors.length) {
       alert("Please correct errors in Step 1.");
       return false;
     }
@@ -121,28 +122,28 @@ export default function UnionBank() {
 
   const validateStep2 = () => {
     clearErrors();
-    let errors = [];
+    const errors = [];
     if (!formData.country) {
-      errors.push("Country not selected");
-      document.getElementById("country-error").classList.remove("hidden");
+      errors.push("country");
+      document.getElementById("country-error")?.classList.remove("hidden");
     }
     if (!formData.university.trim()) {
-      errors.push("University not specified");
-      document.getElementById("university-error").classList.remove("hidden");
+      errors.push("university");
+      document.getElementById("university-error")?.classList.remove("hidden");
     }
     if (!formData.course.trim()) {
-      errors.push("Course not specified");
-      document.getElementById("course-error").classList.remove("hidden");
+      errors.push("course");
+      document.getElementById("course-error")?.classList.remove("hidden");
     }
     if (!formData.intakeMonth || !formData.intakeYear) {
-      errors.push("Intake not selected");
-      document.getElementById("intake-error").classList.remove("hidden");
+      errors.push("intake");
+      document.getElementById("intake-error")?.classList.remove("hidden");
     }
     if (!formData.admitStatus) {
-      errors.push("Admit status not selected");
-      document.getElementById("admitStatus-error").classList.remove("hidden");
+      errors.push("admit");
+      document.getElementById("admitStatus-error")?.classList.remove("hidden");
     }
-    if (errors.length > 0) {
+    if (errors.length) {
       alert("Please correct errors in Step 2.");
       return false;
     }
@@ -162,19 +163,15 @@ export default function UnionBank() {
       "intakeYear",
       "admitStatus",
     ].forEach((id) => {
-      const input = document.getElementById(id);
-      const error = document.getElementById(`${id}-error`);
-      if (input) input.classList.remove("border-red-500");
-      if (error) error.classList.add("hidden");
+      document.getElementById(id)?.classList.remove("border-red-500");
+      document.getElementById(`${id}-error`)?.classList.add("hidden");
     });
   };
 
   const submitToSupabase = async (data) => {
     try {
-      const response = await supabase
-        .from("student_applications")
-        .insert([data]);
-      return response.status === 201;
+      const res = await supabase.from("student_applications").insert([data]);
+      return res.status === 201;
     } catch (error) {
       console.error("Supabase fetch error:", error.message);
       alert(`Error: ${error.message}. Please try again.`);
@@ -210,37 +207,143 @@ export default function UnionBank() {
       setProgress(100);
     }
   };
-
   const handlePrev = () => {
     setFormStep(1);
     setProgress(50);
   };
 
+  // -------- JSON-LD --------
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.studysahara.com" },
+      { "@type": "ListItem", position: 2, name: "Union Bank of India Education Loan", item: CANONICAL },
+    ],
+  };
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What is the maximum loan amount from Union Bank of India?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Up to ₹40 lakh without collateral for overseas studies; no upper limit for secured loans (subject to policy).",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Is collateral required for Union Bank education loans?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Collateral is not required up to ₹40 lakh for abroad studies (and up to ₹4 lakh in India). Above these, collateral/guarantor may be required.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What is the repayment period?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Up to 15 years for loans above ₹7.5 lakh and up to 10 years for loans up to ₹7.5 lakh, with a moratorium of course duration plus 1 year.",
+        },
+      },
+    ],
+  };
+
+  const loanJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LoanOrCredit",
+    name: "Union Bank of India Education Loan",
+    url: CANONICAL,
+    provider: { "@type": "BankOrCreditUnion", name: "Union Bank of India" },
+    areaServed: "IN",
+    loanType: "EducationLoan",
+    interestRate: {
+      "@type": "QuantitativeValue",
+      minValue: 7.85,
+      maxValue: 11.75,
+      unitText: "PERCENT",
+    },
+    offers: {
+      "@type": "Offer",
+      availability: "https://schema.org/InStock",
+      url: CANONICAL,
+      priceCurrency: "INR",
+      price: "0",
+    },
+  };
+
   return (
     <>
       <Head>
-        <title>Union Bank of India Education Loan - StudySahara</title>
-        <meta name="description" content="Explore Union Bank of India's education loan options with StudySahara. Get up to ₹40 lakh without collateral for studying abroad with flexible repayment terms." />
-        <meta name="keywords" content="Union Bank education loan, study abroad loan, education financing, StudySahara, loan without collateral" />
+        {/* Primary SEO */}
+        <title>Union Bank of India Education Loan | StudySahara</title>
+        <meta
+          name="description"
+          content="Explore UBI education loans for study in India & abroad. Unsecured up to ₹40L, flexible repayment, concessions & subsidies. Check eligibility, documents & apply."
+        />
+        <meta
+          name="keywords"
+          content="Union Bank education loan, UBI study loan, unsecured student loan, study abroad loan India, StudySahara"
+        />
         <meta name="robots" content="index, follow" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta charSet="UTF-8" />
+        <link rel="canonical" href={CANONICAL} />
         <meta name="author" content="StudySahara" />
-        <link rel="canonical" href="https://www.studysahara.com/unionbank" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charSet="UTF-8" />
+
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Union Bank of India Education Loan | StudySahara" />
+        <meta
+          property="og:description"
+          content="Loans up to ₹40L without collateral for abroad studies. See features, eligibility & apply with expert help."
+        />
+        <meta property="og:url" content={CANONICAL} />
+        <meta property="og:site_name" content="StudySahara" />
+        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Union Bank of India Education Loan - StudySahara" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Union Bank of India Education Loan | StudySahara" />
+        <meta
+          name="twitter:description"
+          content="Unsecured up to ₹40L, flexible tenures & concessions. Apply now."
+        />
+        <meta name="twitter:image" content={OG_IMAGE} />
+
+        {/* Performance */}
+        <link rel="preload" as="image" href="/images/logo.png" />
+        <link rel="preload" as="image" href="/images/unionbank.png" />
+
+        {/* JSON-LD */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(loanJsonLd) }} />
       </Head>
+
       <div className={styles.unionbankContainer}>
         <header className={styles.header}>
           <div className={styles.headerContent}>
             <Link href="/" className={styles.logo}>
-              <Image src="/images/logo.png" alt="StudySahara Logo" width={40} height={48} className={styles.logoImage} />
+              <Image src="/images/logo.png" alt="StudySahara Logo" width={40} height={48} className={styles.logoImage} priority />
               <span className={styles.logoText}>StudySahara</span>
             </Link>
-             <Link href="/" className={styles.navLink}>
-                  <svg className={styles.homeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                </Link>
-                </div>
+            <Link href="/" className={styles.navLink} aria-label="Go to home">
+              <svg className={styles.homeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </Link>
+          </div>
         </header>
 
         <main className={styles.main}>
@@ -249,8 +352,7 @@ export default function UnionBank() {
               <div className={styles.heroText}>
                 <h1 className={styles.heroTitle}>Union Bank of India Education Loan</h1>
                 <p className={styles.heroSubtitle}>
-                  Unlock your global education dreams with loans up to ₹40 lakh
-                  without collateral and flexible repayment options.
+                  Unlock your global education dreams with loans up to ₹40 lakh without collateral and flexible repayment options.
                 </p>
                 <button id="heroApplyBtn" className={styles.heroButton} onClick={openModal}>
                   Apply Now
@@ -260,11 +362,11 @@ export default function UnionBank() {
                 <div className={styles.imageWrapper}>
                   <Image
                     src="/images/unionbank.png"
-                    alt="Union Bank of India Logo"
+                    alt="Union Bank of India logo"
                     width={180}
                     height={180}
                     className={styles.unionbankImage}
-                    onError={(e) => (e.target.src = "/images/ubi.png")}
+                    priority
                   />
                 </div>
               </div>
@@ -291,11 +393,8 @@ export default function UnionBank() {
               <section id="overview" className={`${styles.section} ${styles.fadeInUp}`}>
                 <h2 className={styles.sectionTitle}>Overview</h2>
                 <p className={styles.sectionText}>
-                  Union Bank of India offers education loans to support students
-                  pursuing higher education in India and abroad. With loans up to
-                  ₹40 lakh without collateral for overseas studies and no upper
-                  limit for secured loans, it provides financing at competitive
-                  rates starting at 7.85% p.a.
+                  Union Bank of India offers education loans to support students pursuing higher education in India and abroad. With loans up to
+                  ₹40 lakh without collateral for overseas studies and no upper limit for secured loans, it provides financing at competitive rates starting at 7.85% p.a.
                 </p>
               </section>
 
@@ -304,10 +403,10 @@ export default function UnionBank() {
                 <ul className={styles.featuresList}>
                   <li className={styles.featureItem}><span>✔</span> Loan Amount: Up to ₹40 lakh unsecured; no limit for secured.</li>
                   <li className={styles.featureItem}><span>✔</span> Moratorium: Course duration + 1 year.</li>
-                  <li className={styles.featureItem}><span>✔</span> Repayment: Up to 15 years (Min ₹7.5 lakh); 10 years (≤ ₹7.5 lakh).</li>
-                  <li className={styles.featureItem}><span>✔</span> Margin: Nil (up to ₹4 lakh); 5% (India), 15% (abroad) above.</li>
+                  <li className={styles.featureItem}><span>✔</span> Repayment: Up to 15 years (&gt;₹7.5L) or 10 years (&le;₹7.5L).</li>
+                  <li className={styles.featureItem}><span>✔</span> Margin: Nil (&le;₹4L); 5% (India), 15% (abroad) above.</li>
                   <li className={styles.featureItem}><span>✔</span> Rates: 7.85%–11.75% p.a., with female student concessions.</li>
-                  <li className={styles.featureItem}><span>✔</span> Subsidies: CSIS, Padho Pardesh, PM-Vidyalaxmi eligible.</li>
+                  <li className={styles.featureItem}><span>✔</span> Subsidies: CSIS, Padho Pardesh, PM-Vidyalakshmi eligible.</li>
                   <li className={styles.featureItem}><span>✔</span> Tax Benefits: Interest deductible under Section 80E.</li>
                 </ul>
               </section>
@@ -319,15 +418,15 @@ export default function UnionBank() {
                     <h3 className={styles.subTitle}>Student:</h3>
                     <ul className={styles.eligibilityList}>
                       <li>Indian national (NRI with Indian passport for India).</li>
-                      <li>Admission via entrance exams (e.g., IELTS, TOEFL) to recognized institutions.</li>
-                      <li>Minimum marks: 60% (general), 55% (OBC), 50% (SC/ST) for premier institutes.</li>
+                      <li>Admission via entrance/merit (IELTS/TOEFL etc.) to recognized institutions.</li>
+                      <li>Minimum marks criteria apply per category/institute.</li>
                     </ul>
                   </div>
                   <div>
                     <h3 className={styles.subTitle}>Co-applicant:</h3>
                     <ul className={styles.eligibilityList}>
                       <li>Mandatory (parent, spouse, or guardian).</li>
-                      <li>Steady income, good credit score (CIBIL ≥650).</li>
+                      <li>Steady income, good credit score (CIBIL ≥650 suggested).</li>
                     </ul>
                   </div>
                 </div>
@@ -342,7 +441,7 @@ export default function UnionBank() {
                       <li>Admission letter or proof of application.</li>
                       <li>Academic records (10th, 12th, graduation, entrance scores).</li>
                       <li>KYC (Aadhaar, PAN, Passport, Voter ID).</li>
-                      <li>Passport-size photos, visa (for abroad).</li>
+                      <li>Passport-size photos; visa for overseas.</li>
                     </ul>
                   </div>
                   <div>
@@ -358,7 +457,7 @@ export default function UnionBank() {
                     <ul className={styles.documentsList}>
                       <li>Loan application form.</li>
                       <li>Course fee structure.</li>
-                      <li>Collateral documents or guarantor form (if applicable).</li>
+                      <li>Collateral/guarantor documents if applicable.</li>
                     </ul>
                   </div>
                 </div>
@@ -367,8 +466,7 @@ export default function UnionBank() {
               <section id="interest-rates" className={`${styles.section} ${styles.fadeInUp}`}>
                 <h2 className={styles.sectionTitle}>Interest Rates & Charges</h2>
                 <p className={styles.sectionText}>
-                  Competitive rates with concessions for female students and
-                  premier institutes.
+                  Competitive rates with concessions for female students and premier institutes.
                 </p>
                 <div className={styles.tableContainer}>
                   <table className={styles.table}>
@@ -383,7 +481,7 @@ export default function UnionBank() {
                     <tbody>
                       <tr>
                         <td>Unsecured (up to ₹40 lakh)</td>
-                        <td>9.25%–11.75% (9.75%–11.25% for females)</td>
+                        <td>9.25%–11.75% (≈9.75%–11.25% for females)</td>
                         <td>₹10,000–₹20,000</td>
                         <td>Not required</td>
                       </tr>
@@ -396,9 +494,7 @@ export default function UnionBank() {
                     </tbody>
                   </table>
                 </div>
-                <p className={styles.tableNote}>
-                  *Rates vary by profile and institute. Contact Union Bank for details.
-                </p>
+                <p className={styles.tableNote}>*Rates vary by profile and institute.</p>
               </section>
 
               <section id="application-process" className={`${styles.section} ${styles.fadeInUp}`}>
@@ -442,8 +538,8 @@ export default function UnionBank() {
                       What is the repayment period? <span id="faq3-icon" className={styles.faqIcon}>+</span>
                     </h3>
                     <p id="faq3-answer" className={styles.faqAnswer} style={{ display: "none" }}>
-                      Up to 15 years (Min ₹7.5 lakh); 10 years (≤ ₹7.5 lakh), with a moratorium.
-                    </p>
+                 Up to 15 years (&gt;₹7.5 lakh) or 10 years (&le;₹7.5 lakh), with moratorium.
+                   </p>
                   </div>
                 </div>
               </section>
@@ -514,7 +610,7 @@ export default function UnionBank() {
                       <option value="+64">+64 (New Zealand)</option>
                       <option value="+971">+971 (Dubai)</option>
                     </select>
-                    <span className={styles.selectedCode}>{formData.countryCode}</span>
+                    <span className={styles.selectedCode} aria-hidden="true">{formData.countryCode}</span>
                     <input
                       type="tel"
                       id="contactNumber"
@@ -526,6 +622,8 @@ export default function UnionBank() {
                       onFocus={(e) => e.target.classList.add(styles.inputActive)}
                       onBlur={(e) => e.target.classList.remove(styles.inputActive)}
                       required
+                      inputMode="numeric"
+                      pattern="\d*"
                     />
                   </div>
                   <p id="contactNumber-error" className={styles.error} style={{ display: "none" }}>Please enter a valid contact number (10-12 digits).</p>
@@ -535,6 +633,7 @@ export default function UnionBank() {
                   <button type="button" className={`${styles.nextButton} ${styles.buttonHover}`} onClick={handleNext}>Next</button>
                 </div>
               </div>
+
               <div id="formStep2" className={`${styles.formStep} ${formStep === 2 ? "" : styles.hidden}`}>
                 <h3 className={styles.stepTitle}>Education Details</h3>
                 <div className={styles.formGroup}>
@@ -550,16 +649,9 @@ export default function UnionBank() {
                     required
                   >
                     <option value="">Select Country</option>
-                    <option value="USA">USA</option>
-                    <option value="UK">UK</option>
-                    <option value="Canada">Canada</option>
-                    <option value="Germany">Germany</option>
-                    <option value="Ireland">Ireland</option>
-                    <option value="Australia">Australia</option>
-                    <option value="France">France</option>
-                    <option value="New Zealand">New Zealand</option>
-                    <option value="Dubai">Dubai</option>
-                    <option value="Others">Others</option>
+                    {["USA","UK","Canada","Germany","Ireland","Australia","France","New Zealand","Dubai","Others"].map(c=>(
+                      <option key={c} value={c}>{c}</option>
+                    ))}
                   </select>
                   <p id="country-error" className={styles.error} style={{ display: "none" }}>Please select a country.</p>
                 </div>
@@ -578,11 +670,12 @@ export default function UnionBank() {
                     required
                   />
                   {universityList.length > 0 && (
-                    <div className={`${styles.autocompleteList} ${styles.fadeIn}`}>
+                    <div className={`${styles.autocompleteList} ${styles.fadeIn}`} role="listbox">
                       {universityList.map((uni) => (
                         <div
                           key={uni}
                           className={styles.autocompleteItem}
+                          role="option"
                           onClick={() => {
                             setFormData((prev) => ({ ...prev, university: uni }));
                             setUniversityList([]);
@@ -625,18 +718,9 @@ export default function UnionBank() {
                       required
                     >
                       <option value="">Month</option>
-                      <option value="January">January</option>
-                      <option value="February">February</option>
-                      <option value="March">March</option>
-                      <option value="April">April</option>
-                      <option value="May">May</option>
-                      <option value="June">June</option>
-                      <option value="July">July</option>
-                      <option value="August">August</option>
-                      <option value="September">September</option>
-                      <option value="October">October</option>
-                      <option value="November">November</option>
-                      <option value="December">December</option>
+                      {["January","February","March","April","May","June","July","August","September","October","November","December"].map(m=>(
+                        <option key={m} value={m}>{m}</option>
+                      ))}
                     </select>
                     <select
                       id="intakeYear"
@@ -649,11 +733,9 @@ export default function UnionBank() {
                       required
                     >
                       <option value="">Select Year</option>
-                      <option value="2023">2023</option>
-                      <option value="2024">2024</option>
-                      <option value="2025">2025</option>
-                      <option value="2026">2026</option>
-                      <option value="2027">2027</option>
+                      {["2023","2024","2025","2026","2027"].map(y=>(
+                        <option key={y} value={y}>{y}</option>
+                      ))}
                     </select>
                   </div>
                   <p id="intake-error" className={styles.error} style={{ display: "none" }}>Please select an intake.</p>
@@ -698,17 +780,17 @@ export default function UnionBank() {
               <h3 className={styles.footerTitle}>Connect</h3>
               <div className={styles.socialLinks}>
                 <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="Facebook">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
                   </svg>
                 </a>
                 <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="Twitter">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
                   </svg>
                 </a>
                 <a href="#" className={`${styles.socialLink} ${styles.socialHover}`} aria-label="LinkedIn">
-                  <svg className={styles.socialIcon} viewBox="0 0 24 24">
+                  <svg className={styles.socialIcon} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z" />
                   </svg>
                 </a>
