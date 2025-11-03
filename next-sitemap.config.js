@@ -3,36 +3,30 @@ module.exports = {
   siteUrl: 'https://www.studysahara.com',
   generateRobotsTxt: true,
 
-  // Force a single sitemap file (no index)
+  // Single sitemap
   generateIndexSitemap: false,
-  sitemapSize: 50000, // large enough to avoid splitting
+  sitemapSize: 50000,
 
-  // Crawl hints
   changefreq: 'weekly',
   priority: 0.6,
 
-  exclude: ['/askbot', '/success'],
+  // ⛔ Exclude private/utility pages from sitemap
+  exclude: ['/askbot', '/success', '/scan'],
 
+  // Normalize and add higher priority to key pages
   transform: async (config, path) => {
-    // ✅ Always normalize to lowercase so /PNB never leaks into sitemap
-    const normalized = path.toLowerCase();
-
+    const normalized = path.replace(/\/+/g, '/').toLowerCase();
     return {
-      loc: `${config.siteUrl}${normalized}`,
-      changefreq: normalized === '/' ? 'weekly' : config.changefreq,
-      priority:
-        normalized === '/'
-          ? 1.0
-          : [
-              '/eligibility',
-              '/no-co-applicant-and-no-collateral',
-              '/co-applicant-and-no-collateral',
-              '/us-co-applicant',
-              '/co-applicant-and-collateral',
-              '/pnb', // ✅ lowercase only
-            ].includes(normalized)
-          ? 0.9
-          : config.priority,
+      loc: normalized,
+      changefreq: config.changefreq,
+      priority: [
+        '/', '/eligibility',
+        '/pnb',
+        '/no-co-applicant-and-no-collateral',
+        '/co-applicant-and-no-collateral',
+        '/us-co-applicant',
+        '/co-applicant-and-collateral',
+      ].includes(normalized) ? 0.9 : config.priority,
       lastmod: new Date().toISOString(),
       alternateRefs: [],
     };
