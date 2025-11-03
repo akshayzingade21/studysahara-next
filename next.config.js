@@ -25,8 +25,6 @@ const nextConfig = {
       // Legacy about
       { source: '/our-company-studysahara', destination: '/ourcompany', permanent: true },
 
-      // Case variant seen by Google once
-      { source: '/PNB', destination: '/pnb', permanent: true },
     ];
   },
 };
