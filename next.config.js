@@ -2,22 +2,19 @@
 const nextConfig = {
   async redirects() {
     return [
-      // ✅ Normalize host to www
-     {
-  source: '/:path*',
-  has: [
-    { type: 'host', value: 'studysahara.com' },       // only non-www domain
-  ],
-  missing: [
-    { type: 'host', value: 'www.studysahara.com' },   // skip redirect if already www
-  ],
-  destination: 'https://www.studysahara.com/:path*',
-  permanent: true,
-},
-      // ✅ Remove legacy index.html
-      { source: '/index.html', destination: '/', permanent: true },
+      // ✅ Force HTTPS + www only if the host is exactly "studysahara.com"
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'studysahara.com' }],
+        destination: 'https://www.studysahara.com/:path*',
+        permanent: true,
+      },
 
-      // ✅ Legacy lender slugs → final slugs (avoid hyphens)
+      // ✅ Remove this rule if you previously added a second "has" for www
+      // (you only want this one)
+
+      // ✅ Keep all your other lender redirects below
+      { source: '/index.html', destination: '/', permanent: true },
       { source: '/icici-bank', destination: '/icicibank', permanent: true },
       { source: '/idfc-first-bank', destination: '/idfc', permanent: true },
       { source: '/union-bank', destination: '/unionbank', permanent: true },
@@ -30,12 +27,8 @@ const nextConfig = {
       { source: '/mpower-financing', destination: '/mpowerfinancing', permanent: true },
       { source: '/avanse-financial-services', destination: '/avanse', permanent: true },
       { source: '/sallie-mae', destination: '/salliemae', permanent: true },
-
-      // ✅ Legacy about route
-      { source: '/our-company-studysahara', destination: '/ourcompany', permanent: true },
-
-      // ✅ Common mistakes / uppercase
       { source: '/PNB', destination: '/pnb', permanent: true },
+      { source: '/our-company-studysahara', destination: '/ourcompany', permanent: true },
     ];
   },
 };
