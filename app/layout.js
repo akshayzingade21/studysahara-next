@@ -12,26 +12,15 @@ export const metadata = {
   },
   description:
     "Get the best education loan deals for studying abroad – lowest interest rates, discounted processing fees, and 100% free support.",
-  icons: {
-    icon: "/images/logo.png"
-  },
-  alternates: {
-    canonical: "https://www.studysahara.com/"
-  },
+  icons: { icon: "/images/logo.png" },
+  alternates: { canonical: "https://www.studysahara.com/" },
   openGraph: {
     title: "StudySahara – Education Loans for Studying Abroad",
     description:
       "Get the best education loan deals for studying abroad – lowest interest rates, discounted processing fees, and 100% free support.",
     url: "https://www.studysahara.com/",
     siteName: "StudySahara",
-    images: [
-      {
-        url: "https://www.studysahara.com/images/og-banner.jpg",
-        width: 1200,
-        height: 630,
-        alt: "StudySahara – Education Loans for Studying Abroad"
-      }
-    ],
+    images: [{ url: "https://www.studysahara.com/images/og-banner.jpg", width: 1200, height: 630, alt: "StudySahara – Education Loans for Studying Abroad" }],
     type: "website"
   },
   twitter: {
@@ -40,21 +29,21 @@ export const metadata = {
     description:
       "Get the best education loan deals for studying abroad – lowest interest rates, discounted processing fees, and 100% free support.",
     images: ["https://www.studysahara.com/images/og-banner.jpg"]
-  }
+  },
+  /** 👇 This fixes mobile sizing/zoom and uses the safe areas */
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    viewportFit: "cover",
+  },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Montserrat:wght@700&display=swap"
-          rel="stylesheet"
-        />
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-        />
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
       </head>
       <body>
         {children}

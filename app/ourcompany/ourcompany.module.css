@@ -387,3 +387,15 @@
     opacity: 1;
   }
 }
+.exploreLink {
+  margin-top: 8px;
+  font-weight: 600;
+  color: var(--brand-ink);
+}
+.exploreLink a {
+  color: var(--brand);
+  text-decoration: underline;
+}
+.exploreLink a:hover {
+  color: #0056d6;
+}
