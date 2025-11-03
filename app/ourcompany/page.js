@@ -72,11 +72,14 @@ export default function OurCompanyPage() {
       <section className={styles.heroSection}>
         <div className={styles.heroContent}>
           <h1>Empowering Your Study Abroad Dreams</h1>
-          <p>
-            StudySahara is India’s premier education loan marketplace, connecting students with
-            top government banks, private banks, NBFCs, and international lenders for the best study
-            abroad loan deals — all at no cost.
-          </p>
+         <p>
+  StudySahara is India’s premier education loan marketplace, connecting students with
+  top government banks, private banks, NBFCs, and international lenders for the best study
+  abroad loan deals — all at no cost.
+</p>
+<p>
+  Explore more – <a href="/" className={styles.footerLink}>www.studysahara.com</a>
+</p>
         </div>
       </section>
 
@@ -182,6 +185,7 @@ export default function OurCompanyPage() {
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
           <p>© 2025 StudySahara. All rights reserved.</p>
+          <a href="/" className={styles.footerLink}>www.studysahara.com</a>
           <p>No 51, 5th Floor, 5th Main Road, Above Alchemy Coffee Roasters, Bengaluru-560041</p>
           <p>
             <a href="mailto:hello@studysahara.com" className={styles.footerLink}>hello@studysahara.com</a>
