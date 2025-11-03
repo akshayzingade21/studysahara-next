@@ -3,12 +3,17 @@ const nextConfig = {
   async redirects() {
     return [
       // ✅ Normalize host to www
-      {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'studysahara.com' }],
-        destination: 'https://www.studysahara.com/:path*',
-        permanent: true,
-      },
+     {
+  source: '/:path*',
+  has: [
+    { type: 'host', value: 'studysahara.com' },       // only non-www domain
+  ],
+  missing: [
+    { type: 'host', value: 'www.studysahara.com' },   // skip redirect if already www
+  ],
+  destination: 'https://www.studysahara.com/:path*',
+  permanent: true,
+},
       // ✅ Remove legacy index.html
       { source: '/index.html', destination: '/', permanent: true },
 
