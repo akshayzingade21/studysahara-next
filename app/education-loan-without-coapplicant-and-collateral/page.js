@@ -13,7 +13,9 @@ export const metadata = {
   title: "Education Loan Without Co-Applicant and Collateral – 2025 Guide | StudySahara",
   description:
     "Can Indian students get an education loan without a co-applicant and without collateral? Learn eligibility, lenders, documents, timelines, and next steps.",
-  alternates: { canonical: "/education-loan-without-coapplicant-and-collateral" },
+  alternates: {
+    canonical: "https://www.studysahara.com/education-loan-without-coapplicant-and-collateral",
+  },
   openGraph: {
     title: "Education Loan Without Co-Applicant and Collateral – StudySahara",
     description:
@@ -21,21 +23,48 @@ export const metadata = {
     url: "https://www.studysahara.com/education-loan-without-coapplicant-and-collateral",
     siteName: "StudySahara",
     type: "article",
+    images: [
+      {
+        url: "https://www.studysahara.com/images/og/no-coapp-nocollateral.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Education Loan Without Co-Applicant and Collateral",
+      },
+    ],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
 function JsonLd() {
   const article = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: "Education Loan Without Co-Applicant and Collateral",
-    description:
-      "Guide for students to apply for an education loan without a co-applicant and without collateral.",
-    mainEntityOfPage:
-      "https://www.studysahara.com/education-loan-without-coapplicant-and-collateral",
-    author: { "@type": "Organization", name: "StudySahara" },
-    publisher: { "@type": "Organization", name: "StudySahara" },
-  };
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Education Loan Without Co-Applicant and Collateral – 2025 Guide",
+  "description": "Can Indian students get an education loan without a co-applicant and collateral? Understand eligibility, documents, timelines, and next steps.",
+  "mainEntityOfPage": "https://www.studysahara.com/education-loan-without-coapplicant-and-collateral",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "author": { "@type": "Organization", "name": "StudySahara" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "StudySahara",
+    "logo": { "@type": "ImageObject", "url": "https://www.studysahara.com/images/logo.png" }
+  },
+  "image": [
+    "https://www.studysahara.com/images/og/no-coapp-nocollateral.png"
+  ],
+  "datePublished": "2025-11-05",      // <-- set actual date
+  "dateModified": "2025-11-05",       // <-- update when edited
+  "articleSection": ["Education Loans", "Unsecured Loans", "Abroad Studies"],
+  "keywords": ["education loan", "no co-applicant", "no collateral", "study abroad", "Indian students"],
+  "about": [
+    { "@type": "Thing", "name": "Education loan" },
+    { "@type": "Thing", "name": "Unsecured loan" }
+  ]
+};
 
   const faq = {
     "@context": "https://schema.org",
@@ -90,8 +119,61 @@ function JsonLd() {
 
 export default function Page() {
   return (
-    <main className={styles.page}>
-      <JsonLd />
+ <main className={styles.page}>
+  <JsonLd />
+
+  {/* FAQ structured data for Google */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "Is it possible to get an education loan without a co-applicant and collateral?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Yes. Certain international and private lenders assess only the student’s admit, course, and future earning potential, without needing a co-applicant or security.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Who can apply for a loan without a co-applicant?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Students pursuing postgraduate or STEM programs at reputed global universities are most likely to qualify.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "What are the interest rates for loans without co-applicant and collateral?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Rates differ by lender and currency; international lenders may offer dollar-denominated loans while Indian NBFCs provide INR loans with flexible repayment terms.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "What documents are required when applying without a co-applicant?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "University admit letter, KYC, academic transcripts, and proof of admission or visa. No income or collateral documents are needed.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "How can StudySahara help with such loans?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "StudySahara connects you with lenders that specialize in unsecured or no-co-applicant education loans and supports you throughout the process at no cost.",
+            },
+          },
+        ],
+      }),
+    }}
+  />
 
       {/* HERO */}
       <section className={styles.hero}>

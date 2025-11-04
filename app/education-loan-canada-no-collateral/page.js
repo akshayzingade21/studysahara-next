@@ -11,7 +11,9 @@ export const metadata = {
   title: "Education Loan for Canada Without Collateral – 2025 Guide | StudySahara",
   description:
     "Step-by-step guide for Indian students to get an education loan for Canada without collateral. Eligibility, documents, timelines, FAQs, and tips.",
-  alternates: { canonical: "/education-loan-canada-no-collateral" },
+  alternates: {
+    canonical: "https://www.studysahara.com/education-loan-canada-no-collateral",
+  },
   openGraph: {
     title: "Education Loan for Canada Without Collateral – StudySahara",
     description:
@@ -19,21 +21,48 @@ export const metadata = {
     url: "https://www.studysahara.com/education-loan-canada-no-collateral",
     siteName: "StudySahara",
     type: "article",
+    images: [
+      {
+        url: "https://www.studysahara.com/images/og/canada-nocollateral.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Education Loan for Canada Without Collateral",
+      },
+    ],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
 function JsonLd() {
   const article = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: "Education Loan for Canada Without Collateral",
-    description:
-      "Step-by-step guide for Indian students to get a Canada education loan without collateral.",
-    mainEntityOfPage:
-      "https://www.studysahara.com/education-loan-canada-no-collateral",
-    author: { "@type": "Organization", name: "StudySahara" },
-    publisher: { "@type": "Organization", name: "StudySahara" },
-  };
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Education Loan for Canada Without Collateral – 2025 Guide",
+  "description": "Step-by-step guide for Indian students to get an education loan for Canada without collateral. Eligibility, documents, timelines, FAQs, and tips.",
+  "mainEntityOfPage": "https://www.studysahara.com/education-loan-canada-no-collateral",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "author": { "@type": "Organization", "name": "StudySahara" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "StudySahara",
+    "logo": { "@type": "ImageObject", "url": "https://www.studysahara.com/images/logo.png" }
+  },
+  "image": [
+    "https://www.studysahara.com/images/og/canada-nocollateral.png"
+  ],
+  "datePublished": "2025-11-04",      // <-- update to your actual publish date
+  "dateModified": "2025-11-05",       // <-- update when you edit
+  "articleSection": ["Education Loans", "Canada", "Collateral-Free"],
+  "keywords": ["education loan", "Canada", "without collateral", "study abroad loan", "Indian students"],
+  "about": [
+    { "@type": "Thing", "name": "Education loan" },
+    { "@type": "Thing", "name": "Canada" }
+  ]
+};
 
   const faq = {
     "@context": "https://schema.org",
@@ -90,8 +119,61 @@ export default function Page() {
   const waLink = `https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, "")}`;
 
   return (
-    <main className={styles.page}>
-      <JsonLd />
+   <main className={styles.page}>
+  <JsonLd />
+
+  {/* FAQ structured data for Google */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "Who is eligible for an education loan for Canada without collateral?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Eligibility depends on your university admit, program, academic record, and repayment prospects. Students joining government-recognized or top-ranked Canadian institutions are typically preferred.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Which lenders offer collateral-free education loans for Canada?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Several Indian banks, NBFCs, and international lenders provide unsecured loans for Canada. StudySahara helps compare these options and apply smoothly.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "What documents are required for a collateral-free Canada education loan?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Offer letter, fee structure, KYC, academic transcripts, test scores, and income proof of the co-applicant (if any). The exact list varies by lender.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "How much loan can I get without collateral for studying in Canada?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Unsecured loans usually range between ₹7 lakh and ₹60 lakh, depending on your university and income profile.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "How long does approval take for a Canada loan without collateral?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Once all documents are submitted, approvals typically take 5–15 working days. Early application helps avoid visa delays.",
+            },
+          },
+        ],
+      }),
+    }}
+  />
 
       {/* HERO */}
       <section className={styles.hero}>
