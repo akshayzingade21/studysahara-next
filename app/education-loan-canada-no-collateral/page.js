@@ -38,80 +38,79 @@ export const metadata = {
 
 function JsonLd() {
   const article = {
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": "Education Loan for Canada Without Collateral – 2025 Guide",
-  "description": "Step-by-step guide for Indian students to get an education loan for Canada without collateral. Eligibility, documents, timelines, FAQs, and tips.",
-  "mainEntityOfPage": "https://www.studysahara.com/education-loan-canada-no-collateral",
-  "inLanguage": "en",
-  "isAccessibleForFree": true,
-  "author": { "@type": "Organization", "name": "StudySahara" },
-  "publisher": {
-    "@type": "Organization",
-    "name": "StudySahara",
-    "logo": { "@type": "ImageObject", "url": "https://www.studysahara.com/images/logo.png" }
-  },
-  "image": [
-    "https://www.studysahara.com/images/og/canada-nocollateral.png"
-  ],
-  "datePublished": "2025-11-04",      // <-- update to your actual publish date
-  "dateModified": "2025-11-05",       // <-- update when you edit
-  "articleSection": ["Education Loans", "Canada", "Collateral-Free"],
-  "keywords": ["education loan", "Canada", "without collateral", "study abroad loan", "Indian students"],
-  "about": [
-    { "@type": "Thing", "name": "Education loan" },
-    { "@type": "Thing", "name": "Canada" }
-  ]
-};
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Education Loan for Canada Without Collateral – 2025 Guide",
+    "description": "Step-by-step guide for Indian students to get an education loan for Canada without collateral. Eligibility, documents, timelines, FAQs, and tips.",
+    "mainEntityOfPage": "https://www.studysahara.com/education-loan-canada-no-collateral",
+    "inLanguage": "en",
+    "isAccessibleForFree": true,
+    "author": { "@type": "Organization", "name": "StudySahara" },
+    "publisher": {
+      "@type": "Organization",
+      "name": "StudySahara",
+      "logo": { "@type": "ImageObject", "url": "https://www.studysahara.com/images/logo.png" }
+    },
+    "image": ["https://www.studysahara.com/images/og/canada-nocollateral.jpg"],
+    "datePublished": "2025-11-05",
+    "dateModified": "2025-11-05",
+    "articleSection": ["Education Loans", "Canada", "Collateral-Free"],
+    "keywords": ["education loan", "Canada", "without collateral", "study abroad loan", "Indian students"]
+  };
 
   const faq = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: [
+    "mainEntity": [
       {
         "@type": "Question",
-        name: "Can I get a Canada education loan without collateral?",
-        acceptedAnswer: {
+        "name": "Who is eligible for an education loan for Canada without collateral?",
+        "acceptedAnswer": {
           "@type": "Answer",
-          text:
-            "Yes. Several lenders offer unsecured (collateral-free) loans based on your admit, co-applicant profile, income proofs, and credit history.",
-        },
+          "text": "Eligibility depends on your university admit, program, academic record, and repayment prospects. Students joining government-recognized or top-ranked Canadian institutions are typically preferred."
+        }
       },
       {
         "@type": "Question",
-        name: "What documents are required for a collateral-free loan?",
-        acceptedAnswer: {
+        "name": "Which lenders offer collateral-free education loans for Canada?",
+        "acceptedAnswer": {
           "@type": "Answer",
-          text:
-            "Typically: admission/offer letter, fee structure, KYC docs, academic records, co-applicant KYC + income proof (salary slips/ITR/bank statements).",
-        },
+          "text": "Several Indian banks, NBFCs, and international lenders provide unsecured loans for Canada. StudySahara helps compare these options and apply smoothly."
+        }
       },
       {
         "@type": "Question",
-        name: "How long does approval and disbursement take?",
-        acceptedAnswer: {
+        "name": "What documents are required for a collateral-free Canada education loan?",
+        "acceptedAnswer": {
           "@type": "Answer",
-          text:
-            "Typical TAT is 5–15 working days after complete documents. Disbursement is aligned to university fee deadlines and your visa timeline.",
-        },
+          "text": "Offer letter, fee structure, KYC, academic transcripts, test scores, and income proof of the co-applicant (if any). The exact list varies by lender."
+        }
       },
       {
         "@type": "Question",
-        name: "Are living expenses covered?",
-        acceptedAnswer: {
+        "name": "How much loan can I get without collateral for studying in Canada?",
+        "acceptedAnswer": {
           "@type": "Answer",
-          text:
-            "Yes. Tuition plus living expenses, insurance, travel, and equipment (e.g., laptop) can be included up to the sanctioned limit.",
-        },
+          "text": "Unsecured loans usually range between ₹7 lakh and ₹60 lakh, depending on your university and income profile."
+        }
       },
-    ],
+      {
+        "@type": "Question",
+        "name": "How long does approval take for a Canada loan without collateral?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Once all documents are submitted, approvals typically take 5–15 working days. Early application helps avoid visa delays."
+        }
+      }
+    ]
   };
 
+  // ✨ Output both objects in ONE script to avoid duplicate FAQPage
   return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(article) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faq) }} />
-    </>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify([article, faq]) }}
+    />
   );
 }
 
@@ -121,60 +120,6 @@ export default function Page() {
   return (
    <main className={styles.page}>
   <JsonLd />
-
-  {/* FAQ structured data for Google */}
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{
-      __html: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        mainEntity: [
-          {
-            "@type": "Question",
-            name: "Who is eligible for an education loan for Canada without collateral?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Eligibility depends on your university admit, program, academic record, and repayment prospects. Students joining government-recognized or top-ranked Canadian institutions are typically preferred.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "Which lenders offer collateral-free education loans for Canada?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Several Indian banks, NBFCs, and international lenders provide unsecured loans for Canada. StudySahara helps compare these options and apply smoothly.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "What documents are required for a collateral-free Canada education loan?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Offer letter, fee structure, KYC, academic transcripts, test scores, and income proof of the co-applicant (if any). The exact list varies by lender.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "How much loan can I get without collateral for studying in Canada?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Unsecured loans usually range between ₹7 lakh and ₹60 lakh, depending on your university and income profile.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "How long does approval take for a Canada loan without collateral?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Once all documents are submitted, approvals typically take 5–15 working days. Early application helps avoid visa delays.",
-            },
-          },
-        ],
-      }),
-    }}
-  />
-
       {/* HERO */}
       <section className={styles.hero}>
         <div className={styles.heroBg}>
