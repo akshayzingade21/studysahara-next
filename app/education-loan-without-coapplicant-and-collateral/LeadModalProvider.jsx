@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import styles from "./educationCanada.module.css";
+import styles from "./noCoappNoCollateral.module.css";
 
 /**
  * Singleton modal provider.
