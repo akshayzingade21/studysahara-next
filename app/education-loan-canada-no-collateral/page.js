@@ -5,7 +5,7 @@ import LeadModalProvider from "./LeadModalProvider";
 import LeadTrigger from "./LeadTrigger";
 
 /** 👉 Put your WhatsApp number here (E.164 format) */
-const WHATSAPP_NUMBER = "+919999999999"; // TODO: replace with your real number
+const WHATSAPP_NUMBER = "+919741723972"; // TODO: replace with your real number
 
 export const metadata = {
   title: "Education Loan for Canada Without Collateral – 2025 Guide | StudySahara",
