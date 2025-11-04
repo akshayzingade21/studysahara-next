@@ -841,11 +841,6 @@
   transform: scale(1.2);
 }
 
-.socialIcon {
-  width: 20px;
-  height: 20px;
-}
-
 .newsletterForm {
   display: flex;
   gap: 10px;
@@ -1194,4 +1189,14 @@
     width: 100%;
   }
   /* Prevent horizontal overflow */
+}
+.socialIcon {
+  width: 20px;
+  height: 20px;
+  fill: white; /* this makes the icon white */
+  transition: fill 0.3s ease; /* optional smooth hover effect */
+}
+
+.socialIcon:hover {
+  fill: #0077b5; /* LinkedIn blue on hover (optional) */
 }

@@ -477,6 +477,14 @@ export default function Home() {
       <footer className={styles.footer}>
         <div className={styles.container}>
           <p>© 2025 StudySahara. All rights reserved.</p>
+          <a
+  href="https://www.linkedin.com/company/studysahara/"
+  target="_blank"
+  rel="noopener"
+  style={{ color: "white", textDecoration: "none" }}
+>
+  Follow us on LinkedIn
+</a>
         </div>
       </footer>
 

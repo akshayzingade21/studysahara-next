@@ -1,4 +1,4 @@
-.PNBContainer {
+.pnbContainer {
 font-family: "Poppins", sans-serif;
 background-color: #f0f4f8;
 scroll-behavior: smooth;
@@ -223,7 +223,7 @@ transition: transform 0.3s ease;
 transform: scale(1.05);
 }
 
-.PNBImage {
+.pnbImage {
 width: 100%;
 height: auto;
 }
@@ -842,8 +842,14 @@ transform: scale(1.2);
 }
 
 .socialIcon {
-width: 20px;
-height: 20px;
+  width: 20px;
+  height: 20px;
+  fill: white; /* this makes the icon white */
+  transition: fill 0.3s ease; /* optional smooth hover effect */
+}
+
+.socialIcon:hover {
+  fill: #0077b5; /* LinkedIn blue on hover (optional) */
 }
 
 .newsletterForm {
@@ -969,7 +975,7 @@ width: 100%;
 /* Mobile-specific optimizations */
 @media (max-width: 767px) {
   /* Adjust container padding for better spacing on small screens */
-  .PNBContainer {
+  .pnbContainer {
     padding: 0 10px;
   }
 
@@ -1045,7 +1051,7 @@ width: 100%;
     padding: 10px;
   }
 
-  .PNBImage {
+  .pnbImage {
     width: 90%;
   }
 

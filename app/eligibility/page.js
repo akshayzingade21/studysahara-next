@@ -898,7 +898,15 @@ export default function Eligibility() {
       <footer className={styles.footer}>
         <div className={styles.container}>
           <p className="text-gray-600">© 2025 StudySahara. All rights reserved.</p>
-          <p className="text-gray-500 text-sm mt-2">Support: support@studysahara.com | +91-123-456-7890</p>
+          <p className="text-gray-500 text-sm mt-2">Support: support@studysahara.com</p>
+        <a
+  href="https://www.linkedin.com/company/studysahara/"
+  target="_blank"
+  rel="noopener"
+  style={{ color: "white", textDecoration: "none" }}
+>
+  Follow us on LinkedIn
+</a>
         </div>
       </footer>
     </>
