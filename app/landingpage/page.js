@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Head from "next/head";
 import styles from "./landingpage.module.css";
 import { createClient } from "@supabase/supabase-js";
 import {
@@ -224,6 +225,53 @@ export default function LandingPage() {
   ];
 
   return (
+    <>
+          {/* ✅ SEO Head Section (added for indexing) */}
+      <Head>
+        <title>Apply for Education Loan | StudySahara</title>
+        <meta
+          name="description"
+          content="Apply for an education loan to study abroad with StudySahara. Compare no-collateral, co-applicant, and international lender options — free expert guidance."
+        />
+        <meta
+          name="keywords"
+          content="education loan apply, study abroad loan, no collateral loan, SBI, ICICI, Axis, PNB, StudySahara"
+        />
+        <link rel="canonical" href="https://www.studysahara.com/landingpage" />
+        <meta name="robots" content="index, follow" />
+        <meta property="og:type" content="website" />
+        <meta
+          property="og:title"
+          content="Apply for Education Loan | StudySahara"
+        />
+        <meta
+          property="og:description"
+          content="Get your education loan for studying abroad approved fast. Compare 15+ lenders and apply free with StudySahara experts."
+        />
+        <meta
+          property="og:url"
+          content="https://www.studysahara.com/landingpage"
+        />
+        <meta property="og:site_name" content="StudySahara" />
+        <meta
+          property="og:image"
+          content="https://www.studysahara.com/images/og-banner.png"
+        />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+      </Head>
+
+      {/* ✅ Minimal crawlable text so Google sees content pre-JS */}
+      <noscript>
+        <p>
+          Apply for your study abroad education loan with StudySahara. Get free
+          expert assistance for SBI, ICICI, Axis, PNB, and global lenders.
+        </p>
+      </noscript>
+      <p style={{ display: "none" }}>
+        StudySahara helps Indian students secure education loans for studying
+        abroad. No-collateral and co-applicant options available. Apply now.
+      </p>
     <main className={styles.page}>
       {/* Decorative BG */}
       <div className={styles.bgDecor} aria-hidden />
@@ -673,6 +721,7 @@ export default function LandingPage() {
         © {new Date().getFullYear()} StudySahara Financial Consultants LLP. All rights reserved.
       </footer>
     </main>
+    </>
   );
 }
 

@@ -281,15 +281,6 @@ export default function Page() {
             <LeadTrigger className={styles.footerBtnOutline} title="Get a Callback">Get a Callback</LeadTrigger>
           </div>
         </div>
-
-        <div className={styles.footerBottom}>
-          <span>© {new Date().getFullYear()} StudySahara. All rights reserved.</span>
-          <span>
-            <Link href="/ourcompany" className={styles.footerLink}>About</Link>
-            <span className={styles.footerSep}>•</span>
-            <Link href="/eligibility" className={styles.footerLink}>Check Eligibility</Link>
-          </span>
-        </div>
       </footer>
 
       {/* Floating WhatsApp */}
