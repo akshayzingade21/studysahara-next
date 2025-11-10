@@ -1,6 +1,8 @@
 // app/(auth)/login/page.js  (or app/[auth]/login/page.js)
 'use client';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import { Suspense } from 'react';
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
