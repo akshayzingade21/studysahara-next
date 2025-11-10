@@ -1,83 +1,143 @@
 // app/admin/dashboard/page.js
-"use client";
-// app/admin/dashboard/page.js
-import { createClient } from '@supabase/supabase-js';
-import dayjs from 'dayjs';
+'use client';
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE;
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE);
+import { useEffect, useMemo, useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
+
+// Runtime only — use public envs on client
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { persistSession: false },
+});
+
+export const revalidate = 0;             // no ISR
+export const dynamic = 'force-dynamic';  // avoid prerender
 
 function formatINR(n) {
   if (n === null || n === undefined) return '—';
+  const num = Number(n) || 0;
   try {
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(Number(n));
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 2,
+    }).format(num);
   } catch {
-    return `₹${Number(n).toFixed(2)}`;
+    return `₹${num.toFixed(2)}`;
   }
 }
 
 function safeDate(s) {
-  return s ? dayjs(s).format('YYYY-MM-DD HH:mm') : '—';
+  if (!s) return '—';
+  try {
+    const d = new Date(s);
+    if (Number.isNaN(d.getTime())) return '—';
+    return d.toLocaleString();
+  } catch {
+    return '—';
+  }
 }
 
-export const dynamic = 'force-dynamic'; // always SSR latest
+export default function AdminDashboardPage() {
+  const [loading, setLoading] = useState(true);
 
-export default async function AdminDashboardPage() {
-  // ---- Totals / aggregates ----
-  const [{ count: convCount }, { count: msgCount }] = await Promise.all([
-    supabase.from('conversations').select('*', { count: 'exact', head: true }),
-    supabase.from('messages').select('*', { count: 'exact', head: true })
-  ]);
+  const [convCount, setConvCount] = useState(0);
+  const [msgCount, setMsgCount] = useState(0);
+  const [aggCostRows, setAggCostRows] = useState([]);
 
-  const { data: aggCostRows } = await supabase
-    .from('cost_logs')
-    .select('est_cost_inr, est_cost_usd, model, created_at')
-    .order('created_at', { ascending: false })
-    .limit(2000);
+  const [recentConvs, setRecentConvs] = useState([]);
+  const [messageBatches, setMessageBatches] = useState([]);
 
-  const totalINR = (aggCostRows || []).reduce((sum, r) => sum + (Number(r.est_cost_inr) || 0), 0);
-  const totalUSD = (aggCostRows || []).reduce((sum, r) => sum + (Number(r.est_cost_usd) || 0), 0);
+  const [recentCosts, setRecentCosts] = useState([]);
 
-  // model-wise totals (last ~2000 rows)
-  const perModel = {};
-  (aggCostRows || []).forEach(r => {
-    const k = r.model || 'unknown';
-    perModel[k] = perModel[k] || { rows: 0, inr: 0, usd: 0 };
-    perModel[k].rows += 1;
-    perModel[k].inr += Number(r.est_cost_inr) || 0;
-    perModel[k].usd += Number(r.est_cost_usd) || 0;
-  });
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        // counts
+        const [{ count: c1 }, { count: c2 }] = await Promise.all([
+          supabase.from('conversations').select('*', { count: 'exact', head: true }),
+          supabase.from('messages').select('*', { count: 'exact', head: true }),
+        ]);
+        if (!mounted) return;
+        setConvCount(c1 ?? 0);
+        setMsgCount(c2 ?? 0);
 
-  // ---- Recent conversations (10) with last message time ----
-  const { data: recentConvs } = await supabase
-    .from('conversations')
-    .select('id, session_id, created_at')
-    .order('created_at', { ascending: false })
-    .limit(10);
+        // costs list for totals and per-model
+        const { data: costAgg } = await supabase
+          .from('cost_logs')
+          .select('est_cost_inr, est_cost_usd, model, created_at')
+          .order('created_at', { ascending: false })
+          .limit(2000);
+        if (!mounted) return;
+        setAggCostRows(costAgg || []);
 
-  // For each conversation, fetch last 8 messages (server-side; OK since service role)
-  const messageBatches = await Promise.all(
-    (recentConvs || []).map(async (c) => {
-      const { data: msgs } = await supabase
-        .from('messages')
-        .select('id, conversation_id, role, model, content, created_at')
-        .eq('conversation_id', c.id)
-        .order('created_at', { ascending: true })
-        .limit(8);
-      return { conv: c, msgs: msgs || [] };
-    })
+        // recent conversations
+        const { data: convs } = await supabase
+          .from('conversations')
+          .select('id, session_id, created_at')
+          .order('created_at', { ascending: false })
+          .limit(10);
+        if (!mounted) return;
+        setRecentConvs(convs || []);
+
+        // messages for each
+        const batches = await Promise.all(
+          (convs || []).map(async (c) => {
+            const { data: msgs } = await supabase
+              .from('messages')
+              .select('id, conversation_id, role, model, content, created_at')
+              .eq('conversation_id', c.id)
+              .order('created_at', { ascending: true })
+              .limit(8);
+            return { conv: c, msgs: msgs || [] };
+          })
+        );
+        if (!mounted) return;
+        setMessageBatches(batches);
+
+        // recent cost logs
+        const { data: recent } = await supabase
+          .from('cost_logs')
+          .select('id, conversation_id, model, prompt_tokens, completion_tokens, total_tokens, est_cost_usd, est_cost_inr, created_at')
+          .order('created_at', { ascending: false })
+          .limit(50);
+        if (!mounted) return;
+        setRecentCosts(recent || []);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+
+  const totalINR = useMemo(
+    () => (aggCostRows || []).reduce((sum, r) => sum + (Number(r.est_cost_inr) || 0), 0),
+    [aggCostRows]
+  );
+  const totalUSD = useMemo(
+    () => (aggCostRows || []).reduce((sum, r) => sum + (Number(r.est_cost_usd) || 0), 0),
+    [aggCostRows]
   );
 
-  // ---- Recent cost logs (show token columns only when present) ----
-  const { data: recentCosts } = await supabase
-    .from('cost_logs')
-    .select('id, conversation_id, model, prompt_tokens, completion_tokens, total_tokens, est_cost_usd, est_cost_inr, created_at')
-    .order('created_at', { ascending: false })
-    .limit(50);
+  const perModel = useMemo(() => {
+    const m = {};
+    (aggCostRows || []).forEach(r => {
+      const k = r.model || 'unknown';
+      m[k] = m[k] || { rows: 0, inr: 0, usd: 0 };
+      m[k].rows += 1;
+      m[k].inr += Number(r.est_cost_inr) || 0;
+      m[k].usd += Number(r.est_cost_usd) || 0;
+    });
+    return m;
+  }, [aggCostRows]);
 
-  const anyTokensPresent = (recentCosts || []).some(
-    r => r?.prompt_tokens != null || r?.completion_tokens != null || r?.total_tokens != null
+  const anyTokensPresent = useMemo(
+    () => (recentCosts || []).some(r =>
+      r?.prompt_tokens != null || r?.completion_tokens != null || r?.total_tokens != null
+    ),
+    [recentCosts]
   );
 
   return (
@@ -90,7 +150,7 @@ export default async function AdminDashboardPage() {
         <StatCard label="Total Conversations" value={convCount ?? 0} />
         <StatCard label="Total Messages" value={msgCount ?? 0} />
         <StatCard label="Total Cost (INR)" value={formatINR(totalINR)} />
-        <StatCard label="Total Cost (USD)" value={`$${totalUSD.toFixed(4)}`} />
+        <StatCard label="Total Cost (USD)" value={`$${(totalUSD || 0).toFixed(4)}`} />
       </div>
 
       {/* Per model */}
@@ -99,25 +159,25 @@ export default async function AdminDashboardPage() {
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-            <tr style={{ textAlign: 'left', background: '#f3f4f6' }}>
-              <Th>Model</Th>
-              <Th># Logs</Th>
-              <Th>Cost (INR)</Th>
-              <Th>Cost (USD)</Th>
-            </tr>
+              <tr style={{ textAlign: 'left', background: '#f3f4f6' }}>
+                <Th>Model</Th>
+                <Th># Logs</Th>
+                <Th>Cost (INR)</Th>
+                <Th>Cost (USD)</Th>
+              </tr>
             </thead>
             <tbody>
-            {Object.entries(perModel).map(([m, v]) => (
-              <tr key={m} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                <Td mono>{m}</Td>
-                <Td>{v.rows}</Td>
-                <Td>{formatINR(v.inr)}</Td>
-                <Td>${v.usd.toFixed(4)}</Td>
-              </tr>
-            ))}
-            {Object.keys(perModel).length === 0 && (
-              <tr><Td colSpan={4} style={{ color: '#6b7280' }}>No cost logs yet.</Td></tr>
-            )}
+              {Object.entries(perModel).map(([m, v]) => (
+                <tr key={m} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                  <Td mono>{m}</Td>
+                  <Td>{v.rows}</Td>
+                  <Td>{formatINR(v.inr)}</Td>
+                  <Td>${(v.usd || 0).toFixed(4)}</Td>
+                </tr>
+              ))}
+              {Object.keys(perModel).length === 0 && (
+                <tr><Td colSpan={4} style={{ color: '#6b7280' }}>No cost logs yet.</Td></tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -152,7 +212,7 @@ export default async function AdminDashboardPage() {
           </div>
         ))}
         {(!messageBatches || messageBatches.length === 0) && (
-          <div style={{ color: '#6b7280' }}>No conversations found.</div>
+          <div style={{ color: '#6b7280' }}>{loading ? 'Loading…' : 'No conversations found.'}</div>
         )}
       </section>
 
@@ -160,38 +220,44 @@ export default async function AdminDashboardPage() {
       <section style={{ marginBottom: 24 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
           <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Recent Cost Logs</h2>
-          <a href="/api/admin/cost-csv" style={{ fontSize: 13, color: '#2563eb', textDecoration: 'underline' }}>Export CSV</a>
+          <a href="/api/admin/cost-csv" style={{ fontSize: 13, color: '#2563eb', textDecoration: 'underline' }}>
+            Export CSV
+          </a>
         </div>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-            <tr style={{ textAlign: 'left', background: '#f3f4f6' }}>
-              <Th>When</Th>
-              <Th>Conversation</Th>
-              <Th>Model</Th>
-              {anyTokensPresent && (<Th>Prompt Toks</Th>)}
-              {anyTokensPresent && (<Th>Completion Toks</Th>)}
-              {anyTokensPresent && (<Th>Total Toks</Th>)}
-              <Th>Cost (INR)</Th>
-              <Th>Cost (USD)</Th>
-            </tr>
+              <tr style={{ textAlign: 'left', background: '#f3f4f6' }}>
+                <Th>When</Th>
+                <Th>Conversation</Th>
+                <Th>Model</Th>
+                {anyTokensPresent && (<Th>Prompt Toks</Th>)}
+                {anyTokensPresent && (<Th>Completion Toks</Th>)}
+                {anyTokensPresent && (<Th>Total Toks</Th>)}
+                <Th>Cost (INR)</Th>
+                <Th>Cost (USD)</Th>
+              </tr>
             </thead>
             <tbody>
-            {(recentCosts || []).map(r => (
-              <tr key={r.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                <Td>{safeDate(r.created_at)}</Td>
-                <Td mono>{r.conversation_id || '—'}</Td>
-                <Td mono>{r.model || '—'}</Td>
-                {anyTokensPresent && (<Td>{r.prompt_tokens ?? '—'}</Td>)}
-                {anyTokensPresent && (<Td>{r.completion_tokens ?? '—'}</Td>)}
-                {anyTokensPresent && (<Td>{r.total_tokens ?? '—'}</Td>)}
-                <Td>{formatINR(r.est_cost_inr)}</Td>
-                <Td>${(Number(r.est_cost_usd) || 0).toFixed(6)}</Td>
-              </tr>
-            ))}
-            {(recentCosts || []).length === 0 && (
-              <tr><Td colSpan={anyTokensPresent ? 8 : 5} style={{ color: '#6b7280' }}>No cost logs yet.</Td></tr>
-            )}
+              {(recentCosts || []).map(r => (
+                <tr key={r.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                  <Td>{safeDate(r.created_at)}</Td>
+                  <Td mono>{r.conversation_id || '—'}</Td>
+                  <Td mono>{r.model || '—'}</Td>
+                  {anyTokensPresent && (<Td>{r.prompt_tokens ?? '—'}</Td>)}
+                  {anyTokensPresent && (<Td>{r.completion_tokens ?? '—'}</Td>)}
+                  {anyTokensPresent && (<Td>{r.total_tokens ?? '—'}</Td>)}
+                  <Td>{formatINR(r.est_cost_inr)}</Td>
+                  <Td>${(Number(r.est_cost_usd) || 0).toFixed(6)}</Td>
+                </tr>
+              ))}
+              {(recentCosts || []).length === 0 && (
+                <tr>
+                  <Td colSpan={anyTokensPresent ? 8 : 5} style={{ color: '#6b7280' }}>
+                    {loading ? 'Loading…' : 'No cost logs yet.'}
+                  </Td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -213,5 +279,17 @@ function Th({ children }) {
   return <th style={{ fontWeight: 600, padding: '10px 8px', fontSize: 13 }}>{children}</th>;
 }
 function Td({ children, mono = false, colSpan }) {
-  return <td colSpan={colSpan} style={{ padding: '8px', fontFamily: mono ? 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace' : undefined }}>{children}</td>;
+  return (
+    <td
+      colSpan={colSpan}
+      style={{
+        padding: '8px',
+        fontFamily: mono
+          ? 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+          : undefined
+      }}
+    >
+      {children}
+    </td>
+  );
 }

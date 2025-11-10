@@ -1,15 +1,23 @@
-// app/(auth)/login/page.js  (or app/[auth]/login/page.js)
+// app/(auth)/login/page.js
 'use client';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-import { Suspense } from 'react';
-import { useState, useEffect } from 'react';
-import { supabase } from '../../../lib/supabase';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { supabase } from '../../../lib/supabase';
 
-function LoginInner(){
-  const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
+export const revalidate = 0;             // must be a number or false
+export const dynamic = 'force-dynamic';  // avoid prerendering
+
+export default function Login() {
+  return (
+    <Suspense fallback={null}>
+      <LoginInner />
+    </Suspense>
+  );
+}
+
+function LoginInner() {
+  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [err, setErr] = useState('');
@@ -17,43 +25,59 @@ function LoginInner(){
 
   const router = useRouter();
   const search = useSearchParams();
-  const redirectedFrom = search?.get('redirectedFrom') || '/crm/loanmanager';
+  const redirectedFrom = search.get('redirectedFrom') || '/crm/loanmanager';
 
-  // ensure user has a row in user_roles (defaults to 'manager')
+  // Upsert into employees so admin can “Assign to …”
+  const ensureEmployee = async (user) => {
+    if (!user?.id) return;
+    await supabase.from('employees').upsert(
+      { id: user.id, email: user.email || null, name: null },
+      { onConflict: 'id' }
+    );
+  };
+
+  // Ensure a role row exists; default to 'manager'
   const ensureDefaultRole = async (userId) => {
     if (!userId) return;
-    const { data: existing, error: rErr } = await supabase
+    const { data, error } = await supabase
       .from('user_roles')
       .select('role')
       .eq('user_id', userId)
       .limit(1);
-    if (rErr) return; // not critical
-    if (existing && existing.length) return;
-    await supabase.from('user_roles').insert({ user_id: userId, role: 'manager' });
+    if (error) return; // not fatal
+    if (!data || data.length === 0) {
+      await supabase.from('user_roles').insert({ user_id: userId, role: 'manager' });
+    }
   };
 
+  // Read role and redirect
   const redirectByRole = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+
+    await ensureEmployee(user);
+    await ensureDefaultRole(user.id);
+
     const { data, error } = await supabase
       .from('user_roles')
       .select('role')
       .eq('user_id', user.id)
       .limit(1);
+
     const role = !error && data?.[0]?.role ? data[0].role : 'manager';
-    if (role === 'admin') router.replace('/crm/admin');
-    else router.replace(redirectedFrom);
+    router.replace(role === 'admin' ? '/crm/admin' : redirectedFrom);
   };
 
+  // If already signed in, do role-based redirect
   useEffect(() => {
-    (async ()=>{
+    (async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await redirectByRole();
-      }
+      if (user) await redirectByRole();
     })();
-  }, []); // eslint-disable-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  // submit
   const submit = async (e) => {
     e.preventDefault();
     setErr('');
@@ -62,24 +86,16 @@ function LoginInner(){
       if (mode === 'signin') {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-
-        const { data: { user } } = await supabase.auth.getUser();
-        const { data } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .limit(1);
-        const role = data?.[0]?.role || 'manager';
-        router.replace(role === 'admin' ? '/crm/admin' : '/crm/loanmanager');
-
+        await redirectByRole();
       } else {
         const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
+
         if (data?.user && data?.session === null) {
           setLoading(false);
           return setErr('Check your email to confirm your account, then sign in.');
         }
-        router.replace('/crm/loanmanager');
+        await redirectByRole();
       }
     } catch (e2) {
       setErr(e2.message || 'Authentication failed');
@@ -104,7 +120,11 @@ function LoginInner(){
           </button>
         </div>
 
-        {err && <div className="text-sm text-rose-600 border border-rose-200 bg-rose-50 rounded-md px-3 py-2">{err}</div>}
+        {err && (
+          <div className="text-sm text-rose-600 border border-rose-200 bg-rose-50 rounded-md px-3 py-2">
+            {err}
+          </div>
+        )}
 
         <input
           value={email}
@@ -132,14 +152,5 @@ function LoginInner(){
         </div>
       </form>
     </div>
-  );
-}
-
-export default function LoginPage() {
-  // Suspense boundary required for components that call useSearchParams()
-  return (
-    <Suspense fallback={<div />}>
-      <LoginInner />
-    </Suspense>
   );
 }
