@@ -1,13 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";          /* Tailwind v4 way */
 
+/* (Optional) point to your config file if you want custom theme/paths) */
+@config "../tw.config.js";
+
+/* Your existing custom CSS can stay below: */
 html, body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
   box-sizing: border-box;
-} 
+}
 
 body {
   font-family: 'Open Sans', sans-serif;
@@ -20,15 +22,4 @@ body {
   transition: padding-top 0.3s ease;
   scroll-behavior: smooth;
 }
-
-body.scrolled {
-  padding-top: 50px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto !important; }
-  *, *::before, *::after {
-    animation: none !important;
-    transition: none !important;
-  }
-}
+body.scrolled { padding-top: 50px; }
