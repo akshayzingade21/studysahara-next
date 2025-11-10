@@ -1,10 +1,12 @@
-// app/[auth]/login/page.js
+// app/(auth)/login/page.js  (or app/[auth]/login/page.js)
 'use client';
+
+import { Suspense } from 'react';
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function Login(){
+function LoginInner(){
   const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,55 +15,34 @@ export default function Login(){
 
   const router = useRouter();
   const search = useSearchParams();
-  // If someone bookmarked a target, we’ll still honor it for non-admins.
-  const redirectedFrom = search.get('redirectedFrom') || '/crm/loanmanager';
+  const redirectedFrom = search?.get('redirectedFrom') || '/crm/loanmanager';
 
-  // -- helpers ----------------------------------------------------------------
-
-  // Upsert into employees so admin can “Assign to …”
-  const ensureEmployee = async (user) => {
-    if (!user?.id) return;
-    // employees: id (uuid PK), email (text), name (text)
-    await supabase.from('employees').upsert(
-      { id: user.id, email: user.email || null, name: null },
-      { onConflict: 'id' }
-    );
-  };
-
-  // Ensure a role row exists; default to 'manager'
+  // ensure user has a row in user_roles (defaults to 'manager')
   const ensureDefaultRole = async (userId) => {
     if (!userId) return;
-    const { data, error } = await supabase
+    const { data: existing, error: rErr } = await supabase
       .from('user_roles')
       .select('role')
       .eq('user_id', userId)
       .limit(1);
-    if (error) return; // not fatal
-    if (!data || data.length === 0) {
-      await supabase.from('user_roles').insert({ user_id: userId, role: 'manager' });
-    }
+    if (rErr) return; // not critical
+    if (existing && existing.length) return;
+    await supabase.from('user_roles').insert({ user_id: userId, role: 'manager' });
   };
 
-  // Read role and redirect
   const redirectByRole = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-
-    // make sure infra rows exist (safe to call repeatedly)
-    await ensureEmployee(user);
-    await ensureDefaultRole(user.id);
-
     const { data, error } = await supabase
       .from('user_roles')
       .select('role')
       .eq('user_id', user.id)
       .limit(1);
-
     const role = !error && data?.[0]?.role ? data[0].role : 'manager';
-    router.replace(role === 'admin' ? '/crm/admin' : redirectedFrom);
+    if (role === 'admin') router.replace('/crm/admin');
+    else router.replace(redirectedFrom);
   };
 
-  // If already signed in, do role-based redirect
   useEffect(() => {
     (async ()=>{
       const { data: { user } } = await supabase.auth.getUser();
@@ -71,7 +52,6 @@ export default function Login(){
     })();
   }, []); // eslint-disable-line
 
-  // -- submit -----------------------------------------------------------------
   const submit = async (e) => {
     e.preventDefault();
     setErr('');
@@ -81,22 +61,23 @@ export default function Login(){
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
-        // finalize infra rows & redirect
-        await redirectByRole();
+        const { data: { user } } = await supabase.auth.getUser();
+        const { data } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .limit(1);
+        const role = data?.[0]?.role || 'manager';
+        router.replace(role === 'admin' ? '/crm/admin' : '/crm/loanmanager');
 
       } else {
         const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
-
-        // If email confirmation is required, there is no session yet.
         if (data?.user && data?.session === null) {
           setLoading(false);
           return setErr('Check your email to confirm your account, then sign in.');
         }
-
-        // If we already have a session (email confirm not required),
-        // finish wiring (employees + role) and redirect by role.
-        await redirectByRole();
+        router.replace('/crm/loanmanager');
       }
     } catch (e2) {
       setErr(e2.message || 'Authentication failed');
@@ -105,7 +86,6 @@ export default function Login(){
     }
   };
 
-  // -- UI ---------------------------------------------------------------------
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
       <form onSubmit={submit} className="bg-white border rounded-xl p-6 w-full max-w-sm space-y-3 shadow-sm">
@@ -150,5 +130,14 @@ export default function Login(){
         </div>
       </form>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  // Suspense boundary required for components that call useSearchParams()
+  return (
+    <Suspense fallback={<div />}>
+      <LoginInner />
+    </Suspense>
   );
 }
