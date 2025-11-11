@@ -2,89 +2,95 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../../../lib/supabase';
 
-// Runtime only — use public envs on client
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { persistSession: false },
-});
-
-export const revalidate = 0;             // no ISR
-export const dynamic = 'force-dynamic';  // avoid prerender
+export const dynamic = 'force-dynamic'; // remove revalidate entirely
 
 function formatINR(n) {
   if (n === null || n === undefined) return '—';
-  const num = Number(n) || 0;
   try {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      maximumFractionDigits: 2,
-    }).format(num);
+      maximumFractionDigits: 2
+    }).format(Number(n));
   } catch {
-    return `₹${num.toFixed(2)}`;
+    return `₹${Number(n).toFixed(2)}`;
   }
 }
 
 function safeDate(s) {
-  if (!s) return '—';
-  try {
-    const d = new Date(s);
-    if (Number.isNaN(d.getTime())) return '—';
-    return d.toLocaleString();
-  } catch {
-    return '—';
-  }
+  try { return s ? new Date(s).toLocaleString() : '—'; } catch { return '—'; }
 }
 
 export default function AdminDashboardPage() {
-  const [loading, setLoading] = useState(true);
-
   const [convCount, setConvCount] = useState(0);
-  const [msgCount, setMsgCount] = useState(0);
+  const [msgCount, setMsgCount]   = useState(0);
   const [aggCostRows, setAggCostRows] = useState([]);
-
   const [recentConvs, setRecentConvs] = useState([]);
   const [messageBatches, setMessageBatches] = useState([]);
-
   const [recentCosts, setRecentCosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const { totalINR, totalUSD, perModel, anyTokensPresent } = useMemo(() => {
+    const inr = (aggCostRows || []).reduce((sum, r) => sum + (Number(r.est_cost_inr) || 0), 0);
+    const usd = (aggCostRows || []).reduce((sum, r) => sum + (Number(r.est_cost_usd) || 0), 0);
+
+    const modelAgg = {};
+    (aggCostRows || []).forEach(r => {
+      const k = r.model || 'unknown';
+      modelAgg[k] = modelAgg[k] || { rows: 0, inr: 0, usd: 0 };
+      modelAgg[k].rows += 1;
+      modelAgg[k].inr  += Number(r.est_cost_inr) || 0;
+      modelAgg[k].usd  += Number(r.est_cost_usd) || 0;
+    });
+
+    const tokensPresent = (recentCosts || []).some(
+      r => r?.prompt_tokens != null || r?.completion_tokens != null || r?.total_tokens != null
+    );
+
+    return { totalINR: inr, totalUSD: usd, perModel: modelAgg, anyTokensPresent: tokensPresent };
+  }, [aggCostRows, recentCosts]);
 
   useEffect(() => {
-    let mounted = true;
+    let cancelled = false;
+
     (async () => {
       try {
-        // counts
-        const [{ count: c1 }, { count: c2 }] = await Promise.all([
-          supabase.from('conversations').select('*', { count: 'exact', head: true }),
-          supabase.from('messages').select('*', { count: 'exact', head: true }),
-        ]);
-        if (!mounted) return;
-        setConvCount(c1 ?? 0);
-        setMsgCount(c2 ?? 0);
+        setLoading(true);
 
-        // costs list for totals and per-model
-        const { data: costAgg } = await supabase
+        const [{ count: cCount }, { count: mCount }] = await Promise.all([
+          supabase.from('conversations').select('*', { count: 'exact', head: true }),
+          supabase.from('messages').select('*', { count: 'exact', head: true })
+        ]);
+        if (!cancelled) {
+          setConvCount(cCount ?? 0);
+          setMsgCount(mCount ?? 0);
+        }
+
+        const { data: agg } = await supabase
           .from('cost_logs')
           .select('est_cost_inr, est_cost_usd, model, created_at')
           .order('created_at', { ascending: false })
           .limit(2000);
-        if (!mounted) return;
-        setAggCostRows(costAgg || []);
+        if (!cancelled) setAggCostRows(agg || []);
 
-        // recent conversations
-        const { data: convs } = await supabase
+        const { data: rCosts } = await supabase
+          .from('cost_logs')
+          .select('id, conversation_id, model, prompt_tokens, completion_tokens, total_tokens, est_cost_usd, est_cost_inr, created_at')
+          .order('created_at', { ascending: false })
+          .limit(50);
+        if (!cancelled) setRecentCosts(rCosts || []);
+
+        const { data: rConvs } = await supabase
           .from('conversations')
           .select('id, session_id, created_at')
           .order('created_at', { ascending: false })
           .limit(10);
-        if (!mounted) return;
-        setRecentConvs(convs || []);
+        if (!cancelled) setRecentConvs(rConvs || []);
 
-        // messages for each
         const batches = await Promise.all(
-          (convs || []).map(async (c) => {
+          (rConvs || []).map(async (c) => {
             const { data: msgs } = await supabase
               .from('messages')
               .select('id, conversation_id, role, model, content, created_at')
@@ -94,58 +100,24 @@ export default function AdminDashboardPage() {
             return { conv: c, msgs: msgs || [] };
           })
         );
-        if (!mounted) return;
-        setMessageBatches(batches);
-
-        // recent cost logs
-        const { data: recent } = await supabase
-          .from('cost_logs')
-          .select('id, conversation_id, model, prompt_tokens, completion_tokens, total_tokens, est_cost_usd, est_cost_inr, created_at')
-          .order('created_at', { ascending: false })
-          .limit(50);
-        if (!mounted) return;
-        setRecentCosts(recent || []);
+        if (!cancelled) setMessageBatches(batches || []);
       } finally {
-        if (mounted) setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     })();
-    return () => { mounted = false; };
+
+    return () => { cancelled = true; };
   }, []);
-
-  const totalINR = useMemo(
-    () => (aggCostRows || []).reduce((sum, r) => sum + (Number(r.est_cost_inr) || 0), 0),
-    [aggCostRows]
-  );
-  const totalUSD = useMemo(
-    () => (aggCostRows || []).reduce((sum, r) => sum + (Number(r.est_cost_usd) || 0), 0),
-    [aggCostRows]
-  );
-
-  const perModel = useMemo(() => {
-    const m = {};
-    (aggCostRows || []).forEach(r => {
-      const k = r.model || 'unknown';
-      m[k] = m[k] || { rows: 0, inr: 0, usd: 0 };
-      m[k].rows += 1;
-      m[k].inr += Number(r.est_cost_inr) || 0;
-      m[k].usd += Number(r.est_cost_usd) || 0;
-    });
-    return m;
-  }, [aggCostRows]);
-
-  const anyTokensPresent = useMemo(
-    () => (recentCosts || []).some(r =>
-      r?.prompt_tokens != null || r?.completion_tokens != null || r?.total_tokens != null
-    ),
-    [recentCosts]
-  );
 
   return (
     <div style={{ padding: 20, fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial' }}>
       <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>StudySahara — Admin Dashboard</h1>
       <p style={{ color: '#6b7280', marginBottom: 20 }}>Messages, costs, and recent conversations</p>
 
-      {/* Top stats */}
+      {loading && (
+        <div style={{ marginBottom: 16, color: '#6b7280' }}>Loading…</div>
+      )}
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 12, marginBottom: 24 }}>
         <StatCard label="Total Conversations" value={convCount ?? 0} />
         <StatCard label="Total Messages" value={msgCount ?? 0} />
@@ -153,7 +125,6 @@ export default function AdminDashboardPage() {
         <StatCard label="Total Cost (USD)" value={`$${(totalUSD || 0).toFixed(4)}`} />
       </div>
 
-      {/* Per model */}
       <section style={{ marginBottom: 24 }}>
         <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Cost by Model (latest)</h2>
         <div style={{ overflowX: 'auto' }}>
@@ -183,7 +154,6 @@ export default function AdminDashboardPage() {
         </div>
       </section>
 
-      {/* Recent conversations + messages */}
       <section style={{ marginBottom: 24 }}>
         <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Recent Conversations</h2>
         {(messageBatches || []).map(({ conv, msgs }) => (
@@ -212,17 +182,14 @@ export default function AdminDashboardPage() {
           </div>
         ))}
         {(!messageBatches || messageBatches.length === 0) && (
-          <div style={{ color: '#6b7280' }}>{loading ? 'Loading…' : 'No conversations found.'}</div>
+          <div style={{ color: '#6b7280' }}>No conversations found.</div>
         )}
       </section>
 
-      {/* Recent cost logs */}
       <section style={{ marginBottom: 24 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
           <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Recent Cost Logs</h2>
-          <a href="/api/admin/cost-csv" style={{ fontSize: 13, color: '#2563eb', textDecoration: 'underline' }}>
-            Export CSV
-          </a>
+          <a href="/api/admin/cost-csv" style={{ fontSize: 13, color: '#2563eb', textDecoration: 'underline' }}>Export CSV</a>
         </div>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -252,11 +219,7 @@ export default function AdminDashboardPage() {
                 </tr>
               ))}
               {(recentCosts || []).length === 0 && (
-                <tr>
-                  <Td colSpan={anyTokensPresent ? 8 : 5} style={{ color: '#6b7280' }}>
-                    {loading ? 'Loading…' : 'No cost logs yet.'}
-                  </Td>
-                </tr>
+                <tr><Td colSpan={anyTokensPresent ? 8 : 5} style={{ color: '#6b7280' }}>No cost logs yet.</Td></tr>
               )}
             </tbody>
           </table>
@@ -279,17 +242,5 @@ function Th({ children }) {
   return <th style={{ fontWeight: 600, padding: '10px 8px', fontSize: 13 }}>{children}</th>;
 }
 function Td({ children, mono = false, colSpan }) {
-  return (
-    <td
-      colSpan={colSpan}
-      style={{
-        padding: '8px',
-        fontFamily: mono
-          ? 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
-          : undefined
-      }}
-    >
-      {children}
-    </td>
-  );
+  return <td colSpan={colSpan} style={{ padding: '8px', fontFamily: mono ? 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace' : undefined }}>{children}</td>;
 }

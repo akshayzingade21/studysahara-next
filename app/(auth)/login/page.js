@@ -5,11 +5,10 @@ import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { supabase } from '../../../lib/supabase';
 
-export const revalidate = 0; // ✅ must be a number or false (not an object)
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'; // don't prerender; avoid stale env
 
-// --- tiny helper so we can wrap useSearchParams in Suspense ---
-function LoginPageWithSearch() {
+// Wrap useSearchParams in Suspense (required by Next 14)
+function LoginWithSearch() {
   const search = useSearchParams();
   const redirectedFrom = search.get('redirectedFrom') || '/crm/loanmanager';
   return <Login redirectedFrom={redirectedFrom} />;
@@ -18,7 +17,7 @@ function LoginPageWithSearch() {
 export default function Page() {
   return (
     <Suspense fallback={<div className="min-h-screen grid place-items-center text-sm text-gray-500">Loading…</div>}>
-      <LoginPageWithSearch />
+      <LoginWithSearch />
     </Suspense>
   );
 }
@@ -32,7 +31,6 @@ function Login({ redirectedFrom }) {
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Upsert into employees so admin can “Assign to …”
   const ensureEmployee = async (user) => {
     if (!user?.id) return;
     await supabase.from('employees').upsert(
@@ -41,7 +39,6 @@ function Login({ redirectedFrom }) {
     );
   };
 
-  // Ensure a role row exists; default to 'manager'
   const ensureDefaultRole = async (userId) => {
     if (!userId) return;
     const { data, error } = await supabase
@@ -55,7 +52,6 @@ function Login({ redirectedFrom }) {
     }
   };
 
-  // Read role and redirect
   const redirectByRole = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -73,7 +69,6 @@ function Login({ redirectedFrom }) {
     router.replace(role === 'admin' ? '/crm/admin' : redirectedFrom);
   };
 
-  // If already signed in, do role-based redirect
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -95,10 +90,10 @@ function Login({ redirectedFrom }) {
       } else {
         const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
-
         if (data?.user && data?.session === null) {
           setLoading(false);
-          return setErr('Check your email to confirm your account, then sign in.');
+            setErr('Check your email to confirm your account, then sign in.');
+          return;
         }
         await redirectByRole();
       }
