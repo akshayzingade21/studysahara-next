@@ -2,30 +2,35 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { supabase } from '../../../lib/supabase';
 
-export const revalidate = 0;             // must be a number or false
-export const dynamic = 'force-dynamic';  // avoid prerendering
+export const revalidate = 0; // ✅ must be a number or false (not an object)
+export const dynamic = 'force-dynamic';
 
-export default function Login() {
+// --- tiny helper so we can wrap useSearchParams in Suspense ---
+function LoginPageWithSearch() {
+  const search = useSearchParams();
+  const redirectedFrom = search.get('redirectedFrom') || '/crm/loanmanager';
+  return <Login redirectedFrom={redirectedFrom} />;
+}
+
+export default function Page() {
   return (
-    <Suspense fallback={null}>
-      <LoginInner />
+    <Suspense fallback={<div className="min-h-screen grid place-items-center text-sm text-gray-500">Loading…</div>}>
+      <LoginPageWithSearch />
     </Suspense>
   );
 }
 
-function LoginInner() {
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+function Login({ redirectedFrom }) {
+  const router = useRouter();
+
+  const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const router = useRouter();
-  const search = useSearchParams();
-  const redirectedFrom = search.get('redirectedFrom') || '/crm/loanmanager';
 
   // Upsert into employees so admin can “Assign to …”
   const ensureEmployee = async (user) => {
@@ -44,7 +49,7 @@ function LoginInner() {
       .select('role')
       .eq('user_id', userId)
       .limit(1);
-    if (error) return; // not fatal
+    if (error) return;
     if (!data || data.length === 0) {
       await supabase.from('user_roles').insert({ user_id: userId, role: 'manager' });
     }
@@ -72,12 +77,12 @@ function LoginInner() {
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) await redirectByRole();
+      if (user) {
+        await redirectByRole();
+      }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []); // eslint-disable-line
 
-  // submit
   const submit = async (e) => {
     e.preventDefault();
     setErr('');
@@ -120,11 +125,7 @@ function LoginInner() {
           </button>
         </div>
 
-        {err && (
-          <div className="text-sm text-rose-600 border border-rose-200 bg-rose-50 rounded-md px-3 py-2">
-            {err}
-          </div>
-        )}
+        {err && <div className="text-sm text-rose-600 border border-rose-200 bg-rose-50 rounded-md px-3 py-2">{err}</div>}
 
         <input
           value={email}
